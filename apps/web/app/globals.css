@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -7,9 +7,9 @@
 :root { color-scheme: light; }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; color: #000; background: #f6f6f6; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-::selection { color: white; background: #8b1f33; }
-:focus-visible { outline: 3px solid rgba(139, 31, 51, .35); outline-offset: 3px; }
+body { margin: 0; color: #00163a; background: #f7f9fc; font-family: Poppins, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+::selection { color: white; background: #009de7; }
+:focus-visible { outline: 3px solid rgba(0, 157, 231, .32); outline-offset: 3px; }
 a, button, input, textarea, select { transition: color .2s ease, background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -19,7 +19,7 @@ a, button, input, textarea, select { transition: color .2s ease, background-colo
 
 @layer components {
   .container-shell { @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10; }
-  .eyebrow { @apply flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[.13em] text-brand; }
+  .eyebrow { @apply flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[.12em] text-brand; }
   .eyebrow::before { content: ""; @apply block h-px w-6 bg-current; }
   .page-title { @apply text-3xl font-semibold tracking-[-.035em] text-navy sm:text-4xl; }
   .panel { @apply rounded-2xl border border-black/10 bg-white shadow-card; }
