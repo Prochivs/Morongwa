@@ -1,0 +1,2 @@
+import Link from "next/link"; import { AuthCard } from "@/components/auth-card"; import { LoginForm } from "@/components/auth-form";
+export default function Page() { return <AuthCard title="Welcome back" intro="Sign in to manage requests, assignments, or QueueMate operations." alternate={<>New to QueueMate? <Link className="font-semibold text-brand" href="/register">Create a customer account</Link></>}><LoginForm /></AuthCard>; }

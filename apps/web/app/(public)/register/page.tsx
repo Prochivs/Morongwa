@@ -1,0 +1,2 @@
+import Link from "next/link"; import { AuthCard } from "@/components/auth-card"; import { RegisterForm } from "@/components/auth-form";
+export default function Page() { return <AuthCard title="Request assistance" intro="Create your secure customer account, then submit and track queue assistance from your phone." alternate={<>Already registered? <Link className="font-semibold text-brand" href="/login">Sign in</Link></>}><RegisterForm /></AuthCard>; }

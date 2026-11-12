@@ -1,0 +1,4 @@
+import type { ReactNode } from "react";
+
+export function ContentPage({ eyebrow, title, intro, children }: { eyebrow: string; title: string; intro: string; children: ReactNode }) { return <div className="bg-white"><section className="border-b border-slate-200 bg-canvas"><div className="container-shell py-16 sm:py-24"><p className="eyebrow">{eyebrow}</p><h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-tight text-navy sm:text-6xl">{title}</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-muted">{intro}</p></div></section><section className="container-shell py-14 sm:py-20"><div className="mx-auto max-w-4xl space-y-10 text-slate-700">{children}</div></section></div>; }
+export function ProseSection({ title, children }: { title: string; children: ReactNode }) { return <section><h2 className="text-xl font-semibold text-navy">{title}</h2><div className="mt-3 space-y-3 text-sm leading-7 text-slate-600">{children}</div></section>; }
