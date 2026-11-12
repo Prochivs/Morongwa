@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, Smartphone, UserCheck } from "lucide-react";
-import { InstitutionPreview, PricingPreview, ReviewPreview } from "@/components/public-data";
+import { PricingPreview, ReviewPreview } from "@/components/public-data";
 
 const steps = [
   [Smartphone, "1. Request", "Tell us the queue, time and location in Gaborone."],
@@ -57,8 +57,6 @@ export default function HomePage() {
         <div className="border-t border-navy/15">{assurances.map(([title, description]) => <div className="grid gap-3 border-b border-navy/15 py-7 sm:grid-cols-[.75fr_1.25fr]" key={title}><h3 className="flex items-center gap-3 font-semibold text-navy"><ShieldCheck className="text-brand" size={20} />{title}</h3><p className="text-sm leading-7 text-muted">{description}</p></div>)}</div>
       </div>
     </section>
-
-    <section className="bg-canvas py-20 sm:py-28"><div className="container-shell"><div className="grid gap-7 lg:grid-cols-[1fr_.7fr] lg:items-end"><div><p className="eyebrow">Eligible locations</p><h2 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-.045em] sm:text-5xl">Reviewed places. Clear rules.</h2></div><p className="text-sm leading-7 text-muted">Availability never implies a partnership. Each request remains subject to the institution's rules and customer-presence requirements.</p></div><div className="mt-12"><InstitutionPreview /></div></div></section>
 
     <section className="bg-white py-20 sm:py-28"><div className="container-shell"><div className="grid gap-7 lg:grid-cols-[1fr_.7fr] lg:items-end"><div><p className="eyebrow">Straightforward pricing</p><h2 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-.045em] sm:text-5xl">See the fee before you commit.</h2></div><p className="text-sm leading-7 text-muted">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p></div><div className="mt-12"><PricingPreview /></div></div></section>
 
