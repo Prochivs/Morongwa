@@ -1,52 +1,52 @@
-# Design QA — HASED-MASTER direction
+# Design QA — smooth rounded refinement
 
 ## Evidence
 
-- Source visual truth: `/private/tmp/hesed-source-home-visible.png`
-- Source mobile visual truth: `/private/tmp/hesed-source-mobile.png`
-- Implementation desktop: `/private/tmp/queuemate-hesed-desktop-final.png`
-- Implementation mobile: `/private/tmp/queuemate-hesed-mobile-final.png`
-- Desktop comparison board: `/private/tmp/queuemate-hesed-comparison-final.png`
-- Mobile comparison board: `/private/tmp/queuemate-hesed-mobile-comparison-final.png`
-- Desktop viewport and pixels: 1440 × 1200 CSS px, device scale factor 1, 1440 × 1200 source and implementation images.
-- Mobile viewport and pixels: 500 × 1200 CSS px, device scale factor 1, 500 × 1200 source and implementation images.
+- Source visual truth: `/private/tmp/queuemate-hesed-desktop-final.png`, with user direction to make the treatment smoother, less generated-looking, and rounded.
+- Source mobile truth: `/private/tmp/queuemate-hesed-mobile-final.png` with the same direction.
+- Implementation desktop: `/private/tmp/queuemate-smooth-desktop.png`.
+- Implementation mobile: `/private/tmp/queuemate-smooth-mobile.png`.
+- Desktop comparison: `/private/tmp/queuemate-smooth-comparison.png`.
+- Mobile comparison: `/private/tmp/queuemate-smooth-mobile-comparison.png`.
+- Desktop viewport: 1440 × 1200 CSS px and image pixels, device scale factor 1.
+- Mobile viewport: 500 × 1200 CSS px and image pixels, device scale factor 1.
 - State: public homepage, navigation closed, top of page.
 
 ## Full-view comparison
 
-The final side-by-side boards show matching high-level composition: compact announcement bar, black navigation, split monochrome hero, restrained burgundy action color, sharp low-radius controls, bordered information ribbon, and spacious editorial section transition. QueueMate intentionally retains its own product copy, logo, generated Gaborone service photography, and service-specific information.
+The after-state preserves the monochrome hero and burgundy identity while replacing the rigid full-bleed geometry with a 28px framed hero, 16–24px card radii, soft elevation, calmer borders, and natural-case navigation and actions. Desktop and mobile retain the same content hierarchy and responsive order.
 
 ## Focused comparison
 
-The original-resolution desktop and mobile captures were inspected specifically for the header, hero typography, CTA row, image crop, and first information ribbon. Separate crops were not necessary because those elements fill the captured viewport and remain readable at 1:1 scale. The generated hero image is sharp at both breakpoints, uses the reference's monochrome documentary treatment, and contains no copied church imagery or branding.
+The original-resolution header, hero actions, image crop, mobile menu button, and first information band were inspected directly. The mobile comparison is itself a focused 500px view. The new radii remain consistent, image crops stay sharp, and no clipping or overflow is visible.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: Inter is used throughout with compact uppercase labels, strong 600-weight display type, tight negative display tracking, and readable body line height. Wrapping is responsive and no text is truncated.
-- Spacing and layout rhythm: desktop uses the reference's lower-weighted hero copy and 52/48 split; mobile stacks copy, image, and ribbon with matching compact spacing. Borders, radii, section gaps, and header density follow the source direction.
-- Colors and visual tokens: black, white, soft gray, and burgundy `#8B1F33` match the HASED-MASTER system. Operational success, warning, and error colors remain semantic for accessibility.
-- Image quality and asset fidelity: the project-local 1536 × 1024 generated hero is purpose-built for QueueMate, remains sharp in both crops, and uses a real raster asset rather than a placeholder or code drawing.
-- Copy and content: all visible copy is QueueMate-specific and accurately describes manual approval, payment verification, agent assignment, and tracking.
+- Fonts and typography: Inter remains the product font. Navigation and actions now use natural case and calmer tracking, while small section labels retain controlled uppercase styling. Display text wraps cleanly at both viewports.
+- Spacing and layout rhythm: 28px hero and CTA containers, 24px section grids, 16px panels and controls, and 12px buttons create a consistent radius scale. Softer shadows and spacing replace the previous hard-edged grid.
+- Colors and visual tokens: black, white, soft gray, and burgundy remain intact. Shadows use neutral black opacity and semantic status colors remain unchanged.
+- Image quality and asset fidelity: the 1536 × 1024 QueueMate hero remains sharp, correctly cropped, and monochrome. Rounded clipping is clean at desktop and mobile sizes.
+- Copy and content: all QueueMate copy and the main request path remain unchanged. Navigation labels are easier to scan in natural case.
 
 ## Findings
 
-No actionable P0, P1, or P2 visual differences remain. The different hero wording and brand mark are intentional product-content deviations.
+No actionable P0, P1, or P2 issues remain. The smoother treatment directly addresses the user feedback without changing QueueMate functionality or content.
 
 ## Comparison history
 
-1. Initial comparison found a P2 responsive rhythm mismatch: mobile hero copy sat too low while desktop copy sat too high, and an extra assurance row made the hero taller than the source.
-2. Fix applied: changed responsive alignment to top on mobile and bottom on desktop, reduced mobile display size, removed the extra assurance row, rebuilt, and recaptured both viewports.
-3. Post-fix evidence: `/private/tmp/queuemate-hesed-comparison-final.png` and `/private/tmp/queuemate-hesed-mobile-comparison-final.png` show aligned hero placement and section proportions.
+1. User review identified a P1 aesthetic mismatch: the prior interface felt overly generated and too rigid, with 2–3px radii, hard borders, all-caps controls, and no elevation.
+2. Fixes applied: introduced a 12/16/24/28px radius scale, softened borders, added restrained card elevation, converted controls to natural case, added subtle hover motion, and applied the same treatment to portal navigation, cards, fields, and buttons.
+3. Post-fix evidence: `/private/tmp/queuemate-smooth-comparison.png` and `/private/tmp/queuemate-smooth-mobile-comparison.png` show the smoother hierarchy and consistent rounded framing.
 
 ## Interaction and runtime checks
 
-- Browser-rendered desktop and mobile homepage captures completed without page-level console errors.
-- Primary destinations `/register`, `/how-it-works`, and `/login` returned HTTP 200.
-- Homepage returned HTTP 200 and the API health endpoint returned HTTP 200.
-- Production typecheck and build passed for all 31 routes.
+- Browser-rendered desktop and mobile captures completed without page-level console errors.
+- Production typecheck and build passed across all 31 routes.
+- Reduced-motion support disables decorative transitions for users who request it.
+- Primary request, navigation, and secondary CTA destinations remain unchanged.
 
 ## Follow-up polish
 
-- P3: a future art-direction pass could test one alternate hero crop if the brand prefers more visible Gaborone architecture.
+- P3: after user review, the global radius scale can be tuned slightly tighter or softer without structural changes.
 
 final result: passed
