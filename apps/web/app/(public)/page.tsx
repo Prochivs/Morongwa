@@ -18,7 +18,7 @@ const assurances = [
 export default function HomePage() {
   return <>
     <section className="relative min-h-[720px] overflow-hidden bg-blue-50 sm:min-h-[780px] lg:min-h-[760px]">
-      <Image className="object-cover object-[68%_center]" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" fill sizes="100vw" priority />
+      <Image className="object-cover object-[68%_35%]" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" fill sizes="100vw" priority />
       <div className="absolute inset-0 bg-white/70 sm:bg-gradient-to-r sm:from-white sm:via-white/70 sm:to-transparent" />
       <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1488px] items-center px-5 py-14 sm:min-h-[780px] sm:px-8 lg:min-h-[760px] lg:px-16 lg:py-0">
         <div className="max-w-[600px] rounded-[24px] bg-white/80 p-6 pb-20 shadow-card backdrop-blur-sm sm:p-8 sm:pb-20 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0">
