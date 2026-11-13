@@ -25,7 +25,6 @@ export default function HomePage() {
           <p className="mt-7 max-w-lg text-base leading-7 text-muted sm:text-lg sm:leading-8">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
           <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
             <Link className="inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-brand px-7 text-sm font-semibold text-white shadow-sm hover:-translate-y-px hover:bg-blue-600 hover:shadow-md" href="/register">Request assistance <ArrowRight size={18} /></Link>
-            <Link className="inline-flex w-fit items-center gap-3 border-b-2 border-brand pb-2 text-sm font-semibold text-navy hover:text-brand" href="/how-it-works">See how it works <ArrowRight size={16} /></Link>
           </div>
         </div>
 
