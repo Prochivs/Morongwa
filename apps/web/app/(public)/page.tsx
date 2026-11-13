@@ -10,9 +10,9 @@ const steps = [
 ] as const;
 
 const assurances = [
-  ["Verified queue agents", "Every agent is reviewed, scheduled and assigned by QueueMate."],
-  ["Only permitted queues", "Requests remain subject to each institution's current rules."],
-  ["Updates from start to finish", "Follow approval, assignment, arrival and completion from your phone."],
+  ["Verified queue agents", "Every agent is reviewed, scheduled and assigned by QueueMate.", true],
+  ["Only permitted queues", "Requests remain subject to each institution's current rules.", false],
+  ["Updates from start to finish", "Follow approval, assignment, arrival and completion from your phone.", false],
 ] as const;
 
 export default function HomePage() {
@@ -54,7 +54,7 @@ export default function HomePage() {
     <section className="bg-white py-20 sm:py-28">
       <div className="container-shell grid gap-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
         <div><p className="eyebrow">Built for confidence</p><h2 className="mt-5 max-w-xl text-4xl font-semibold leading-[1.08] tracking-[-.045em] sm:text-5xl">Know what is happening at every step.</h2><p className="mt-6 max-w-lg text-base leading-8 text-muted">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p></div>
-        <div className="border-t border-navy/15">{assurances.map(([title, description]) => <div className="grid gap-3 border-b border-navy/15 py-7 sm:grid-cols-[.75fr_1.25fr]" key={title}><h3 className="flex items-center gap-3 font-semibold text-navy"><ShieldCheck className="text-brand" size={20} />{title}</h3><p className="text-sm leading-7 text-muted">{description}</p></div>)}</div>
+        <div className="border-t border-navy/15">{assurances.map(([title, description, highlighted]) => <div className="grid gap-3 border-b border-navy/15 py-7 sm:grid-cols-[.75fr_1.25fr]" key={title}><h3 className="flex items-center gap-3 font-semibold text-navy"><ShieldCheck className="text-brand" size={20} />{title}</h3><p className={`text-sm leading-7 ${highlighted ? "text-brand" : "text-muted"}`}>{description}</p></div>)}</div>
       </div>
     </section>
 
