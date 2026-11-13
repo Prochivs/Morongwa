@@ -62,7 +62,7 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section aria-labelledby="reviews-heading" className="bg-white pb-20 pt-10 sm:pb-28 sm:pt-16">
+    <section aria-labelledby="reviews-heading" className="bg-white pb-20 pt-16 sm:pb-28 sm:pt-24">
       <div className="container-shell">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]" id="reviews-heading">What our customers say.</h2>

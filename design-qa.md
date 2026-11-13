@@ -63,7 +63,7 @@
 - Source visual truth: `/private/tmp/uidux-testimonials-reference.png` (`1600 × 1200`).
 - Populated implementation state: `/private/tmp/queuemate-testimonials-populated-section.png` (`1440 × 1200`).
 - Side-by-side comparison: `/private/tmp/queuemate-testimonials-comparison.png` (`3040 × 1200`).
-- Final live-data homepage: `/private/tmp/queuemate-testimonials-final-live.png` (`1440 × 3600`).
+- Final live-data homepage: `/private/tmp/queuemate-review-spacing.png` (`1440 × 3600`).
 - Responsive populated state: `/private/tmp/queuemate-testimonials-mobile-full.png` (`500 × 6500`).
 - Shared page-title check: `/private/tmp/queuemate-how-it-works-regular.png` (`1440 × 900`).
 - Desktop CSS viewport: `1440 × 3600`; mobile CSS viewport: `500 × 6500`; device scale factor `1`.
@@ -93,7 +93,7 @@
    - Fix: rendered three explicitly labelled temporary QA records, captured desktop and mobile evidence, and removed every fixture before the final build.
 2. Populated comparison: `/private/tmp/queuemate-testimonials-comparison.png`.
    - The source structure and QueueMate adaptation align without actionable P0/P1/P2 drift.
-3. Final live-data render: `/private/tmp/queuemate-testimonials-final-live.png`.
+3. Final live-data render: `/private/tmp/queuemate-review-spacing.png`.
    - The production build uses the real approved-review feed and presents the honest verified empty state until reviews are available.
 
 ## Implementation checklist
