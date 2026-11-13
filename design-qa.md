@@ -1,57 +1,57 @@
-# QueueMate Human-First Redesign — Design QA
+# QueueMate Pricing Cards — Design QA
 
-## Comparison target
+## Evidence
 
-- Source visual truth: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-ad8b0092-1f41-4e4c-be43-5ae08bcb0433.png`
-- Source pixels: `1487 × 1058`
-- Desktop implementation: `/private/tmp/queuemate-human-desktop-final.png`
-- Desktop implementation pixels: `1487 × 1058`
-- Mobile implementation: `/private/tmp/queuemate-human-mobile.png`
-- Mobile implementation pixels: `500 × 1200`
-- Combined comparison evidence: `/private/tmp/queuemate-design-comparison.png` (`2400 × 900`)
-- CSS viewport: desktop `1487 × 1058`, mobile `500 × 1200`
-- Device scale factor: `1`
-- Density normalization: none required; source and final desktop implementation were compared at identical pixel dimensions.
-- State: public homepage, signed out, navigation closed, initial scroll position.
+- Source visual truth: `/private/tmp/queuemate-pricing-reference.png`
+- Source pixels: `455 × 341`
+- Desktop implementation: `/private/tmp/queuemate-pricing-plans-960.png`
+- Desktop implementation pixels: `960 × 741`
+- Mobile implementation: `/private/tmp/queuemate-pricing-plans-mobile.png`
+- Mobile implementation pixels: `430 × 1374`
+- Side-by-side comparison: `/private/tmp/queuemate-pricing-comparison.png`
+- Desktop CSS viewport: `960 × 800`, device scale factor `1`
+- Mobile CSS viewport: `430 × 800`, device scale factor `1`
+- Density normalization: the 960 px implementation capture is displayed at 455 px wide beside the 455 px source thumbnail in the combined comparison.
+- State: public homepage, signed out, live pricing loaded, pricing section at rest.
 
 ## Findings
 
-- No actionable P0, P1, or P2 issues remain.
-- Fonts and typography: Poppins is loaded from Google Fonts at 400–700 weights and applied globally. Headline weight, tight tracking, compact navigation, and restrained supporting copy preserve the selected concept's hierarchy. The QueueMate brand uses the clean wordmark alone, without an icon.
-- Spacing and layout rhythm: the desktop hero uses the selected asymmetric 42/58 split, `64px` left inset, a `640px` hero image, a flush right edge, `24px` image radius, and a full-width navy process band. Mobile collapses to one clean column with full-width CTA, readable status strip, and no horizontal overflow.
-- Colors and visual tokens: deep navy `#00163A`, cyan `#009DE7`, white, pale blue, and cool gray map directly to the selected design and the requested Bayport palette. Contrast remains strong in the hero, CTA, navigation, and navy process section.
-- Image quality and asset fidelity: the hero uses a dedicated `1536 × 1024` generated editorial photograph, not a crop from the mockup or a placeholder. Subject, wardrobe, daylight, Gaborone setting, and crop match the selected art direction. Next Image supplies responsive optimization.
-- Copy and content: the selected headline, CTA, Gaborone context, live status, navy statement, and three-step story are reproduced. Existing product/legal constraints remain intact below the hero.
-- Interaction and runtime: homepage, How it works, Pricing, About, FAQs, Contact, Sign in, Register, hero asset, and API health endpoints all returned HTTP 200. Primary CTAs retain real application routes. The mobile navigation control remains the existing client-side accessible menu with `aria-label` and `aria-expanded`. No page-level console error appeared during Chrome desktop or mobile captures; browser stderr contained only macOS headless display warnings.
+- No actionable P0, P1, or P2 differences remain.
+- Fonts and typography: both designs use a centered two-line hierarchy, compact plan names, prominent prices, small feature copy, and restrained button labels. QueueMate keeps its established Poppins family and medium weights.
+- Spacing and layout rhythm: the final section matches the reference's centered header, three equal cards, feature lists, bottom-aligned actions, and emphasized middle choice. The QueueMate container uses its established larger radius as an intentional brand adaptation.
+- Colors and visual tokens: the source purple/coral treatment is intentionally translated to QueueMate's `#1a1c27` dark surface and solid brand blue. The featured middle card uses a blue border and filled action while the outer cards use subtle outlines.
+- Image quality and asset fidelity: the reference is entirely interface UI and contains no photography, illustration, logo, or decorative raster asset requiring recreation.
+- Copy and content: generic plan copy is replaced with QueueMate's live service names, BWP prices, verified-agent benefits, request updates, and fixed-price promise.
+- Responsive behavior: the three-card row becomes a clean single-column stack at 430 px with no clipping or horizontal overflow.
+- Interaction: all three action buttons link to `/register`; the destination returned HTTP 200.
+- Browser console: no browser warnings or errors were recorded in the final desktop or mobile captures.
 
 ## Full-view comparison evidence
 
-- `/private/tmp/queuemate-design-comparison.png` places the selected concept and final desktop implementation in the same visual input.
-- Overall composition, hero proportions, heading wrap, image placement, status cue, navy band, and three-step hierarchy align closely.
-- Focused region comparison was not required because the identical-size full desktop captures keep headline, navigation, buttons, status text, and process copy legible. The standalone mobile capture was reviewed separately for responsive behavior.
+- `/private/tmp/queuemate-pricing-comparison.png` places the source and final implementation in one comparison input at the same displayed width.
+- The comparison confirms matching information hierarchy, centered alignment, three-card structure, featured middle action, and dark-panel composition.
+- A separate focused crop was not needed because the comparison keeps headings, prices, feature lists, borders, and actions readable; the mobile capture was reviewed separately.
 
 ## Comparison history
 
-1. Initial implementation: `/private/tmp/queuemate-human-desktop.png`
-   - [P1] The centered `max-w-7xl` frame made the hero photograph too small and left large side margins compared with the selected concept.
-   - [P2] The narrow copy column wrapped the headline across four lines rather than three.
-   - Fix: changed the hero and header to a `1488px` presentation frame, used a `42/58` desktop split, removed the desktop right inset, set the hero image to `640px` tall, and tuned the headline size/width.
-2. Post-fix implementation: `/private/tmp/queuemate-human-desktop-final.png`
-   - The photograph now reaches the right edge, the hero and navy band change at the same vertical point as the source, and the headline wraps across three lines.
-   - The combined comparison shows no remaining actionable P0/P1/P2 mismatch.
+1. Initial implementation: `/private/tmp/queuemate-pricing-plans-960.png` before the final spacing pass measured `960 × 926`.
+   - [P2] The outer whitespace, header scale, gap above the cards, and 330 px card height made the section substantially taller and airier than the compact source.
+   - Fix: reduced the outer section padding, headline size, card gap, and card minimum height.
+2. Post-fix implementation: `/private/tmp/queuemate-pricing-plans-960.png` now measures `960 × 741`.
+   - The normalized comparison shows the compact three-card rhythm and section proportions now align without actionable P0/P1/P2 drift.
 
 ## Implementation checklist
 
-- [x] Poppins typography and Bayport navy/cyan tokens
-- [x] Human-first editorial hero with dedicated Gaborone image
-- [x] Working primary and secondary CTA routes
-- [x] Responsive desktop and mobile composition
-- [x] Matching navy process band and three-step story
-- [x] TypeScript and optimized production build
-- [x] Browser-rendered desktop/mobile evidence and route checks
+- [x] Centered reference-inspired pricing header
+- [x] Three live service-price cards
+- [x] Shared feature lists and bottom-aligned actions
+- [x] Featured middle option
+- [x] Working registration links
+- [x] Responsive single-column mobile layout
+- [x] TypeScript check and browser-rendered evidence
 
 ## Follow-up polish
 
-- P3: after user review, the wordmark weight and tracking can be fine-tuned independently from the interface typography.
+- P3: the source uses a purple/coral gradient accent; QueueMate intentionally uses a solid blue accent to preserve brand consistency and avoid introducing a one-off visual language.
 
 final result: passed
