@@ -17,9 +17,11 @@ const assurances = [
 
 export default function HomePage() {
   return <>
-    <section className="bg-white py-10 sm:py-14 lg:py-0">
-      <div className="mx-auto grid w-full max-w-[1488px] items-center gap-10 px-5 sm:px-8 lg:min-h-[670px] lg:grid-cols-[42%_58%] lg:gap-0 lg:pl-16 lg:pr-0">
-        <div className="pb-2 lg:pr-14">
+    <section className="relative min-h-[650px] overflow-hidden bg-blue-50 sm:min-h-[700px] lg:min-h-[670px]">
+      <Image className="object-cover object-[68%_center]" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" fill sizes="100vw" priority />
+      <div className="absolute inset-0 bg-white/70 sm:bg-gradient-to-r sm:from-white sm:via-white/70 sm:to-transparent" />
+      <div className="relative mx-auto flex min-h-[650px] w-full max-w-[1488px] items-center px-5 py-14 sm:min-h-[700px] sm:px-8 lg:min-h-[670px] lg:px-16 lg:py-0">
+        <div className="max-w-[600px] rounded-[24px] bg-white/80 p-6 pb-20 shadow-card backdrop-blur-sm sm:p-8 sm:pb-20 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0">
           <p className="eyebrow">Queue assistance · Gaborone</p>
           <h1 className="mt-7 max-w-[570px] text-[42px] font-semibold leading-[1.02] tracking-[-.055em] text-navy sm:text-6xl lg:text-[62px]">Your day should not stop for a queue.</h1>
           <p className="mt-7 max-w-lg text-base font-light leading-7 text-muted sm:text-lg sm:leading-8">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
@@ -27,13 +29,9 @@ export default function HomePage() {
             <Link className="inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-brand px-7 text-sm font-semibold text-white shadow-sm hover:-translate-y-px hover:bg-blue-600 hover:shadow-md" href="/register">Request assistance <ArrowRight size={18} /></Link>
           </div>
         </div>
-
-        <div className="relative overflow-hidden rounded-[24px] bg-blue-50 shadow-card lg:min-h-[670px] lg:self-stretch lg:rounded-l-[24px] lg:rounded-r-none">
-          <Image className="aspect-[1.32/1] h-full w-full object-cover object-center lg:aspect-auto" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" width={1536} height={1024} priority />
-          <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl bg-white/95 px-4 py-3 text-sm font-semibold text-navy shadow-card backdrop-blur sm:left-8 sm:right-auto sm:px-5">
-            <span className="h-2.5 w-2.5 rounded-full bg-teal shadow-[0_0_0_5px_rgba(15,157,114,.12)]" />
-            <span>Agent in queue · 28 min estimated</span>
-          </div>
+        <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl bg-white/95 px-4 py-3 text-sm font-semibold text-navy shadow-card backdrop-blur sm:left-auto sm:right-8 sm:px-5 lg:right-16">
+          <span className="h-2.5 w-2.5 rounded-full bg-teal shadow-[0_0_0_5px_rgba(15,157,114,.12)]" />
+          <span>Agent in queue · 28 min estimated</span>
         </div>
       </div>
     </section>
