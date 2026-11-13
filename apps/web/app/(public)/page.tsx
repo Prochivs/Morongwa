@@ -62,7 +62,7 @@ export default function HomePage() {
             <h2 className="mt-4 text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]">See the fee before you commit.</h2>
             <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p>
           </div>
-          <div className="mx-auto mt-8 max-w-4xl"><PricingPreview layout="plans" /></div>
+          <div className="mx-auto mt-8 max-w-6xl"><PricingPreview layout="plans" /></div>
         </div>
       </div>
     </section>
