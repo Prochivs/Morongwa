@@ -15,6 +15,13 @@ const assurances = [
   ["Updates from start to finish", "Follow approval, assignment, arrival and completion from your phone.", false],
 ] as const;
 
+const requestControls = [
+  ["01", "A clear quote", "See the full fee before you submit your request."],
+  ["02", "Progress updates", "Follow approval, assignment, arrival and completion."],
+  ["03", "Verified agents", "Every request is assigned to a reviewed queue agent."],
+  ["04", "Rules respected", "Assistance is limited to queues where the service is permitted."],
+] as const;
+
 export default function HomePage() {
   return <>
     <section className="relative min-h-[720px] overflow-hidden bg-blue-50 sm:min-h-[780px] lg:min-h-[760px]">
@@ -66,6 +73,25 @@ export default function HomePage() {
             <p className="text-xs font-semibold uppercase tracking-[.14em] text-navy/45">Current rates</p>
             <div className="mt-5"><PricingPreview layout="list" /></div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="bg-[#1a1c27] py-16 text-white lg:py-20" id="request-control">
+      <div className="container-shell grid gap-12 md:grid-cols-[.85fr_1.15fr] md:items-center md:gap-12 lg:gap-20">
+        <div>
+          <h2 className="max-w-xl text-4xl font-medium leading-[1.06] tracking-[-.05em] sm:text-[38px] lg:text-[50px]">
+            <span className="block whitespace-nowrap">You stay in control.</span><span className="block whitespace-nowrap text-brand">Without the queue.</span>
+          </h2>
+          <p className="mt-6 max-w-lg text-sm leading-7 text-white/65">See your quote, follow progress as it happens, and know exactly when it is time to be served.</p>
+          <Link className="mt-8 inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-white px-7 text-sm font-semibold text-navy shadow-sm hover:-translate-y-px hover:bg-blue-50" href="/register">Request assistance <ArrowRight size={18} /></Link>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {requestControls.map(([number, title, description]) => <article className="rounded-[18px] border border-white/10 bg-white/[.045] p-4 sm:min-h-[140px]" key={title}>
+            <p className="text-xs font-semibold tracking-[.14em] text-brand">{number}</p>
+            <h3 className="mt-3 text-base font-medium text-white">{title}</h3>
+            <p className="mt-2 text-xs leading-5 text-white/60">{description}</p>
+          </article>)}
         </div>
       </div>
     </section>
