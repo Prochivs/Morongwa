@@ -21,24 +21,24 @@ export function PricingPreview({ layout = "cards" }: { layout?: "cards" | "list"
   const query = useQuery({ queryKey: ["pricing"], queryFn: () => apiFetch<Price[]>("/public/pricing") });
   if (query.isLoading) {
     if (layout === "list") return <div className="divide-y divide-navy/10 border-y border-navy/10">{[1,2,3].map((item) => <div className="h-24 animate-pulse bg-white/45" key={item} />)}</div>;
-    if (layout === "plans") return <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map((item) => <div className="h-[300px] animate-pulse rounded-[18px] bg-white/[.06]" key={item} />)}</div>;
+    if (layout === "plans") return <div className="grid gap-4 md:grid-cols-3">{[1,2,3].map((item) => <div className="h-[300px] animate-pulse rounded-[18px] bg-slate-100" key={item} />)}</div>;
     return <div className="grid gap-3 sm:grid-cols-3">{[1,2,3].map((item) => <div className="h-48 animate-pulse rounded-[18px] bg-slate-100" key={item} />)}</div>;
   }
   if (query.isError || !query.data?.length) {
     if (layout === "list") return <div className="border-y border-navy/15 py-7"><h3 className="font-medium text-navy">Live pricing is temporarily unavailable</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-muted">We could not load the current fees. Please try again shortly; your final price will always be shown before you submit a request.</p></div>;
-    if (layout === "plans") return <div className="rounded-[18px] border border-white/10 bg-white/[.05] p-6 text-white"><h3 className="font-medium">Live pricing is temporarily unavailable</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">We could not load the current fees. Please try again shortly; your final price will always be shown before you submit a request.</p></div>;
+    if (layout === "plans") return <div className="rounded-[18px] border border-navy/10 bg-white p-6 text-navy"><h3 className="font-medium">Live pricing is temporarily unavailable</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-muted">We could not load the current fees. Please try again shortly; your final price will always be shown before you submit a request.</p></div>;
     return <Card className="shadow-none"><CardContent><h3 className="font-medium text-navy">Live pricing is temporarily unavailable</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-muted">We could not load the current fees. Please try again shortly; your final price will always be shown before you submit a request.</p></CardContent></Card>;
   }
   if (layout === "list") return <div className="divide-y divide-navy/10 border-y border-navy/15">{query.data.slice(0, 3).map((item) => <div className="grid gap-3 py-6 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-8" key={item.id}><div><h3 className="font-medium text-navy">{item.name}</h3><p className="mt-1 text-sm leading-6 text-muted">Confirmed before you submit and fixed to your request.</p></div><p className="text-2xl font-medium tracking-[-.03em] text-navy">{item.type === "CUSTOM_QUOTE" || !item.amount ? "Custom quote" : formatCurrency(item.amount, item.currency)}</p></div>)}</div>;
-  if (layout === "plans") return <div className="grid gap-4 md:grid-cols-3">{query.data.slice(0, 3).map((item, index) => <article className={`flex min-h-[300px] flex-col rounded-[18px] border p-6 ${index === 1 ? "border-brand/70 bg-white/[.09]" : "border-white/10 bg-white/[.045]"}`} key={item.id}>
-    <p className="text-sm font-medium text-white/70">{item.name}</p>
-    <p className="mt-3 text-3xl font-medium tracking-[-.04em] text-white">{item.type === "CUSTOM_QUOTE" || !item.amount ? "Custom quote" : formatCurrency(item.amount, item.currency)}</p>
-    <ul className="mt-7 list-disc space-y-3 pl-4 text-xs leading-5 text-white/60 marker:text-brand">
+  if (layout === "plans") return <div className="grid gap-4 md:grid-cols-3">{query.data.slice(0, 3).map((item, index) => <article className={`flex min-h-[300px] flex-col rounded-[18px] border p-6 ${index === 1 ? "border-brand bg-blue-50/60 shadow-card" : "border-navy/10 bg-white shadow-sm"}`} key={item.id}>
+    <p className="text-sm font-medium text-navy/70">{item.name}</p>
+    <p className="mt-3 text-3xl font-medium tracking-[-.04em] text-navy">{item.type === "CUSTOM_QUOTE" || !item.amount ? "Custom quote" : formatCurrency(item.amount, item.currency)}</p>
+    <ul className="mt-7 list-disc space-y-3 pl-4 text-xs leading-5 text-muted marker:text-brand">
       <li>Verified queue agent</li>
       <li>Live request updates</li>
       <li>Price fixed before payment</li>
     </ul>
-    <Link className={`mt-auto inline-flex h-11 items-center justify-center rounded-lg border px-4 text-xs font-semibold ${index === 1 ? "border-brand bg-brand text-white hover:bg-blue-600" : "border-white/20 text-white hover:border-brand hover:text-brand"}`} href="/register">Choose this service</Link>
+    <Link className={`mt-auto inline-flex h-11 items-center justify-center rounded-lg border px-4 text-xs font-semibold ${index === 1 ? "border-brand bg-brand text-white hover:bg-blue-600" : "border-navy/20 text-navy hover:border-brand hover:text-brand"}`} href="/register">Choose this service</Link>
   </article>)}</div>;
   return <div className="grid gap-3 sm:grid-cols-3">{query.data?.slice(0, 3).map((item) => <Card className="h-full shadow-none" key={item.id}><CardContent className="flex h-full min-h-[200px] flex-col"><h3 className="text-sm font-medium leading-6 text-navy">{item.name}</h3><p className="mt-5 text-3xl font-medium tracking-[-.035em] text-navy">{item.type === "CUSTOM_QUOTE" || !item.amount ? "Custom quote" : formatCurrency(item.amount, item.currency)}</p><p className="mt-auto border-t border-navy/10 pt-4 text-xs leading-5 text-muted">Confirmed before you submit and fixed to your request.</p></CardContent></Card>)}</div>;
 }

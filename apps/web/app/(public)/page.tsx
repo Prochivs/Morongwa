@@ -56,11 +56,11 @@ export default function HomePage() {
 
     <section className="bg-white py-14 sm:py-16" id="pricing-section">
       <div className="container-shell">
-        <div className="rounded-[28px] bg-[#1a1c27] px-5 py-14 text-white shadow-card sm:px-10 sm:py-16 lg:px-14">
+        <div className="py-4 sm:py-6">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[.14em] text-brand">Straightforward pricing</p>
-            <h2 className="mt-4 text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-[42px]">See the fee before you commit.</h2>
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/60">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p>
+            <h2 className="mt-4 text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]">See the fee before you commit.</h2>
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p>
           </div>
           <div className="mx-auto mt-8 max-w-4xl"><PricingPreview layout="plans" /></div>
         </div>
