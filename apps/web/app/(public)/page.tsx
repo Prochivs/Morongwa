@@ -38,7 +38,7 @@ export default function HomePage() {
 
     <section className="bg-[#1a1c27] py-16 text-white sm:py-20">
       <div className="container-shell">
-        <h2 className="text-center text-4xl font-normal tracking-[-.045em] sm:text-5xl">We wait. You keep moving.</h2>
+        <h2 className="text-center text-4xl font-medium tracking-[-.045em] sm:text-5xl">We wait. You keep moving.</h2>
         <div className="mt-12 grid gap-0 border-t border-white/20 md:grid-cols-3">
           {steps.map(([title, description], index) => <article className={`py-7 md:px-8 md:py-8 ${index > 0 ? "border-t border-white/20 md:border-l md:border-t-0" : ""}`} key={title}>
             <h3 className="font-medium text-white">{title}</h3><p className="mt-3 max-w-xs text-sm leading-6 text-white/65">{description}</p>
