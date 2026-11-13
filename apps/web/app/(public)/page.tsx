@@ -22,7 +22,7 @@ export default function HomePage() {
         <div className="pb-2 lg:pr-14">
           <p className="eyebrow">Queue assistance · Gaborone</p>
           <h1 className="mt-7 max-w-[570px] text-[42px] font-semibold leading-[1.02] tracking-[-.055em] text-navy sm:text-6xl lg:text-[62px]">Your day should not stop for a queue.</h1>
-          <p className="mt-7 max-w-lg text-base leading-7 text-muted sm:text-lg sm:leading-8">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
+          <p className="mt-7 max-w-lg text-base font-light leading-7 text-muted sm:text-lg sm:leading-8">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
           <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
             <Link className="inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-brand px-7 text-sm font-semibold text-white shadow-sm hover:-translate-y-px hover:bg-blue-600 hover:shadow-md" href="/register">Request assistance <ArrowRight size={18} /></Link>
           </div>
