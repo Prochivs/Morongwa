@@ -54,7 +54,21 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="bg-[#f4f7fa] py-20 sm:py-28"><div className="container-shell"><div className="grid gap-8 border-b border-navy/15 pb-10 lg:grid-cols-[1fr_.7fr] lg:items-end"><div><p className="eyebrow">Straightforward pricing</p><h2 className="mt-5 max-w-3xl text-4xl font-medium tracking-[-.045em] sm:text-5xl">See the fee before you commit.</h2></div><p className="max-w-xl text-sm leading-7 text-muted lg:justify-self-end">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p></div><div className="mt-4"><PricingPreview layout="list" /></div></div></section>
+    <section className="bg-white py-20 sm:py-28">
+      <div className="container-shell">
+        <div className="grid overflow-hidden rounded-[28px] border border-navy/10 shadow-card lg:grid-cols-[.8fr_1.2fr]">
+          <div className="bg-brand px-6 py-12 text-white sm:px-10 sm:py-14 lg:px-12 lg:py-16">
+            <p className="text-xs font-semibold uppercase tracking-[.14em] text-white/75">Straightforward pricing</p>
+            <h2 className="mt-5 max-w-lg text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl">See the fee before you commit.</h2>
+            <p className="mt-6 max-w-md text-sm leading-7 text-white/80">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p>
+          </div>
+          <div className="bg-[#f7f9fc] px-6 py-10 sm:px-10 sm:py-12 lg:px-12">
+            <p className="text-xs font-semibold uppercase tracking-[.14em] text-navy/45">Current rates</p>
+            <div className="mt-5"><PricingPreview layout="list" /></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     {/* Customer reviews will be restored when approved reviews are ready to publish. */}
 
