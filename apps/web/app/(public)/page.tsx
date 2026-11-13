@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, ShieldCheck, Smartphone, UserCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { PricingPreview } from "@/components/public-data";
 
 const steps = [
-  [Smartphone, "1. Request", "Tell us the queue, time and location in Gaborone."],
-  [UserCheck, "2. We hold your place", "A verified agent joins the permitted queue for you."],
-  [Check, "3. Get back to your day", "We keep you updated until it is time to be served."],
+  ["1. Request", "Tell us the queue, time and location in Gaborone."],
+  ["2. We hold your place", "A verified agent joins the permitted queue for you."],
+  ["3. Get back to your day", "We keep you updated until it is time to be served."],
 ] as const;
 
 const assurances = [
@@ -38,11 +38,10 @@ export default function HomePage() {
 
     <section className="bg-[#1a1c27] py-16 text-white sm:py-20">
       <div className="container-shell">
-        <h2 className="text-center text-4xl font-semibold tracking-[-.045em] sm:text-5xl">We wait. You keep moving.</h2>
-        <div className="mt-12 grid gap-0 md:grid-cols-3">
-          {steps.map(([Icon, title, description], index) => <article className={`flex gap-5 py-6 md:px-8 md:py-2 ${index > 0 ? "border-t border-white/20 md:border-l md:border-t-0" : ""}`} key={title}>
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-white/25 text-brand"><Icon size={21} /></span>
-            <div><h3 className="font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-white/65">{description}</p></div>
+        <h2 className="text-center text-4xl font-medium tracking-[-.045em] sm:text-5xl">We wait. You keep moving.</h2>
+        <div className="mt-12 grid gap-0 border-t border-white/20 md:grid-cols-3">
+          {steps.map(([title, description], index) => <article className={`py-7 md:px-8 md:py-8 ${index > 0 ? "border-t border-white/20 md:border-l md:border-t-0" : ""}`} key={title}>
+            <h3 className="font-medium text-white">{title}</h3><p className="mt-3 max-w-xs text-sm leading-6 text-white/65">{description}</p>
           </article>)}
         </div>
       </div>
