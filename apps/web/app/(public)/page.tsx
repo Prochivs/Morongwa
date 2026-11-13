@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, Smartphone, UserCheck } from "lucide-react";
-import { PricingPreview, ReviewPreview } from "@/components/public-data";
+import { PricingPreview } from "@/components/public-data";
 
 const steps = [
   [Smartphone, "1. Request", "Tell us the queue, time and location in Gaborone."],
@@ -59,7 +59,7 @@ export default function HomePage() {
 
     <section className="bg-white py-20 sm:py-28"><div className="container-shell"><div className="grid gap-7 lg:grid-cols-[1fr_.7fr] lg:items-end"><div><p className="eyebrow">Straightforward pricing</p><h2 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-.045em] sm:text-5xl">See the fee before you commit.</h2></div><p className="text-sm leading-7 text-muted">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p></div><div className="mt-12"><PricingPreview /></div></div></section>
 
-    <section className="bg-blue-50 py-20 sm:py-28"><div className="container-shell"><p className="eyebrow">Customer reviews</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.045em] sm:text-5xl">Time back feels good.</h2><div className="mt-12"><ReviewPreview /></div></div></section>
+    {/* Customer reviews will be restored when approved reviews are ready to publish. */}
 
     <section className="bg-white py-14 sm:py-20"><div className="container-shell"><div className="grid overflow-hidden rounded-[24px] bg-brand text-white shadow-card lg:grid-cols-[1fr_auto] lg:items-end"><div className="px-6 py-14 sm:px-10 lg:px-14"><p className="text-xs font-semibold uppercase tracking-[.12em] text-white/75">Ready when you are</p><h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.06] tracking-[-.045em] sm:text-5xl">Make room for the rest of your day.</h2><p className="mt-5 max-w-2xl text-sm leading-7 text-white/80">Submit your request in minutes. Approval remains subject to payment, eligibility and agent availability.</p></div><Link className="m-6 inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-white px-7 text-sm font-semibold text-navy shadow-sm hover:-translate-y-px hover:bg-blue-50 lg:m-10" href="/register">Request assistance <ArrowRight size={18} /></Link></div></div></section>
   </>;
