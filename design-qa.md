@@ -17,7 +17,7 @@
 ## Findings
 
 - No actionable P0, P1, or P2 issues remain.
-- Fonts and typography: Open Sans is loaded from Google Fonts at 400–700 weights and applied globally. Headline weight, tight tracking, compact navigation, and restrained supporting copy preserve the selected concept's hierarchy. The QueueMate brand now uses the clean wordmark alone, without an icon.
+- Fonts and typography: Poppins is loaded from Google Fonts at 400–700 weights and applied globally. Headline weight, tight tracking, compact navigation, and restrained supporting copy preserve the selected concept's hierarchy. The QueueMate brand uses the clean wordmark alone, without an icon.
 - Spacing and layout rhythm: the desktop hero uses the selected asymmetric 42/58 split, `64px` left inset, a `640px` hero image, a flush right edge, `24px` image radius, and a full-width navy process band. Mobile collapses to one clean column with full-width CTA, readable status strip, and no horizontal overflow.
 - Colors and visual tokens: deep navy `#00163A`, cyan `#009DE7`, white, pale blue, and cool gray map directly to the selected design and the requested Bayport palette. Contrast remains strong in the hero, CTA, navigation, and navy process section.
 - Image quality and asset fidelity: the hero uses a dedicated `1536 × 1024` generated editorial photograph, not a crop from the mockup or a placeholder. Subject, wardrobe, daylight, Gaborone setting, and crop match the selected art direction. Next Image supplies responsive optimization.
@@ -42,7 +42,7 @@
 
 ## Implementation checklist
 
-- [x] Open Sans typography and Bayport navy/cyan tokens
+- [x] Poppins typography and Bayport navy/cyan tokens
 - [x] Human-first editorial hero with dedicated Gaborone image
 - [x] Working primary and secondary CTA routes
 - [x] Responsive desktop and mobile composition
@@ -52,6 +52,6 @@
 
 ## Follow-up polish
 
-- P3: Open Sans is slightly narrower than the selected concept's original display type, so very large headings may wrap differently at intermediate widths.
+- P3: after user review, the wordmark weight and tracking can be fine-tuned independently from the interface typography.
 
 final result: passed
