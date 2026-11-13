@@ -54,7 +54,7 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="bg-white py-20 sm:py-28"><div className="container-shell"><div className="grid gap-7 lg:grid-cols-[1fr_.7fr] lg:items-end"><div><p className="eyebrow">Straightforward pricing</p><h2 className="mt-5 max-w-3xl text-4xl font-semibold tracking-[-.045em] sm:text-5xl">See the fee before you commit.</h2></div><p className="text-sm leading-7 text-muted">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p></div><div className="mt-12"><PricingPreview /></div></div></section>
+    <section className="bg-[#f4f7fa] py-20 sm:py-28"><div className="container-shell"><div className="grid gap-8 border-b border-navy/15 pb-10 lg:grid-cols-[1fr_.7fr] lg:items-end"><div><p className="eyebrow">Straightforward pricing</p><h2 className="mt-5 max-w-3xl text-4xl font-medium tracking-[-.045em] sm:text-5xl">See the fee before you commit.</h2></div><p className="max-w-xl text-sm leading-7 text-muted lg:justify-self-end">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p></div><div className="mt-4"><PricingPreview layout="list" /></div></div></section>
 
     {/* Customer reviews will be restored when approved reviews are ready to publish. */}
 
