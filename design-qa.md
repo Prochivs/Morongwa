@@ -54,4 +54,60 @@
 
 - P3: the source uses a purple/coral gradient accent; QueueMate intentionally uses a solid blue accent to preserve brand consistency and avoid introducing a one-off visual language.
 
+---
+
+# QueueMate Testimonials and Page Titles — Design QA
+
+## Evidence
+
+- Source visual truth: `/private/tmp/uidux-testimonials-reference.png` (`1600 × 1200`).
+- Populated implementation state: `/private/tmp/queuemate-testimonials-populated-section.png` (`1440 × 1200`).
+- Side-by-side comparison: `/private/tmp/queuemate-testimonials-comparison.png` (`3040 × 1200`).
+- Final live-data homepage: `/private/tmp/queuemate-testimonials-final-live.png` (`1440 × 3600`).
+- Responsive populated state: `/private/tmp/queuemate-testimonials-mobile-full.png` (`500 × 6500`).
+- Shared page-title check: `/private/tmp/queuemate-how-it-works-regular.png` (`1440 × 900`).
+- Desktop CSS viewport: `1440 × 3600`; mobile CSS viewport: `500 × 6500`; device scale factor `1`.
+- State: public pages, signed out, light theme. The populated comparison used three clearly labelled temporary QA-only reviews; those fixtures were removed before the final build. The live API currently has no approved reviews, so the shipped state displays the verified empty-state message.
+
+## Findings
+
+- No actionable P0, P1, or P2 differences remain.
+- Fonts and typography: QueueMate retains its established Poppins family. The testimonial hierarchy follows the source while using the product's sentence case. Shared secondary-page H1 titles now use regular weight, verified on the How it works page.
+- Spacing and layout rhythm: the desktop section matches the source's centered introduction, three-card row, elevated middle card, framed background band, and centered paging controls. The mobile layout becomes a clean single-column stack without clipping or horizontal overflow.
+- Colors and visual tokens: the source's amber accent is translated to QueueMate blue `#009de7`; navy text, pale slate framing, soft shadows, and rounded corners remain consistent with the rest of the site.
+- Image quality and asset fidelity: the testimonial reference contains interface elements only. Lucide stars and arrows are used as crisp vector icons; no new raster asset was required.
+- Copy and content: no invented customer claims ship in production. Reviews render only from the approved public API, and the live empty state explains the verification requirement.
+- Primary interaction: previous and next controls expose working handlers, clear disabled states, and accessible labels. The single-page QA fixture correctly displayed both controls as disabled.
+- Browser console: no application console errors were observed; the only message was the standard React DevTools development notice.
+
+## Full-view comparison evidence
+
+- `/private/tmp/queuemate-testimonials-comparison.png` places the source and populated implementation in the same `3040 × 1200` comparison input.
+- The comparison confirms the same testimonial-section hierarchy, three-card composition, elevated center card, review-rating row, customer metadata, and paging-control placement.
+- Decorative source dots were intentionally omitted to keep QueueMate's visual language restrained and avoid adding one-off ornamentation.
+
+## Comparison history
+
+1. Initial live-data render: `/private/tmp/queuemate-testimonials-section.png`.
+   - [P2] The approved-review API was empty, so visual fidelity of the populated card composition could not be assessed from the production state alone.
+   - Fix: rendered three explicitly labelled temporary QA records, captured desktop and mobile evidence, and removed every fixture before the final build.
+2. Populated comparison: `/private/tmp/queuemate-testimonials-comparison.png`.
+   - The source structure and QueueMate adaptation align without actionable P0/P1/P2 drift.
+3. Final live-data render: `/private/tmp/queuemate-testimonials-final-live.png`.
+   - The production build uses the real approved-review feed and presents the honest verified empty state until reviews are available.
+
+## Implementation checklist
+
+- [x] Reference-inspired section directly below pricing
+- [x] Three responsive testimonial cards with elevated center card
+- [x] Approved-review API integration with no fabricated production data
+- [x] Accessible paging controls and disabled states
+- [x] Responsive desktop and mobile visual checks
+- [x] Regular-weight shared secondary-page titles
+- [x] TypeScript check and browser-rendered evidence
+
+## Follow-up polish
+
+- P3: when more than three approved reviews exist, add a browser-level interaction test that clicks both paging controls and records the state transition.
+
 final result: passed

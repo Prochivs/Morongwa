@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Star } from "lucide-react";
 import { formatCurrency } from "@queuemate/shared";
 import { apiFetch } from "@/lib/api";
 import { Card, CardContent } from "./ui/card";
@@ -44,8 +45,23 @@ export function PricingPreview({ layout = "cards" }: { layout?: "cards" | "list"
 }
 
 export function ReviewPreview() {
+  const [page, setPage] = useState(0);
   const query = useQuery({ queryKey: ["reviews"], queryFn: () => apiFetch<Review[]>("/public/reviews") });
-  if (query.isLoading) return <div className="h-32 animate-pulse rounded-xl bg-slate-100" />;
-  if (!query.data?.length) return <Card><CardContent><h3 className="font-semibold text-navy">Genuine reviews only</h3><p className="mt-2 text-sm leading-6 text-muted">Customer reviews will appear here after completed requests and administrative moderation. QueueMate does not publish invented testimonials.</p></CardContent></Card>;
-  return <div className="grid gap-4 md:grid-cols-3">{query.data.map((review, index) => <Card key={index}><CardContent><div className="flex text-amber-500">{Array.from({ length: review.rating }).map((_, i) => <Star key={i} size={16} fill="currentColor" />)}</div><p className="mt-4 text-sm leading-6 text-slate-700">“{review.comment}”</p><p className="mt-4 text-xs font-semibold text-muted">Verified QueueMate customer</p></CardContent></Card>)}</div>;
+  if (!query.data?.length) return <div className="rounded-[24px] bg-slate-100 p-6 sm:p-10"><div className="mx-auto max-w-2xl rounded-[18px] bg-white p-8 text-center shadow-sm sm:p-10"><h3 className="text-xl font-medium text-navy">Verified customer stories will appear here.</h3><p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-muted">Reviews are published only after a completed request and administrative approval. QueueMate never fills this space with invented testimonials.</p></div></div>;
+
+  const pageCount = Math.ceil(query.data.length / 3);
+  const currentPage = Math.min(page, pageCount - 1);
+  const visibleReviews = query.data.slice(currentPage * 3, currentPage * 3 + 3);
+
+  return <div className="rounded-[24px] bg-slate-100 px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
+    <div className="grid gap-6 md:grid-cols-3">{visibleReviews.map((review, index) => <article className={`flex min-h-[260px] flex-col rounded-[18px] bg-white p-7 shadow-sm ${index === 1 ? "md:-translate-y-3 md:shadow-card" : ""}`} key={`${review.createdAt}-${index}`}>
+      <div aria-label={`${review.rating} out of 5 stars`} className="flex gap-1 text-brand">{Array.from({ length: review.rating }).map((_, i) => <Star aria-hidden="true" fill="currentColor" key={i} size={16} />)}</div>
+      <p className="mt-6 text-sm leading-7 text-slate-700">“{review.comment || "Rating submitted after a completed QueueMate request."}”</p>
+      <div className="mt-auto border-t border-navy/10 pt-5"><p className="text-sm font-semibold text-navy">Verified QueueMate customer</p><p className="mt-1 text-xs text-muted">Completed request · {new Date(review.createdAt).toLocaleDateString("en-BW", { month: "short", year: "numeric" })}</p></div>
+    </article>)}</div>
+    <div className="mt-8 flex justify-center gap-2">
+      <button aria-label="Previous reviews" className="grid h-11 w-11 place-items-center rounded-lg border border-navy/10 bg-white text-navy hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-35" disabled={currentPage === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} type="button"><ArrowLeft size={17} /></button>
+      <button aria-label="Next reviews" className="grid h-11 w-11 place-items-center rounded-lg bg-brand text-white shadow-sm hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-35" disabled={currentPage >= pageCount - 1} onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))} type="button"><ArrowRight size={17} /></button>
+    </div>
+  </div>;
 }

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { PricingPreview } from "@/components/public-data";
+import { PricingPreview, ReviewPreview } from "@/components/public-data";
 
 const steps = [
   ["1. Request", "Tell us the queue, time and location in Gaborone."],
@@ -62,7 +62,15 @@ export default function HomePage() {
       </div>
     </section>
 
-    {/* Customer reviews will be restored when approved reviews are ready to publish. */}
+    <section aria-labelledby="reviews-heading" className="bg-white pb-20 pt-10 sm:pb-28 sm:pt-16">
+      <div className="container-shell">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]" id="reviews-heading">What our customers say.</h2>
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Only feedback connected to completed QueueMate requests and approved for publication appears here.</p>
+        </div>
+        <div className="mx-auto mt-10 max-w-6xl"><ReviewPreview /></div>
+      </div>
+    </section>
 
   </>;
 }
