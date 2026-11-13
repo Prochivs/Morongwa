@@ -39,7 +39,7 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="bg-navy py-16 text-white sm:py-20">
+    <section className="bg-[#1a1c27] py-16 text-white sm:py-20">
       <div className="container-shell">
         <h2 className="text-center text-4xl font-semibold tracking-[-.045em] sm:text-5xl">We wait. You keep moving.</h2>
         <div className="mt-12 grid gap-0 md:grid-cols-3">
