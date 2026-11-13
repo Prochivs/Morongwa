@@ -28,8 +28,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[24px] bg-blue-50 shadow-card lg:h-[640px] lg:rounded-r-none">
-          <Image className="aspect-[1.32/1] h-full w-full object-cover object-center" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" width={1536} height={1024} priority />
+        <div className="relative overflow-hidden rounded-[24px] bg-blue-50 shadow-card lg:min-h-[670px] lg:self-stretch lg:rounded-l-[24px] lg:rounded-r-none">
+          <Image className="aspect-[1.32/1] h-full w-full object-cover object-center lg:aspect-auto" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" width={1536} height={1024} priority />
           <div className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl bg-white/95 px-4 py-3 text-sm font-semibold text-navy shadow-card backdrop-blur sm:left-8 sm:right-auto sm:px-5">
             <span className="h-2.5 w-2.5 rounded-full bg-teal shadow-[0_0_0_5px_rgba(15,157,114,.12)]" />
             <span>Agent in queue · 28 min estimated</span>
