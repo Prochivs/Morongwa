@@ -64,7 +64,7 @@ export default function HomePage() {
           </div>
           <div className="bg-[#f7f9fc] px-6 py-10 sm:px-10 sm:py-12 lg:px-12">
             <p className="text-xs font-semibold uppercase tracking-[.14em] text-navy/45">Current rates</p>
-            <div className="mt-5"><PricingPreview layout="list" /></div>
+            <div className="mt-5"><PricingPreview /></div>
           </div>
         </div>
       </div>
