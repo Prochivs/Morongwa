@@ -19,6 +19,7 @@ export function InstitutionPreview() {
 export function PricingPreview() {
   const query = useQuery({ queryKey: ["pricing"], queryFn: () => apiFetch<Price[]>("/public/pricing") });
   if (query.isLoading) return <div className="h-40 animate-pulse rounded-xl bg-slate-100" />;
+  if (query.isError || !query.data?.length) return <Card><CardContent><CheckCircle2 className="text-brand" size={22} /><h3 className="mt-5 font-semibold text-navy">Live pricing is temporarily unavailable</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-muted">We could not load the current fees. Please try again shortly; your final price will always be shown before you submit a request.</p></CardContent></Card>;
   return <div className="grid gap-4 md:grid-cols-3">{query.data?.slice(0, 3).map((item) => <Card key={item.id}><CardContent><CheckCircle2 className="text-teal" size={22} /><h3 className="mt-5 font-semibold text-navy">{item.name}</h3><p className="mt-3 text-3xl font-bold text-navy">{item.type === "CUSTOM_QUOTE" || !item.amount ? "Custom" : formatCurrency(item.amount, item.currency)}</p><p className="mt-2 text-sm text-muted">Final price is fixed on your request before payment.</p></CardContent></Card>)}</div>;
 }
 
