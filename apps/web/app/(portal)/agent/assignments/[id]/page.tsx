@@ -243,7 +243,7 @@ export default function Page() {
       )}
 
       <div className="grid gap-6 xl:grid-cols-[1fr_.8fr]">
-        <div className="space-y-6">
+        <div>
           <Card>
             <CardHeader><h2 className="font-semibold text-navy">Task details</h2></CardHeader>
             <CardContent>
@@ -266,19 +266,17 @@ export default function Page() {
                   {item.request.institution.restrictions}
                 </p>
               )}
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader><h2 className="font-semibold text-navy">Customer contact</h2></CardHeader>
-            <CardContent>
-              <p className="font-semibold text-navy">{item.request.contactName}</p>
-              <a className="mt-2 inline-flex items-center gap-2 text-sm font-normal text-brand" href={`tel:${item.request.contactMobile}`}>
-                <Phone size={16} />{item.request.contactMobile}
-              </a>
-              <p className="mt-4 text-xs leading-5 text-muted">
-                Use these details only for this assignment. Never impersonate the customer.
-              </p>
+              <div className="mt-6 border-t border-slate-100 pt-6">
+                <h3 className="text-[15px] font-normal text-navy">Customer contact</h3>
+                <p className="mt-4 font-semibold text-navy">{item.request.contactName}</p>
+                <a className="mt-2 inline-flex items-center gap-2 text-sm font-normal text-brand" href={`tel:${item.request.contactMobile}`}>
+                  <Phone size={16} />{item.request.contactMobile}
+                </a>
+                <p className="mt-4 text-xs leading-5 text-muted">
+                  Use these details only for this assignment. Never impersonate the customer.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
