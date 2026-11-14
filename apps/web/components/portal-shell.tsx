@@ -31,7 +31,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex items-center justify-between">
+        <div className="-mx-5 flex items-center justify-between border-b border-slate-200 px-5 pb-5">
           <Brand />
           <button className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-navy lg:hidden" onClick={() => setOpen(false)}>
             <X />
