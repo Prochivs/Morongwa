@@ -1,3 +1,122 @@
 "use client";
-import { useState } from "react";import { useQuery } from "@tanstack/react-query";import { apiFetch } from "@/lib/api";import { formatDate } from "@/lib/utils";import { Badge } from "@/components/ui/badge";import { Card,CardContent,CardHeader } from "@/components/ui/card";import { LoadingState } from "@/components/data-state";import { PageHeader } from "@/components/page-header";
-type Schedule={date:string;agents:{id:string;agentReference:string;user:{fullName:string;status:string};assignments:{id:string;status:string;scheduledStartAt:string;scheduledEndAt:string;request:{reference:string;institution:{name:string;address:string}}}[];availability:{id:string;type:string;startsAt:string;endsAt:string}[]}[]};export default function Page(){const [date,setDate]=useState(new Date().toISOString().slice(0,10));const query=useQuery({queryKey:["schedule",date],queryFn:()=>apiFetch<Schedule>(`/admin/schedule?date=${date}`)});return <><PageHeader eyebrow="Scheduling" title="Agent calendar" description="Assignments include estimated duration and travel buffers; overlapping work is blocked transactionally." action={<input className="field w-48" type="date" value={date} onChange={e=>setDate(e.target.value)}/>}/>{query.isLoading?<LoadingState/>:<div className="grid gap-5 lg:grid-cols-2">{query.data?.agents.map(agent=><Card key={agent.id}><CardHeader><div className="flex items-center justify-between"><div><p className="text-xs font-bold text-brand">{agent.agentReference}</p><h2 className="mt-1 font-semibold text-navy">{agent.user.fullName}</h2></div><Badge status={agent.user.status}/></div></CardHeader><CardContent>{agent.assignments.length?<div className="space-y-3">{agent.assignments.map(assignment=><article className="rounded-xl border border-slate-200 p-4" key={assignment.id}><div className="flex justify-between"><p className="font-semibold text-navy">{assignment.request.reference}</p><Badge status={assignment.status}/></div><p className="mt-2 text-sm text-muted">{assignment.request.institution.name}</p><p className="mt-2 text-xs font-semibold text-slate-600">{formatDate(assignment.scheduledStartAt)} – {new Date(assignment.scheduledEndAt).toLocaleTimeString("en-BW",{hour:"2-digit",minute:"2-digit"})}</p></article>)}</div>:<p className="py-8 text-center text-sm text-muted">No assignments scheduled for this date.</p>}</CardContent></Card>)}</div>}</>}
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
+import { formatDate } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { EmptyState, LoadingState } from "@/components/data-state";
+import { PageHeader } from "@/components/page-header";
+type Schedule = {
+  date: string;
+  agents: {
+    id: string;
+    agentReference: string;
+    user: { fullName: string; status: string };
+    assignments: {
+      id: string;
+      status: string;
+      scheduledStartAt: string;
+      scheduledEndAt: string;
+      request: {
+        reference: string;
+        institution: { name: string; address: string };
+      };
+    }[];
+    availability: {
+      id: string;
+      type: string;
+      startsAt: string;
+      endsAt: string;
+    }[];
+  }[];
+};
+export default function Page() {
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const query = useQuery({
+    queryKey: ["schedule", date],
+    queryFn: () => apiFetch<Schedule>(`/admin/schedule?date=${date}`),
+  });
+  return (
+    <>
+      <PageHeader
+        eyebrow="Scheduling"
+        title="Agent calendar"
+        description="Assignments include estimated duration and travel buffers; overlapping work is blocked transactionally."
+        action={
+          <input
+            className="field w-48"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        }
+      />
+      {query.isLoading ? (
+        <LoadingState />
+      ) : !query.data?.agents.length ? (
+        <Card>
+          <EmptyState
+            title="No schedule for this date"
+            message="Agents and their assignments for the selected date will appear here."
+          />
+        </Card>
+      ) : (
+        <div className="grid gap-5 lg:grid-cols-2">
+          {query.data?.agents.map((agent) => (
+            <Card key={agent.id}>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-brand">
+                      {agent.agentReference}
+                    </p>
+                    <h2 className="mt-1 font-semibold text-navy">
+                      {agent.user.fullName}
+                    </h2>
+                  </div>
+                  <Badge status={agent.user.status} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                {agent.assignments.length ? (
+                  <div className="space-y-3">
+                    {agent.assignments.map((assignment) => (
+                      <article
+                        className="rounded-xl border border-slate-200 p-4"
+                        key={assignment.id}
+                      >
+                        <div className="flex justify-between">
+                          <p className="font-semibold text-navy">
+                            {assignment.request.reference}
+                          </p>
+                          <Badge status={assignment.status} />
+                        </div>
+                        <p className="mt-2 text-sm text-muted">
+                          {assignment.request.institution.name}
+                        </p>
+                        <p className="mt-2 text-xs font-semibold text-slate-600">
+                          {formatDate(assignment.scheduledStartAt)} –{" "}
+                          {new Date(
+                            assignment.scheduledEndAt,
+                          ).toLocaleTimeString("en-BW", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="py-8 text-center text-sm text-muted">
+                    No assignments scheduled for this date.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
