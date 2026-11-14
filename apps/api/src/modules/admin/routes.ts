@@ -3,7 +3,7 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 import { addDays, endOfDay, startOfDay, startOfMonth } from "date-fns";
-import { agentSchema, assignmentSchema, institutionSchema, paymentDecisionSchema, requestDecisionSchema } from "@queuemate/shared";
+import { agentSchema, assignmentSchema, institutionSchema, objectIdSchema, paymentDecisionSchema, requestDecisionSchema } from "@queuemate/shared";
 import { prisma } from "../../config/prisma.js";
 import { authenticate, authorise, hashToken, requireCsrf } from "../../middleware/auth.js";
 import { audit } from "../../services/audit.js";
@@ -18,8 +18,8 @@ router.use("/admin", authenticate, authorise("ADMIN"));
 router.get("/admin/dashboard", asyncHandler(async (_request, response) => {
   const today = startOfDay(new Date());
   const month = startOfMonth(new Date());
-  const [totalRequests, todayRequests, grouped, todayRevenue, monthRevenue, availableAgents, assignedAgents, recent, revenueSeries] = await prisma.$transaction([
-    prisma.serviceRequest.count({ where: { deletedAt: null } }),
+  const [totalRequests, todayRequests, grouped, todayRevenue, monthRevenue, availableAgents, assignedAgents, recent, verifiedPayments] = await prisma.$transaction([
+    prisma.serviceRequest.count({ where: { OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] } }),
     prisma.serviceRequest.count({ where: { createdAt: { gte: today } } }),
     prisma.serviceRequest.groupBy({ by: ["requestStatus"], orderBy: { requestStatus: "asc" }, _count: { _all: true } }),
     prisma.payment.aggregate({ where: { status: "VERIFIED", verifiedAt: { gte: today } }, _sum: { amountExpected: true } }),
@@ -27,13 +27,21 @@ router.get("/admin/dashboard", asyncHandler(async (_request, response) => {
     prisma.agentProfile.count({ where: { available: true, user: { status: "ACTIVE" } } }),
     prisma.agentAssignment.count({ where: { status: { in: ["ASSIGNED", "ACCEPTED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"] } } }),
     prisma.serviceRequest.findMany({ take: 8, orderBy: { createdAt: "desc" }, include: { customer: { select: { fullName: true } }, institution: { select: { name: true } } } }),
-    prisma.$queryRaw<Array<{ day: Date; amount: Prisma.Decimal; requests: bigint }>>`SELECT date_trunc('day', "createdAt") AS day, COALESCE(SUM("amountExpected"), 0) AS amount, COUNT(*) AS requests FROM "Payment" WHERE status = 'VERIFIED' AND "createdAt" >= ${addDays(today, -29)} GROUP BY 1 ORDER BY 1`,
+    prisma.payment.findMany({ where: { status: "VERIFIED", createdAt: { gte: addDays(today, -29) } }, select: { createdAt: true, amountExpected: true } }),
   ]);
   const statusCounts = Object.fromEntries(grouped.map((item) => [item.requestStatus, (item._count as { _all: number })._all]));
+  const revenueByDay = new Map<string, { day: string; revenue: number; requests: number }>();
+  for (const payment of verifiedPayments) {
+    const day = payment.createdAt.toISOString().slice(0, 10);
+    const current = revenueByDay.get(day) ?? { day, revenue: 0, requests: 0 };
+    current.revenue += payment.amountExpected;
+    current.requests += 1;
+    revenueByDay.set(day, current);
+  }
   return ok(response, {
     metrics: { totalRequests, todayRequests, pendingPaymentVerification: statusCounts.PAYMENT_REVIEW ?? 0, pendingApproval: statusCounts.PENDING_APPROVAL ?? 0, approved: statusCounts.APPROVED ?? 0, active: (statusCounts.EN_ROUTE ?? 0) + (statusCounts.ARRIVED ?? 0) + (statusCounts.IN_PROGRESS ?? 0), completed: statusCounts.COMPLETED ?? 0, cancelled: statusCounts.CANCELLED ?? 0, todayRevenue: todayRevenue._sum.amountExpected ?? 0, monthRevenue: monthRevenue._sum.amountExpected ?? 0, availableAgents, assignedAgents },
     statusDistribution: grouped.map((item) => ({ status: item.requestStatus, count: (item._count as { _all: number })._all })),
-    revenueSeries: revenueSeries.map((item) => ({ day: item.day, revenue: Number(item.amount), requests: Number(item.requests) })),
+    revenueSeries: [...revenueByDay.values()].sort((a, b) => a.day.localeCompare(b.day)),
     recent,
   });
 }));
@@ -42,12 +50,14 @@ router.get("/admin/requests", asyncHandler(async (request, response) => {
   const { page, pageSize, skip, take } = pagination(request.query);
   const search = typeof request.query.search === "string" ? request.query.search.trim() : undefined;
   const where: Prisma.ServiceRequestWhereInput = {
-    deletedAt: null,
+    AND: [
+      { OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] },
+      ...(search ? [{ OR: [{ reference: { contains: search, mode: "insensitive" as const } }, { customer: { fullName: { contains: search, mode: "insensitive" as const } } }, { customer: { email: { contains: search, mode: "insensitive" as const } } }] }] : []),
+    ],
     ...(request.query.status ? { requestStatus: String(request.query.status) as never } : {}),
     ...(request.query.paymentStatus ? { paymentStatus: String(request.query.paymentStatus) as never } : {}),
     ...(request.query.institutionId ? { institutionId: String(request.query.institutionId) } : {}),
     ...(request.query.date ? { requestedDate: new Date(String(request.query.date)) } : {}),
-    ...(search ? { OR: [{ reference: { contains: search, mode: "insensitive" } }, { customer: { fullName: { contains: search, mode: "insensitive" } } }, { customer: { email: { contains: search, mode: "insensitive" } } }] } : {}),
   };
   const [items, total] = await prisma.$transaction([
     prisma.serviceRequest.findMany({ where, include: { customer: { select: { id: true, fullName: true, mobile: true, email: true } }, institution: { select: { id: true, name: true, city: true } }, assignments: { orderBy: { createdAt: "desc" }, take: 1, include: { agent: { include: { user: { select: { fullName: true } } } } } } }, orderBy: { createdAt: "desc" }, skip, take }),
@@ -135,13 +145,13 @@ router.patch("/admin/payments/:id/verify", requireCsrf, asyncHandler(async (requ
     if (!payment) throw new AppError(404, "PAYMENT_NOT_FOUND", "Payment not found");
     if (payment.status === "VERIFIED") throw new AppError(409, "ALREADY_VERIFIED", "This payment has already been verified");
     if (payment.status !== "PROOF_UPLOADED" && payment.status !== "UNDER_VERIFICATION") throw new AppError(409, "INVALID_PAYMENT_STATE", "The payment is not ready for verification");
-    if (!payment.proofs.length || !payment.amountSubmitted || !payment.amountSubmitted.equals(payment.amountExpected)) throw new AppError(422, "PAYMENT_AMOUNT_MISMATCH", "Confirm that the submitted amount exactly matches the expected amount");
+    if (!payment.proofs.length || !payment.amountSubmitted || Math.round(payment.amountSubmitted * 100) !== Math.round(payment.amountExpected * 100)) throw new AppError(422, "PAYMENT_AMOUNT_MISMATCH", "Confirm that the submitted amount exactly matches the expected amount");
     const updated = await transaction.payment.update({ where: { id: payment.id }, data: { status: "VERIFIED", verificationNotes: notes, verifiedById: request.auth!.userId, verifiedAt: new Date() } });
     await transaction.serviceRequest.update({ where: { id: payment.requestId }, data: { paymentStatus: "VERIFIED", requestStatus: "PENDING_APPROVAL" } });
     await transaction.auditLog.create({ data: { actorId: request.auth!.userId, action: "PAYMENT_VERIFIED", entityType: "Payment", entityId: payment.id, before: { status: payment.status }, after: { status: "VERIFIED", notes }, ipAddress: request.ip } });
     await notify({ userId: payment.request.customerId, requestId: payment.requestId, event: "PAYMENT_VERIFIED", title: "Payment verified", message: `Payment for ${payment.request.reference} was verified and the request is awaiting approval.` }, transaction);
     return updated;
-  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  });
   return ok(response, result);
 }));
 
@@ -201,7 +211,7 @@ router.post("/admin/assignments", requireCsrf, asyncHandler(async (request, resp
     await notify({ userId: created.agent.user.id, requestId: serviceRequest.id, event: "AGENT_ASSIGNED", title: "New QueueMate assignment", message: `${serviceRequest.reference} is scheduled for ${serviceRequest.scheduledStartAt.toISOString()}.` }, transaction);
     await notify({ userId: serviceRequest.customerId, requestId: serviceRequest.id, event: "AGENT_ASSIGNED", title: "Agent assigned", message: `${created.agent.user.fullName} has been assigned to ${serviceRequest.reference}.` }, transaction);
     return created;
-  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  });
   return ok(response, assignment, 201);
 }));
 
@@ -213,7 +223,7 @@ router.get("/admin/schedule", asyncHandler(async (request, response) => {
 }));
 
 router.get("/admin/institutions", asyncHandler(async (_request, response) => {
-  const items = await prisma.institution.findMany({ where: { deletedAt: null }, include: { permissions: { include: { serviceType: true } }, _count: { select: { requests: true } } }, orderBy: { name: "asc" } });
+  const items = await prisma.institution.findMany({ where: { OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] }, include: { permissions: { include: { serviceType: true } }, _count: { select: { requests: true } } }, orderBy: { name: "asc" } });
   return ok(response, items);
 }));
 
@@ -226,7 +236,7 @@ router.post("/admin/institutions", requireCsrf, asyncHandler(async (request, res
 }));
 
 router.patch("/admin/institutions/:id", requireCsrf, asyncHandler(async (request, response) => {
-  const input = parseBody(institutionSchema.partial().extend({ serviceTypeId: z.string().uuid().optional() }), request.body);
+  const input = parseBody(institutionSchema.partial().extend({ serviceTypeId: objectIdSchema.optional() }), request.body);
   const item = await prisma.institution.update({ where: { id: request.params.id }, data: { name: input.name, address: input.address, city: input.city, contactPhone: input.contactPhone, contactEmail: input.contactEmail || undefined, description: input.description, active: input.active, actualCustomerRequired: input.actualCustomerRequired, requiredAuthorisation: input.requiredAuthorisation, restrictions: input.restrictions, estimatedDurationMinutes: input.estimatedDurationMinutes, lastPermissionReviewAt: input.permitted !== undefined ? new Date() : undefined, permissions: input.serviceTypeId ? { upsert: { where: { institutionId_serviceTypeId: { institutionId: request.params.id, serviceTypeId: input.serviceTypeId } }, create: { serviceTypeId: input.serviceTypeId, permitted: input.permitted ?? false, conditions: input.permissionConditions, reviewedAt: new Date() }, update: { permitted: input.permitted, conditions: input.permissionConditions, reviewedAt: new Date() } } } : undefined }, include: { permissions: { include: { serviceType: true } } } });
   await audit(request, "INSTITUTION_UPDATED", "Institution", item.id);
   return ok(response, item);
@@ -235,7 +245,7 @@ router.patch("/admin/institutions/:id", requireCsrf, asyncHandler(async (request
 router.get("/admin/pricing", asyncHandler(async (_request, response) => ok(response, await prisma.pricingRule.findMany({ include: { serviceType: true }, orderBy: { effectiveFrom: "desc" } }))));
 
 router.post("/admin/pricing", requireCsrf, asyncHandler(async (request, response) => {
-  const input = parseBody(z.object({ name: z.string().min(2), serviceTypeId: z.string().uuid(), type: z.enum(["FIXED", "CUSTOM_QUOTE"]), amount: z.coerce.number().positive().optional(), currency: z.string().default("BWP"), active: z.boolean().default(true), effectiveFrom: z.string().datetime(), effectiveTo: z.string().datetime().optional() }), request.body);
+  const input = parseBody(z.object({ name: z.string().min(2), serviceTypeId: objectIdSchema, type: z.enum(["FIXED", "CUSTOM_QUOTE"]), amount: z.coerce.number().positive().optional(), currency: z.string().default("BWP"), active: z.boolean().default(true), effectiveFrom: z.string().datetime(), effectiveTo: z.string().datetime().optional() }), request.body);
   if (input.type === "FIXED" && input.amount === undefined) throw new AppError(422, "AMOUNT_REQUIRED", "Fixed pricing requires an amount");
   const item = await prisma.pricingRule.create({ data: { ...input, amount: input.amount, effectiveFrom: new Date(input.effectiveFrom), effectiveTo: input.effectiveTo ? new Date(input.effectiveTo) : null } });
   await audit(request, "PRICING_CREATED", "PricingRule", item.id);
@@ -261,7 +271,7 @@ router.get("/admin/reports", asyncHandler(async (request, response) => {
     prisma.user.count({ where: { role: "CUSTOMER", createdAt: { gte: from, lte: to } } }),
   ]);
   if (request.query.format === "csv") {
-    const rows = ["category,status,count,amount", ...payments.map((item) => `payment,${item.status},${(item._count as { _all: number })._all},${(item._sum as { amountExpected: Prisma.Decimal | null }).amountExpected ?? 0}`), ...requests.map((item) => `request,${item.requestStatus},${(item._count as { _all: number })._all},`)];
+    const rows = ["category,status,count,amount", ...payments.map((item) => `payment,${item.status},${(item._count as { _all: number })._all},${item._sum?.amountExpected ?? 0}`), ...requests.map((item) => `request,${item.requestStatus},${(item._count as { _all: number })._all},`)];
     response.setHeader("Content-Type", "text/csv"); response.setHeader("Content-Disposition", "attachment; filename=queuemate-report.csv");
     return response.send(rows.join("\n"));
   }

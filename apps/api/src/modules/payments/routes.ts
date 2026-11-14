@@ -48,13 +48,11 @@ router.get("/payments/:requestId", asyncHandler(async (request, response) => {
 router.get("/payments/proofs/:proofId/file", asyncHandler(async (request, response) => {
   const proof = await prisma.paymentProof.findUnique({ where: { id: request.params.proofId }, include: { payment: { include: { request: { select: { customerId: true } } } } } });
   if (!proof || (request.auth!.role === "CUSTOMER" && proof.payment.request.customerId !== request.auth!.userId) || request.auth!.role === "AGENT") throw new AppError(404, "PROOF_NOT_FOUND", "Payment proof not found");
-  const object = await getPrivateFile(proof.storageKey);
-  if (!object.Body) throw new AppError(404, "FILE_NOT_FOUND", "Stored file not found");
-  const bytes = await object.Body.transformToByteArray();
+  const bytes = await getPrivateFile(proof.storageKey);
   response.setHeader("Content-Type", proof.mimeType);
   response.setHeader("Content-Disposition", `inline; filename="${proof.originalName.replace(/[\"\\]/g, "")}"`);
   response.setHeader("Cache-Control", "private, no-store");
-  return response.send(Buffer.from(bytes));
+  return response.send(bytes);
 }));
 
 export default router;

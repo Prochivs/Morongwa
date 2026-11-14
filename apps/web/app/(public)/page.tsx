@@ -26,7 +26,7 @@ export default function HomePage() {
           <h1 className="mt-7 max-w-[570px] text-[42px] font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-6xl lg:text-[62px]">Your day should not stop for a queue.</h1>
           <p className="mt-5 max-w-xl text-sm leading-7 text-muted">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
           <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
-            <Link className="inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-brand px-7 text-sm font-semibold text-white shadow-sm hover:-translate-y-px hover:bg-blue-600 hover:shadow-md" href="/register">Request assistance <ArrowRight size={18} /></Link>
+            <Link className="inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-brand px-7 text-sm font-normal text-white shadow-sm hover:-translate-y-px hover:bg-[#1a1c27] hover:text-white hover:shadow-md" href="/register">Request assistance <ArrowRight size={18} /></Link>
           </div>
         </div>
       </div>
@@ -50,9 +50,9 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="bg-white py-14 sm:py-16" id="pricing-section">
+    <section className="bg-white pb-14 pt-6 sm:pb-16 sm:pt-8" id="pricing-section">
       <div className="container-shell">
-        <div className="py-4 sm:py-6">
+        <div className="pb-4 sm:pb-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]">See the fee before you commit.</h2>
             <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p>
@@ -66,9 +66,9 @@ export default function HomePage() {
       <div className="container-shell">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]" id="reviews-heading">What our customers say.</h2>
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Only feedback connected to completed QueueMate requests and approved for publication appears here.</p>
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Customer stories rotate automatically. Sample content is clearly marked until approved QueueMate reviews are published.</p>
         </div>
-        <div className="mx-auto mt-10 max-w-6xl"><ReviewPreview /></div>
+        <div className="mt-10 w-full"><ReviewPreview /></div>
       </div>
     </section>
 

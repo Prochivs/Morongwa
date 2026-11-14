@@ -46,6 +46,7 @@ function ResetPasswordForm() {
             className="field"
             name="password"
             type="password"
+            placeholder="Create a secure password"
             required
             minLength={12}
           />
@@ -56,6 +57,7 @@ function ResetPasswordForm() {
             className="field"
             name="passwordConfirmation"
             type="password"
+            placeholder="Re-enter your new password"
             required
             minLength={12}
           />

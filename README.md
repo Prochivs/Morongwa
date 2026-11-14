@@ -5,25 +5,25 @@ QueueMate is a production-minded queue-assistance operations platform for Botswa
 ## Stack
 
 - Next.js App Router, React, TypeScript, Tailwind CSS, TanStack Query, React Hook Form, Zod, Lucide, and Recharts
-- Express REST API, TypeScript, Zod, Prisma, and PostgreSQL
+- Express REST API, TypeScript, Zod, Prisma, and MongoDB
 - Private S3-compatible object storage (Silo/MinIO API), Nginx, and Docker Compose
 - Vitest/Supertest unit and API tests plus a Playwright API end-to-end workflow
 
 ## Quick start
 
-Requirements: Node.js 20.9+ (Node.js 22 LTS recommended), npm, and Docker with Compose.
+Requirements: Node.js 20.9+ (Node.js 22 LTS recommended), npm, a MongoDB Atlas database, and Docker with Compose for object storage.
 
 ```bash
 cp .env.example .env
 npm install
-docker compose up -d postgres minio minio-init
+docker compose up -d minio minio-init
 npm run db:generate
-npm run db:migrate -- --name init
+npm run db:push
 npm run db:seed
 npm run dev
 ```
 
-For host-based development, use `localhost:5433` for PostgreSQL and `http://localhost:9000` for object storage in `.env`. The Docker application services override these with internal service names. Visit `http://localhost:3000`; the API health endpoint is `http://localhost:4000/api/v1/health`.
+Set `DATABASE_URL` in `.env` to the MongoDB Atlas connection string for the `queuemate` database, and use `http://localhost:9000` for object storage. In Atlas, allow this machine's IP address and create a database user before starting the API. Visit `http://localhost:3000`; the API health endpoint is `http://localhost:4000/api/v1/health`.
 
 To run the whole stack behind Nginx:
 
@@ -50,7 +50,7 @@ Change all secrets and never run the development seed in production. The seed ac
 
 ```bash
 npm run verify
-# With API, PostgreSQL, and object storage running and seeded:
+# With API, MongoDB, and object storage running and seeded:
 npm run test:e2e
 docker compose config --quiet
 docker compose -f docker-compose.yml -f docker-compose.prod.yml config --quiet

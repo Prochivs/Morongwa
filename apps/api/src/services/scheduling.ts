@@ -12,7 +12,11 @@ export async function assertAgentCanBeAssigned(
   travelBufferMinutes: number,
   overrideConflict: boolean,
 ) {
-  await transaction.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${agentId}))`;
+  await transaction.agentScheduleLock.upsert({
+    where: { agentId },
+    create: { agentId },
+    update: { version: { increment: 1 } },
+  });
   const agent = await transaction.agentProfile.findUnique({ where: { id: agentId }, include: { user: true } });
   if (!agent || agent.user.status !== "ACTIVE" || !agent.available) throw new AppError(409, "AGENT_UNAVAILABLE", "The selected agent is not active and available");
 

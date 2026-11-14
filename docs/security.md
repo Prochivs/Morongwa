@@ -1,6 +1,6 @@
 # Security model
 
-- Opaque random session tokens are stored only as SHA-256 hashes in PostgreSQL and sent in HTTP-only, SameSite cookies. Production cookies are secure.
+- Opaque random session tokens are stored only as SHA-256 hashes in MongoDB and sent in HTTP-only, SameSite cookies. Production cookies are secure.
 - Each session has an independent CSRF secret; all authenticated mutations validate the cookie/header pair and stored hash.
 - Passwords use bcrypt with cost 12. Password reset tokens are random, hashed at rest, expire after one hour, and invalidate sessions when used.
 - Route-level RBAC separates customer, administrator, and agent access. Resource queries also enforce ownership or assignment.

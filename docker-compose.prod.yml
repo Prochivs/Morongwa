@@ -1,20 +1,6 @@
 name: queuemate-production
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    env_file: [.env]
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backups:/backups
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-    networks: [internal]
-
   minio:
     image: pgsty/silo:RELEASE.2026-11-09T00-00-00Z
     restart: unless-stopped
@@ -36,10 +22,8 @@ services:
       target: production
     restart: unless-stopped
     env_file: [.env]
-    command: sh -c "npx prisma migrate deploy && node apps/api/dist/server.js"
+    command: sh -c "npx prisma db push && node apps/api/dist/server.js"
     depends_on:
-      postgres:
-        condition: service_healthy
       minio:
         condition: service_healthy
     healthcheck:
@@ -83,7 +67,6 @@ services:
     networks: [internal]
 
 volumes:
-  postgres_data:
   minio_data:
 
 networks:

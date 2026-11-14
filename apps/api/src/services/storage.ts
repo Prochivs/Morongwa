@@ -1,14 +1,23 @@
 import crypto from "node:crypto";
+import { get, put } from "@vercel/blob";
 import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { env } from "../config/env.js";
 import { AppError } from "../utils/http.js";
 
-const storage = new S3Client({
-  endpoint: env.MINIO_ENDPOINT,
-  region: env.MINIO_REGION,
-  forcePathStyle: true,
-  credentials: { accessKeyId: env.MINIO_ACCESS_KEY, secretAccessKey: env.MINIO_SECRET_KEY },
-});
+const useVercelBlob = Boolean(process.env.VERCEL || process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
+
+function getLocalStorage() {
+  if (!env.MINIO_ENDPOINT || !env.MINIO_ACCESS_KEY || !env.MINIO_SECRET_KEY || !env.MINIO_BUCKET) {
+    throw new AppError(500, "STORAGE_UNAVAILABLE", "Private file storage is not configured");
+  }
+
+  return new S3Client({
+    endpoint: env.MINIO_ENDPOINT,
+    region: env.MINIO_REGION,
+    forcePathStyle: true,
+    credentials: { accessKeyId: env.MINIO_ACCESS_KEY, secretAccessKey: env.MINIO_SECRET_KEY },
+  });
+}
 
 const signatures = {
   "application/pdf": (buffer: Buffer) => buffer.subarray(0, 5).toString() === "%PDF-",
@@ -27,10 +36,38 @@ export async function putPrivateFile(prefix: string, file: Express.Multer.File) 
   const extension = file.mimetype === "application/pdf" ? "pdf" : file.mimetype === "image/png" ? "png" : "jpg";
   const sha256 = crypto.createHash("sha256").update(file.buffer).digest("hex");
   const key = `${prefix}/${crypto.randomUUID()}.${extension}`;
-  await storage.send(new PutObjectCommand({ Bucket: env.MINIO_BUCKET, Key: key, Body: file.buffer, ContentType: file.mimetype, Metadata: { sha256 } }));
+
+  if (useVercelBlob) {
+    const stored = await put(key, file.buffer, {
+      access: "private",
+      addRandomSuffix: false,
+      contentType: file.mimetype,
+    });
+    return { key: stored.pathname, sha256 };
+  }
+
+  await getLocalStorage().send(
+    new PutObjectCommand({
+      Bucket: env.MINIO_BUCKET!,
+      Key: key,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      Metadata: { sha256 },
+    }),
+  );
   return { key, sha256 };
 }
 
 export async function getPrivateFile(key: string) {
-  return storage.send(new GetObjectCommand({ Bucket: env.MINIO_BUCKET, Key: key }));
+  if (useVercelBlob) {
+    const object = await get(key, { access: "private" });
+    if (!object || object.statusCode !== 200 || !object.stream) {
+      throw new AppError(404, "FILE_NOT_FOUND", "The requested file is unavailable");
+    }
+    return Buffer.from(await new Response(object.stream).arrayBuffer());
+  }
+
+  const object = await getLocalStorage().send(new GetObjectCommand({ Bucket: env.MINIO_BUCKET!, Key: key }));
+  if (!object.Body) throw new AppError(404, "FILE_NOT_FOUND", "The requested file is unavailable");
+  return Buffer.from(await object.Body.transformToByteArray());
 }

@@ -15,8 +15,8 @@
     "verify": "npm run typecheck && npm test && npm run build",
     "typecheck": "npm run typecheck -w @queuemate/shared && npm run typecheck -w @queuemate/api && npm run typecheck -w @queuemate/web",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:bootstrap": "tsx prisma/bootstrap.ts",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "format": "prettier --write ."

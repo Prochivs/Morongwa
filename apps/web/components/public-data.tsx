@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Building2, Star } from "lucide-react";
+import { Building2, Star } from "lucide-react";
 import { formatCurrency } from "@queuemate/shared";
 import { apiFetch } from "@/lib/api";
 import { Card, CardContent } from "./ui/card";
@@ -10,6 +10,45 @@ import { Card, CardContent } from "./ui/card";
 type Institution = { id: string; name: string; address: string; city: string; actualCustomerRequired: boolean };
 type Price = { id: string; name: string; amount: string | null; currency: string; type: string };
 type Review = { rating: number; comment: string | null; createdAt: string };
+type DisplayReview = Review & { id: string; sample?: boolean };
+
+const sampleReviews: DisplayReview[] = [
+  {
+    id: "sample-1",
+    rating: 5,
+    comment: "The process felt simple from the start, and I always knew what was happening with my request.",
+    createdAt: "",
+    sample: true,
+  },
+  {
+    id: "sample-2",
+    rating: 5,
+    comment: "I could carry on with my day while checking each update from my phone.",
+    createdAt: "",
+    sample: true,
+  },
+  {
+    id: "sample-3",
+    rating: 5,
+    comment: "The fee was clear before I confirmed, and the request steps were easy to follow.",
+    createdAt: "",
+    sample: true,
+  },
+  {
+    id: "sample-4",
+    rating: 5,
+    comment: "The updates were helpful and made it easy to know when I needed to be available.",
+    createdAt: "",
+    sample: true,
+  },
+  {
+    id: "sample-5",
+    rating: 5,
+    comment: "Submitting a request took only a few minutes, and everything stayed clear afterward.",
+    createdAt: "",
+    sample: true,
+  },
+];
 
 export function InstitutionPreview() {
   const query = useQuery({ queryKey: ["institutions"], queryFn: () => apiFetch<Institution[]>("/public/institutions") });
@@ -39,7 +78,7 @@ export function PricingPreview({ layout = "cards" }: { layout?: "cards" | "list"
       <li>Live request updates</li>
       <li>Price fixed before payment</li>
     </ul>
-    <Link className={`mt-auto inline-flex h-11 items-center justify-center rounded-lg border px-4 text-xs font-semibold ${index === 1 ? "border-brand bg-brand text-white hover:bg-blue-600" : "border-navy/20 text-navy hover:border-brand hover:text-brand"}`} href="/register">Choose this service</Link>
+    <Link className={`mt-auto inline-flex h-11 items-center justify-center rounded-lg border px-4 text-xs font-semibold ${index === 1 ? "border-brand bg-brand text-white hover:border-[#1a1c27] hover:bg-[#1a1c27] hover:text-white" : "border-navy/20 text-navy hover:border-brand hover:text-brand"}`} href="/register">Choose this service</Link>
   </article>)}</div>;
   return <div className="grid gap-3 sm:grid-cols-3">{query.data?.slice(0, 3).map((item) => <Card className="h-full shadow-none" key={item.id}><CardContent className="flex h-full min-h-[200px] flex-col"><h3 className="text-sm font-medium leading-6 text-navy">{item.name}</h3><p className="mt-5 text-3xl font-medium tracking-[-.035em] text-navy">{item.type === "CUSTOM_QUOTE" || !item.amount ? "Custom quote" : formatCurrency(item.amount, item.currency)}</p><p className="mt-auto border-t border-navy/10 pt-4 text-xs leading-5 text-muted">Confirmed before you submit and fixed to your request.</p></CardContent></Card>)}</div>;
 }
@@ -47,21 +86,39 @@ export function PricingPreview({ layout = "cards" }: { layout?: "cards" | "list"
 export function ReviewPreview() {
   const [page, setPage] = useState(0);
   const query = useQuery({ queryKey: ["reviews"], queryFn: () => apiFetch<Review[]>("/public/reviews") });
-  if (!query.data?.length) return <div className="rounded-[24px] bg-slate-100 p-6 sm:p-10"><div className="mx-auto max-w-2xl rounded-[18px] bg-white p-8 text-center shadow-sm sm:p-10"><h3 className="text-xl font-medium text-navy">Verified customer stories will appear here.</h3><p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-muted">Reviews are published only after a completed request and administrative approval. QueueMate never fills this space with invented testimonials.</p></div></div>;
+  const approvedReviews: DisplayReview[] = (query.data ?? []).slice(0, 5).map((review, index) => ({
+    ...review,
+    id: `approved-${review.createdAt}-${index}`,
+  }));
+  const reviews = approvedReviews.length
+    ? [...approvedReviews, ...sampleReviews.slice(0, Math.max(0, 5 - approvedReviews.length))]
+    : sampleReviews;
+  const currentPage = page % reviews.length;
+  const visibleReviews = [
+    reviews[(currentPage - 1 + reviews.length) % reviews.length],
+    reviews[currentPage],
+    reviews[(currentPage + 1) % reviews.length],
+  ];
 
-  const pageCount = Math.ceil(query.data.length / 3);
-  const currentPage = Math.min(page, pageCount - 1);
-  const visibleReviews = query.data.slice(currentPage * 3, currentPage * 3 + 3);
+  useEffect(() => {
+    if (reviews.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const interval = window.setInterval(() => setPage((value) => (value + 1) % reviews.length), 5000);
+    return () => window.clearInterval(interval);
+  }, [reviews.length]);
 
   return <div className="rounded-[24px] bg-slate-100 px-5 py-8 sm:px-8 sm:py-10 lg:px-10">
-    <div className="grid gap-6 md:grid-cols-3">{visibleReviews.map((review, index) => <article className={`flex min-h-[260px] flex-col rounded-[18px] bg-white p-7 shadow-sm ${index === 1 ? "md:-translate-y-3 md:shadow-card" : ""}`} key={`${review.createdAt}-${index}`}>
+    <div aria-live="off" className="grid gap-6 md:grid-cols-3">{visibleReviews.map((review, index) => <article className={`${index === 1 ? "flex border-brand/60 shadow-card" : "hidden border-navy/5 shadow-sm md:flex"} min-h-[260px] flex-col rounded-[18px] border bg-white p-7 transition-all duration-500`} key={review.id}>
       <div aria-label={`${review.rating} out of 5 stars`} className="flex gap-1 text-brand">{Array.from({ length: review.rating }).map((_, i) => <Star aria-hidden="true" fill="currentColor" key={i} size={16} />)}</div>
       <p className="mt-6 text-sm leading-7 text-slate-700">“{review.comment || "Rating submitted after a completed QueueMate request."}”</p>
-      <div className="mt-auto border-t border-navy/10 pt-5"><p className="text-sm font-semibold text-navy">Verified QueueMate customer</p><p className="mt-1 text-xs text-muted">Completed request · {new Date(review.createdAt).toLocaleDateString("en-BW", { month: "short", year: "numeric" })}</p></div>
+      <div className="mt-auto border-t border-navy/10 pt-5">
+        <p className="text-sm font-normal text-navy">{review.sample ? "Sample customer story" : "Verified QueueMate customer"}</p>
+        <p className="mt-1 text-xs text-muted">{review.sample ? "Preview content" : `Completed request · ${new Date(review.createdAt).toLocaleDateString("en-BW", { month: "short", year: "numeric" })}`}</p>
+      </div>
     </article>)}</div>
-    <div className="mt-8 flex justify-center gap-2">
-      <button aria-label="Previous reviews" className="grid h-11 w-11 place-items-center rounded-lg border border-navy/10 bg-white text-navy hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-35" disabled={currentPage === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} type="button"><ArrowLeft size={17} /></button>
-      <button aria-label="Next reviews" className="grid h-11 w-11 place-items-center rounded-lg bg-brand text-white shadow-sm hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-35" disabled={currentPage >= pageCount - 1} onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))} type="button"><ArrowRight size={17} /></button>
+    <div className="mt-8 flex items-center justify-center">
+      <div className="flex gap-1.5" role="tablist" aria-label="Choose a customer review">
+        {reviews.map((review, index) => <button aria-label={`Show review ${index + 1}`} aria-selected={currentPage === index} className={`h-1.5 rounded-full transition-all ${currentPage === index ? "w-5 bg-brand" : "w-1.5 bg-slate-300 hover:bg-slate-400"}`} key={review.id} onClick={() => setPage(index)} role="tab" type="button" />)}
+      </div>
     </div>
   </div>;
 }

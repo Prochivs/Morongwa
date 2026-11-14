@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Copy, Loader2, Upload } from "lucide-react";
@@ -6,5 +7,84 @@ import { apiFetch } from "@/lib/api";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
-type Bank={accountHolder:string;bankName:string;accountNumber:string;branch:string;branchCode?:string;paymentInstructions:string};
-export function PaymentUpload({requestId,reference,disabled}:{requestId:string;reference:string;disabled:boolean}){const client=useQueryClient();const bank=useQuery({queryKey:["bank"],queryFn:()=>apiFetch<Bank>("/payments/bank-details"),enabled:!disabled});const [error,setError]=useState("");const upload=useMutation({mutationFn:async(form:FormData)=>apiFetch(`/payments/${requestId}/proof`,{method:"POST",body:form}),onSuccess:()=>{void client.invalidateQueries({queryKey:["request",requestId]});},onError:error=>setError(error instanceof Error?error.message:"Upload failed")});if(disabled)return null;return <Card><CardHeader><h2 className="font-semibold text-navy">Pay by bank transfer</h2><p className="mt-1 text-sm text-muted">Transfer the exact amount, then upload proof for manual verification.</p></CardHeader><CardContent>{bank.isLoading?<div className="h-28 animate-pulse rounded-lg bg-slate-100"/>:bank.data&&<div className="rounded-xl bg-slate-50 p-4"><div className="flex items-start gap-3"><Building2 className="mt-1 text-brand"/><dl className="grid flex-1 gap-3 text-sm sm:grid-cols-2"><div><dt className="text-xs text-muted">Bank</dt><dd className="font-semibold">{bank.data.bankName}</dd></div><div><dt className="text-xs text-muted">Account holder</dt><dd className="font-semibold">{bank.data.accountHolder}</dd></div><div><dt className="text-xs text-muted">Account number</dt><dd className="flex items-center gap-2 font-semibold">{bank.data.accountNumber}<button aria-label="Copy account number" onClick={()=>navigator.clipboard.writeText(bank.data!.accountNumber)}><Copy size={14}/></button></dd></div><div><dt className="text-xs text-muted">Reference</dt><dd className="font-semibold text-brand">{reference}</dd></div></dl></div><p className="mt-4 text-xs leading-5 text-muted">{bank.data.paymentInstructions}</p></div>}<form className="mt-5 grid gap-4" onSubmit={event=>{event.preventDefault();setError("");upload.mutate(new FormData(event.currentTarget));}}><div className="grid gap-4 sm:grid-cols-2"><div><label className="field-label">Amount transferred</label><input className="field" name="amountSubmitted" type="number" min="1" step="0.01" required/></div><div><label className="field-label">Bank payment reference</label><input className="field" name="paymentReference" required minLength={3}/></div></div><div><label className="field-label">Proof of payment</label><input className="block w-full rounded-lg border border-slate-300 bg-white p-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-semibold file:text-brand" name="proof" type="file" accept="application/pdf,image/png,image/jpeg" required/><p className="mt-1 text-xs text-muted">Private PDF, PNG, or JPEG. Maximum 5 MB.</p></div>{error&&<p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}<Button type="submit" disabled={upload.isPending}>{upload.isPending?<Loader2 className="animate-spin" size={17}/>:<Upload size={17}/>}Upload proof</Button></form></CardContent></Card>}
+type Bank = {
+  accountHolder: string;
+  bankName: string;
+  accountNumber: string;
+  branch: string;
+  branchCode?: string;
+  paymentInstructions: string;
+};
+
+export function PaymentUpload({ requestId, reference, disabled }: { requestId: string; reference: string; disabled: boolean }) {
+  const client = useQueryClient();
+  const bank = useQuery({
+    queryKey: ["bank"],
+    queryFn: () => apiFetch<Bank>("/payments/bank-details"),
+    enabled: !disabled,
+  });
+  const [error, setError] = useState("");
+  const upload = useMutation({
+    mutationFn: async (form: FormData) => apiFetch(`/payments/${requestId}/proof`, { method: "POST", body: form }),
+    onSuccess: () => { void client.invalidateQueries({ queryKey: ["request", requestId] }); },
+    onError: (uploadError) => setError(uploadError instanceof Error ? uploadError.message : "Upload failed"),
+  });
+
+  if (disabled) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <h2 className="text-[15px] font-normal text-navy">Pay by bank transfer</h2>
+        <p className="mt-1 text-[13px] font-normal text-muted">Transfer the exact amount, then upload proof for manual verification.</p>
+      </CardHeader>
+      <CardContent>
+        {bank.isLoading ? (
+          <div className="h-28 animate-pulse rounded-lg bg-slate-100" />
+        ) : bank.data && (
+          <div className="rounded-xl bg-slate-50 p-4">
+            <div className="flex items-start gap-3">
+              <Building2 className="mt-1 text-brand" />
+              <dl className="grid flex-1 gap-3 text-[13px] sm:grid-cols-2">
+                <div><dt className="text-[11px] text-muted">Bank</dt><dd className="font-normal">{bank.data.bankName}</dd></div>
+                <div><dt className="text-[11px] text-muted">Account holder</dt><dd className="font-normal">{bank.data.accountHolder}</dd></div>
+                <div>
+                  <dt className="text-[11px] text-muted">Account number</dt>
+                  <dd className="flex items-center gap-2 font-normal">
+                    {bank.data.accountNumber}
+                    <button aria-label="Copy account number" onClick={() => navigator.clipboard.writeText(bank.data!.accountNumber)}><Copy size={14} /></button>
+                  </dd>
+                </div>
+                <div><dt className="text-[11px] text-muted">Reference</dt><dd className="font-normal text-brand">{reference}</dd></div>
+              </dl>
+            </div>
+            <p className="mt-4 text-[11px] font-normal leading-5 text-muted">{bank.data.paymentInstructions}</p>
+          </div>
+        )}
+
+        <form className="mt-5 grid gap-4 [&_.field-label]:text-[13px] [&_.field-label]:font-normal" onSubmit={(event) => { event.preventDefault(); setError(""); upload.mutate(new FormData(event.currentTarget)); }}>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="field-label">Amount transferred</label>
+              <input className="field" name="amountSubmitted" type="number" min="1" step="0.01" placeholder="0.00" required />
+            </div>
+            <div>
+              <label className="field-label">Bank payment reference</label>
+              <input className="field" name="paymentReference" placeholder="Enter payment reference" required minLength={3} />
+            </div>
+          </div>
+          <div>
+            <label className="field-label">Proof of payment</label>
+            <input className="block w-full rounded-lg border border-slate-300 bg-white p-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-normal file:text-brand" name="proof" type="file" accept="application/pdf,image/png,image/jpeg" required />
+            <p className="mt-1 text-[11px] font-normal text-muted">Private PDF, PNG, or JPEG. Maximum 5 MB.</p>
+          </div>
+          {error && <p className="rounded-lg bg-red-50 p-3 text-[13px] text-red-700">{error}</p>}
+          <Button className="text-xs font-normal" type="submit" disabled={upload.isPending}>
+            {upload.isPending ? <Loader2 className="animate-spin" size={17} /> : <Upload size={17} />}
+            Upload proof
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}

@@ -22,4 +22,4 @@ erDiagram
   ServiceRequest ||--o{ AuditLog : concerns
 ```
 
-Monetary values use PostgreSQL decimal columns and timestamps are stored as UTC. The business timezone is `Africa/Gaborone` when translating customer dates/times. Soft deletion is used for institutions and service requests; audit events remain append-only.
+Monetary values are stored as numeric MongoDB fields and compared at two-decimal currency precision in payment verification. Timestamps are stored as UTC. The business timezone is `Africa/Gaborone` when translating customer dates/times. Soft deletion is used for institutions and service requests; audit events remain append-only.

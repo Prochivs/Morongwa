@@ -6,7 +6,7 @@ import { asyncHandler, ok } from "../../utils/http.js";
 const router = Router();
 
 router.get("/health", asyncHandler(async (_request, response) => {
-  await prisma.$queryRaw`SELECT 1`;
+  await prisma.user.findFirst({ select: { id: true } });
   return ok(response, { status: "healthy", timestamp: new Date().toISOString(), service: "queuemate-api" });
 }));
 
@@ -20,7 +20,7 @@ router.get("/public/config", asyncHandler(async (_request, response) => {
 
 router.get("/public/institutions", asyncHandler(async (_request, response) => {
   const institutions = await prisma.institution.findMany({
-    where: { active: true, deletedAt: null, permissions: { some: { permitted: true, serviceType: { active: true } } } },
+    where: { active: true, OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }], permissions: { some: { permitted: true, serviceType: { active: true } } } },
     select: { id: true, name: true, address: true, city: true, description: true, actualCustomerRequired: true, restrictions: true, estimatedDurationMinutes: true, permissions: { where: { permitted: true }, select: { conditions: true, serviceType: { select: { id: true, name: true, description: true } } } } },
     orderBy: { name: "asc" },
   });
@@ -28,7 +28,7 @@ router.get("/public/institutions", asyncHandler(async (_request, response) => {
 }));
 
 router.get("/public/pricing", asyncHandler(async (_request, response) => {
-  const pricing = await prisma.pricingRule.findMany({ where: { active: true, effectiveFrom: { lte: new Date() }, OR: [{ effectiveTo: null }, { effectiveTo: { gt: new Date() } }] }, include: { serviceType: { select: { name: true } } }, orderBy: { amount: "asc" } });
+  const pricing = await prisma.pricingRule.findMany({ where: { active: true, effectiveFrom: { lte: new Date() }, OR: [{ effectiveTo: null }, { effectiveTo: { isSet: false } }, { effectiveTo: { gt: new Date() } }] }, include: { serviceType: { select: { name: true } } }, orderBy: { amount: "asc" } });
   return ok(response, pricing);
 }));
 

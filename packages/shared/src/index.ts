@@ -35,6 +35,10 @@ export const passwordSchema = z
   .regex(/[0-9]/, "Include a number")
   .regex(/[^A-Za-z0-9]/, "Include a symbol");
 
+export const objectIdSchema = z
+  .string()
+  .regex(/^[0-9a-f]{24}$/i, "Enter a valid identifier");
+
 export const registerSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120),
@@ -56,8 +60,8 @@ export const loginSchema = z.object({
 });
 
 export const createRequestSchema = z.object({
-  institutionId: z.string().uuid(),
-  serviceTypeId: z.string().uuid(),
+  institutionId: objectIdSchema,
+  serviceTypeId: objectIdSchema,
   requestedDate: z.string().date(),
   preferredArrivalTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/),
   locationInstructions: z.string().trim().max(500).optional(),
@@ -89,8 +93,8 @@ export const requestDecisionSchema = z.object({
 });
 
 export const assignmentSchema = z.object({
-  requestId: z.string().uuid(),
-  agentId: z.string().uuid(),
+  requestId: objectIdSchema,
+  agentId: objectIdSchema,
   travelBufferMinutes: z.coerce.number().int().min(0).max(240).default(30),
   overrideConflict: z.boolean().default(false),
   overrideReason: z.string().trim().min(10).max(500).optional(),
@@ -119,7 +123,7 @@ export const institutionSchema = z.object({
   requiredAuthorisation: z.string().trim().max(500).optional(),
   restrictions: z.string().trim().max(1000).optional(),
   estimatedDurationMinutes: z.coerce.number().int().min(15).max(720).default(120),
-  serviceTypeId: z.string().uuid(),
+  serviceTypeId: objectIdSchema,
   permitted: z.boolean().default(false),
   permissionConditions: z.string().trim().max(1000).optional(),
 });

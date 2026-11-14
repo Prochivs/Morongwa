@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { Prisma } from "@prisma/client";
 import { fromZonedTime } from "date-fns-tz";
 import { cancellationSchema, createRequestSchema } from "@queuemate/shared";
 import { env } from "../../config/env.js";
@@ -37,7 +38,7 @@ router.patch("/customers/profile", requireCsrf, asyncHandler(async (request, res
 router.post("/requests", requireCsrf, asyncHandler(async (request, response) => {
   const input = parseBody(createRequestSchema, request.body);
   const institution = await prisma.institution.findFirst({
-    where: { id: input.institutionId, active: true, deletedAt: null, permissions: { some: { serviceTypeId: input.serviceTypeId, permitted: true } } },
+    where: { id: input.institutionId, active: true, OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }], permissions: { some: { serviceTypeId: input.serviceTypeId, permitted: true } } },
     include: { permissions: { where: { serviceTypeId: input.serviceTypeId }, take: 1 } },
   });
   if (!institution) throw new AppError(422, "INSTITUTION_NOT_ELIGIBLE", "This institution is not currently approved for the requested assistance");
@@ -45,7 +46,7 @@ router.post("/requests", requireCsrf, asyncHandler(async (request, response) => 
   const requestedStart = fromZonedTime(`${input.requestedDate}T${input.preferredArrivalTime}:00`, env.BUSINESS_TIMEZONE);
   if (requestedStart <= new Date()) throw new AppError(422, "DATE_IN_PAST", "Choose a future date and time");
   const pricing = await prisma.pricingRule.findFirst({
-    where: { serviceTypeId: input.serviceTypeId, active: true, effectiveFrom: { lte: requestedStart }, OR: [{ effectiveTo: null }, { effectiveTo: { gte: requestedStart } }], type: "FIXED" },
+    where: { serviceTypeId: input.serviceTypeId, active: true, effectiveFrom: { lte: requestedStart }, OR: [{ effectiveTo: null }, { effectiveTo: { isSet: false } }, { effectiveTo: { gte: requestedStart } }], type: "FIXED" },
     orderBy: { amount: "asc" },
   });
   if (!pricing?.amount) throw new AppError(422, "QUOTE_REQUIRED", "This request needs a custom quote. Please contact QueueMate");
@@ -91,7 +92,7 @@ router.post("/requests", requireCsrf, asyncHandler(async (request, response) => 
 
 router.get("/requests/my-requests", asyncHandler(async (request, response) => {
   const { page, pageSize, skip, take } = pagination(request.query);
-  const where = { customerId: request.auth!.userId, deletedAt: null };
+  const where: Prisma.ServiceRequestWhereInput = { customerId: request.auth!.userId, OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] };
   const [items, total] = await prisma.$transaction([
     prisma.serviceRequest.findMany({ where, include: { institution: { select: { name: true, city: true } }, assignments: { where: { status: { notIn: ["CANCELLED", "FAILED"] } }, take: 1, include: { agent: { include: { user: { select: { fullName: true, mobile: true } } } } } } }, orderBy: { createdAt: "desc" }, skip, take }),
     prisma.serviceRequest.count({ where }),
@@ -101,7 +102,7 @@ router.get("/requests/my-requests", asyncHandler(async (request, response) => {
 
 router.get("/requests/:id", asyncHandler(async (request, response) => {
   const item = await prisma.serviceRequest.findFirst({
-    where: { id: request.params.id, customerId: request.auth!.userId, deletedAt: null },
+    where: { id: request.params.id, customerId: request.auth!.userId, OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] },
     include: {
       institution: { select: { name: true, address: true, city: true, actualCustomerRequired: true, restrictions: true } },
       serviceType: { select: { name: true } }, payments: { include: { proofs: { select: { id: true, originalName: true, uploadedAt: true } } } },

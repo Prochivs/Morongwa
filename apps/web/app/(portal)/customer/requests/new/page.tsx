@@ -1,2 +1,2 @@
 import { PageHeader } from "@/components/page-header"; import { RequestWizard } from "@/components/request-wizard";
-export default function Page(){return <div className="mx-auto max-w-4xl"><PageHeader eyebrow="New request" title="Request queue assistance" description="Complete each step carefully. QueueMate will review payment, permission, and availability before approval."/><RequestWizard/></div>}
+export default function Page(){return <div className="mx-auto max-w-4xl"><PageHeader title="Request assistance" titleClassName="!text-[26px] !font-normal sm:!text-[30px]" descriptionClassName="!text-[13px]" description="Tell us where and when you need help. You will review everything before submitting."/><RequestWizard/></div>}

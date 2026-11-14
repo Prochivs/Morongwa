@@ -80,7 +80,7 @@ router.post("/forgot-password", asyncHandler(async (request, response) => {
   if (user) {
     const token = crypto.randomBytes(32).toString("base64url");
     await prisma.$transaction([
-      prisma.passwordReset.deleteMany({ where: { userId: user.id, usedAt: null } }),
+      prisma.passwordReset.deleteMany({ where: { userId: user.id, OR: [{ usedAt: null }, { usedAt: { isSet: false } }] } }),
       prisma.passwordReset.create({ data: { userId: user.id, tokenHash: hashToken(token), expiresAt: new Date(Date.now() + 60 * 60 * 1000) } }),
       prisma.notification.create({ data: { userId: user.id, channel: "EMAIL", event: "PASSWORD_RESET", title: "Reset your QueueMate password", message: `${env.APP_URL}/reset-password?token=${token}` } }),
     ]);
