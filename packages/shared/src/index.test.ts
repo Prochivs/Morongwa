@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canTransition, createRequestSchema, customerProfileSchema, registerSchema, reviewSchema } from "./index";
+import { agentSchema, canTransition, createRequestSchema, customerProfileSchema, registerSchema, reviewSchema } from "./index";
 
 describe("shared business contracts", () => {
   it("accepts only valid assignment transitions", () => {
@@ -22,6 +22,20 @@ describe("shared business contracts", () => {
 
   it("rejects a request without the mandatory acknowledgements", () => {
     expect(createRequestSchema.safeParse({}).success).toBe(false);
+  });
+
+  it("requires matching strong passwords for administrator-created agents", () => {
+    const agent = {
+      fullName: "Kago Agent",
+      email: "agent@example.com",
+      mobile: "+26772123456",
+      agentReference: "AGENT-003",
+      hourlyRate: 50,
+      password: "QueueMateAgent!2026",
+      passwordConfirmation: "QueueMateAgent!2026",
+    };
+    expect(agentSchema.safeParse(agent).success).toBe(true);
+    expect(agentSchema.safeParse({ ...agent, passwordConfirmation: "Different!2026" }).success).toBe(false);
   });
 
   it("validates customer profile updates", () => {

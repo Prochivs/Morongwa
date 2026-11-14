@@ -142,15 +142,22 @@ export const institutionSchema = z.object({
   permissionConditions: z.string().trim().max(1000).optional(),
 });
 
-export const agentSchema = z.object({
-  fullName: z.string().trim().min(2).max(120),
-  email: z.string().trim().email(),
-  mobile: botswanaPhoneSchema,
-  agentReference: z.string().trim().regex(/^AGENT-[A-Z0-9-]+$/),
-  emergencyContact: z.string().trim().max(160).optional(),
-  available: z.boolean().default(false),
-  hourlyRate: z.coerce.number().min(0).max(10000).default(0),
-});
+export const agentSchema = z
+  .object({
+    fullName: z.string().trim().min(2).max(120),
+    email: z.string().trim().email().transform((value) => value.toLowerCase()),
+    mobile: botswanaPhoneSchema,
+    agentReference: z.string().trim().regex(/^AGENT-[A-Z0-9-]+$/),
+    emergencyContact: z.string().trim().max(160).optional(),
+    available: z.boolean().default(false),
+    hourlyRate: z.coerce.number().min(0).max(10000).default(0),
+    password: passwordSchema,
+    passwordConfirmation: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    path: ["passwordConfirmation"],
+    message: "Passwords do not match",
+  });
 
 export const availabilitySchema = z.object({
   type: z.enum(["WORKING_HOURS", "UNAVAILABLE", "DAY_OFF"]),

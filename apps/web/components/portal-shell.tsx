@@ -6,6 +6,7 @@ import { BarChart3, Bell, Building2, CalendarDays, ClipboardList, CreditCard, La
 import { useEffect, useState, type ReactNode } from "react";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { BouncingSquares } from "./data-state";
 import { Brand } from "./brand";
 
 type Me = { id: string; fullName: string; email: string; role: "CUSTOMER" | "ADMIN" | "AGENT" };
@@ -32,7 +33,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const logout = useMutation({ mutationFn: () => apiFetch("/auth/logout", { method: "POST" }), onSuccess: () => { router.push("/login"); router.refresh(); } });
   useEffect(() => { if (me.isError) router.replace("/login"); }, [me.isError, router]);
   useEffect(() => { if (!me.data) return; const base = pathname.split("/")[1]; const expected = me.data.role.toLowerCase(); if (base && base !== expected) router.replace(`/${expected}`); }, [me.data, pathname, router]);
-  if (me.isLoading || !me.data) return <div className="grid min-h-screen place-items-center bg-canvas"><div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-100 border-t-brand" /></div>;
+  if (me.isLoading || !me.data) return <div className="grid min-h-screen place-items-center bg-canvas"><BouncingSquares /></div>;
   const links = navigation[me.data.role];
   return (
     <div className={cn("min-h-screen bg-canvas", me.data.role === "ADMIN" && "portal-admin")}>
@@ -49,17 +50,15 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        {me.data.role !== "CUSTOMER" && (
-          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="truncate text-sm font-normal text-navy">{me.data.fullName}</p>
-            <p className="mt-1 truncate text-xs text-muted">{me.data.email}</p>
-            <span className="mt-3 inline-block rounded-lg bg-brand px-2.5 py-1 text-[9px] font-normal uppercase tracking-[.12em] text-white">
-              {me.data.role.toLowerCase()}
-            </span>
-          </div>
-        )}
+        <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <p className="truncate text-sm font-normal text-navy">{me.data.fullName}</p>
+          <p className="mt-1 truncate text-xs text-muted">{me.data.email}</p>
+          <span className="mt-3 inline-block rounded-lg bg-brand px-2.5 py-1 text-[9px] font-normal uppercase tracking-[.12em] text-white">
+            {me.data.role.toLowerCase()}
+          </span>
+        </div>
 
-        <nav className={`${me.data.role === "CUSTOMER" ? "mt-10" : "mt-6"} space-y-1.5`}>
+        <nav className="mt-6 space-y-1.5">
           {links.map(([Icon, label, href]) => {
             const active = isNavigationActive(pathname, href);
             return (

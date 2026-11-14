@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Building2, Copy, Loader2, Upload } from "lucide-react";
+import { Building2, Copy, Upload } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
+import { BouncingSquares } from "./data-state";
 
 type Bank = {
   accountHolder: string;
@@ -80,7 +81,7 @@ export function PaymentUpload({ requestId, reference, disabled }: { requestId: s
           </div>
           {error && <p className="rounded-lg bg-red-50 p-3 text-[13px] text-red-700">{error}</p>}
           <Button className="text-xs font-normal" type="submit" disabled={upload.isPending}>
-            {upload.isPending ? <Loader2 className="animate-spin" size={17} /> : <Upload size={17} />}
+            {upload.isPending ? <BouncingSquares compact inverse /> : <Upload size={17} />}
             Upload proof
           </Button>
         </form>

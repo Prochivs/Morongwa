@@ -2,10 +2,11 @@
 
 import { useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Loader2, Star } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { BouncingSquares } from "@/components/data-state";
 
 export type RequestReview = { id: string; rating: number; comment?: string | null; approved: boolean; createdAt: string };
 
@@ -78,7 +79,7 @@ export function ReviewSubmission({ requestId, review }: { requestId: string; rev
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p aria-live="polite" className="text-sm text-red-700">{error}</p>
             <Button className="min-w-[140px] text-xs font-normal" disabled={submit.isPending} type="submit">
-              {submit.isPending && <Loader2 className="animate-spin" size={16} />}
+              {submit.isPending && <BouncingSquares compact inverse />}
               Submit review
             </Button>
           </div>

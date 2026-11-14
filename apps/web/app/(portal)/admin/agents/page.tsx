@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserPlus } from "lucide-react";
+import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,8 @@ type Agent = {
 export default function Page() {
   const client = useQueryClient();
   const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [message, setMessage] = useState("");
   const query = useQuery({
     queryKey: ["admin-agents"],
@@ -33,13 +35,18 @@ export default function Page() {
           email: form.get("email"),
           mobile: form.get("mobile"),
           agentReference: form.get("agentReference"),
+          emergencyContact: form.get("emergencyContact"),
           available: false,
           hourlyRate: Number(form.get("hourlyRate")),
+          password: form.get("password"),
+          passwordConfirmation: form.get("passwordConfirmation"),
         }),
       }),
     onSuccess: () => {
       setShow(false);
-      setMessage("Agent invitation created.");
+      setShowPassword(false);
+      setShowConfirmation(false);
+      setMessage("Agent account created. Share the login details securely.");
       void client.invalidateQueries({ queryKey: ["admin-agents"] });
     },
     onError: (error) =>
@@ -61,11 +68,11 @@ export default function Page() {
       <PageHeader
         eyebrow="Workforce"
         title="Agent management"
-        description="Invite agents, control availability, and see active workload without hardcoded capacity."
+        description="Add agent accounts, control availability, and see active workload."
         action={
           <Button onClick={() => setShow(!show)}>
             <UserPlus size={17} />
-            Invite agent
+            Add agent
           </Button>
         }
       />
@@ -78,7 +85,7 @@ export default function Page() {
         <Card className="mb-6">
           <CardContent>
             <form
-              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5"
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
               onSubmit={(event) => {
                 event.preventDefault();
                 create.mutate(new FormData(event.currentTarget));
@@ -113,15 +120,60 @@ export default function Page() {
                 className="field"
                 name="hourlyRate"
                 type="number"
-                placeholder="Compensation"
+                min="0"
+                step="0.01"
+                placeholder="Hourly compensation"
                 required
               />
+              <input
+                className="field"
+                name="emergencyContact"
+                placeholder="Emergency contact (optional)"
+              />
+              <div className="relative">
+                <input
+                  className="field pr-11"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  minLength={12}
+                  placeholder="Create agent password"
+                  required
+                />
+                <button
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 grid w-11 place-items-center text-slate-400 hover:text-navy"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  type="button"
+                >
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  className="field pr-11"
+                  name="passwordConfirmation"
+                  type={showConfirmation ? "text" : "password"}
+                  autoComplete="new-password"
+                  minLength={12}
+                  placeholder="Confirm agent password"
+                  required
+                />
+                <button
+                  aria-label={showConfirmation ? "Hide password confirmation" : "Show password confirmation"}
+                  className="absolute inset-y-0 right-0 grid w-11 place-items-center text-slate-400 hover:text-navy"
+                  onClick={() => setShowConfirmation((visible) => !visible)}
+                  type="button"
+                >
+                  {showConfirmation ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+              </div>
               <Button
-                className="sm:col-span-2 lg:col-span-5"
+                className="sm:col-span-2 lg:col-span-3"
                 type="submit"
                 disabled={create.isPending}
               >
-                Create secure invitation
+                Add agent account
               </Button>
             </form>
           </CardContent>
@@ -133,7 +185,7 @@ export default function Page() {
         <Card>
           <EmptyState
             title="No agents yet"
-            message="Invited agents will appear here once their profiles are created."
+            message="Agent accounts added by an administrator will appear here."
           />
         </Card>
       ) : (
