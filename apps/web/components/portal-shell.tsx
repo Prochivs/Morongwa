@@ -13,7 +13,7 @@ type Me = { id: string; fullName: string; email: string; role: "CUSTOMER" | "ADM
 const navigation = {
   CUSTOMER: [[LayoutDashboard,"Home","/customer"],[Plus,"Request help","/customer/requests/new"],[ClipboardList,"Requests","/customer/requests"],[UserRound,"Profile","/customer/profile"]],
   ADMIN: [[LayoutDashboard,"Overview","/admin"],[ClipboardList,"Requests","/admin/requests"],[CreditCard,"Payments","/admin/payments"],[Users,"Agents","/admin/agents"],[CalendarDays,"Schedule","/admin/schedule"],[Building2,"Institutions","/admin/institutions"],[BarChart3,"Reports","/admin/reports"],[Settings,"Settings","/admin/settings"]],
-  AGENT: [[LayoutDashboard,"Overview","/agent"],[ClipboardList,"Assignments","/agent/assignments"],[CreditCard,"Earnings","/agent/earnings"]],
+  AGENT: [[LayoutDashboard,"Overview","/agent"],[ClipboardList,"Assignments","/agent/assignments"]],
 } as const;
 
 const portalRoots = new Set(["/customer", "/admin", "/agent"]);
