@@ -2,11 +2,13 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AuthCard } from "@/components/auth-card";
+import { LoadingState } from "@/components/data-state";
 import { Button } from "@/components/ui/button";
 import { apiFetch } from "@/lib/api";
 function ResetPasswordForm() {
   const params = useSearchParams();
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   return (
     <AuthCard
       title="Choose a new password"
@@ -17,6 +19,8 @@ function ResetPasswordForm() {
         className="space-y-5"
         onSubmit={async (event) => {
           event.preventDefault();
+          if (submitting) return;
+          setSubmitting(true);
           const form = new FormData(event.currentTarget);
           try {
             const result = await apiFetch<{ message: string }>(
@@ -37,6 +41,8 @@ function ResetPasswordForm() {
                 ? error.message
                 : "Unable to reset password",
             );
+          } finally {
+            setSubmitting(false);
           }
         }}
       >
@@ -67,7 +73,7 @@ function ResetPasswordForm() {
             {message}
           </p>
         )}
-        <Button className="w-full" type="submit">
+        <Button className="w-full" loading={submitting} type="submit">
           Update password
         </Button>
       </form>
@@ -77,7 +83,7 @@ function ResetPasswordForm() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="py-16 text-center text-sm text-muted">Loading secure reset form…</div>}>
+    <Suspense fallback={<LoadingState />}>
       <ResetPasswordForm />
     </Suspense>
   );

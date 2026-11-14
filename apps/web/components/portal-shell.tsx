@@ -79,11 +79,12 @@ export function PortalShell({ children }: { children: ReactNode }) {
         </nav>
 
         <button
+          aria-busy={logout.isPending || undefined}
           className="absolute bottom-5 left-5 right-5 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-normal text-slate-500 hover:bg-slate-100 hover:text-navy"
+          disabled={logout.isPending}
           onClick={() => logout.mutate()}
         >
-          <LogOut size={18} />
-          Sign out
+          {logout.isPending ? <BouncingSquares compact /> : <><LogOut size={18} />Sign out</>}
         </button>
       </aside>
 

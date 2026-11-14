@@ -163,6 +163,7 @@ export default function Page() {
             <CardContent>
               <div className="flex flex-wrap gap-3">
                 <Button
+                  loading={action.isPending && action.variables?.path.endsWith("/approve")}
                   disabled={
                     item.requestStatus !== "PENDING_APPROVAL" ||
                     item.paymentStatus !== "VERIFIED" ||
@@ -188,7 +189,8 @@ export default function Page() {
                 <div className="mt-3 flex gap-3">
                   <Button
                     variant="danger"
-                    disabled={reason.length < 5}
+                    disabled={reason.length < 5 || action.isPending}
+                    loading={action.isPending && action.variables?.path.endsWith("/reject")}
                     onClick={() =>
                       action.mutate({
                         path: `/admin/requests/${item.id}/reject`,
@@ -200,7 +202,8 @@ export default function Page() {
                   </Button>
                   <Button
                     variant="outline"
-                    disabled={reason.length < 5}
+                    disabled={reason.length < 5 || action.isPending}
+                    loading={action.isPending && action.variables?.path.endsWith("/cancel")}
                     onClick={() =>
                       action.mutate({
                         path: `/admin/requests/${item.id}/cancel`,
@@ -236,7 +239,8 @@ export default function Page() {
                         ))}
                     </select>
                     <Button
-                      disabled={!agentId || assign.isPending}
+                      disabled={!agentId}
+                      loading={assign.isPending}
                       onClick={() => assign.mutate()}
                     >
                       Assign

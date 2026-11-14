@@ -142,7 +142,7 @@ export default function Page() {
                 <input name="customerRequired" type="checkbox" />
                 Actual customer must be present
               </label>
-              <Button className="sm:col-span-2" type="submit">
+              <Button className="sm:col-span-2" loading={create.isPending} type="submit">
                 Create for permission review
               </Button>
             </form>
@@ -190,6 +190,8 @@ export default function Page() {
                           .join(", ")}
                       </p>
                       <Button
+                        disabled={toggle.isPending}
+                        loading={toggle.isPending && toggle.variables?.id === item.id}
                         size="sm"
                         variant="outline"
                         onClick={() => toggle.mutate(item)}

@@ -6,7 +6,6 @@ import { Building2, Copy, Upload } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import { BouncingSquares } from "./data-state";
 
 type Bank = {
   accountHolder: string;
@@ -80,8 +79,8 @@ export function PaymentUpload({ requestId, reference, disabled }: { requestId: s
             <p className="mt-1 text-[11px] font-normal text-muted">Private PDF, PNG, or JPEG. Maximum 5 MB.</p>
           </div>
           {error && <p className="rounded-lg bg-red-50 p-3 text-[13px] text-red-700">{error}</p>}
-          <Button className="text-xs font-normal" type="submit" disabled={upload.isPending}>
-            {upload.isPending ? <BouncingSquares compact inverse /> : <Upload size={17} />}
+          <Button className="text-xs font-normal" type="submit" loading={upload.isPending}>
+            <Upload size={17} />
             Upload proof
           </Button>
         </form>

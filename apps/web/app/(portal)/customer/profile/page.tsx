@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import { BouncingSquares, LoadingState } from "@/components/data-state";
+import { LoadingState } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -95,8 +95,8 @@ export default function Page() {
             </div>
             <div className="flex flex-col gap-3 border-t border-slate-100 pt-5 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
               <p aria-live="polite" className={`text-sm ${update.isError ? "text-red-700" : "text-teal"}`}>{message}</p>
-              <Button className="min-w-[140px] text-xs font-normal" disabled={update.isPending} type="submit">
-                {update.isPending ? <BouncingSquares compact inverse /> : <Check size={16} />}
+              <Button className="min-w-[140px] text-xs font-normal" loading={update.isPending} type="submit">
+                <Check size={16} />
                 Save changes
               </Button>
             </div>

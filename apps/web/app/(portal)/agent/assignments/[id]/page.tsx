@@ -182,6 +182,7 @@ export default function Page() {
                 )}
                 <Button
                   className="w-full"
+                  loading={transition.isPending && transition.variables === action.status}
                   disabled={
                     transition.isPending ||
                     (item.status === "IN_PROGRESS" && outcome.length < 5)
@@ -196,7 +197,8 @@ export default function Page() {
                   <Button
                     className="w-full"
                     variant="danger"
-                    disabled={note.length < 5}
+                    disabled={note.length < 5 || transition.isPending}
+                    loading={transition.isPending && transition.variables === "FAILED"}
                     onClick={() => transition.mutate("FAILED")}
                   >
                     Report task failure

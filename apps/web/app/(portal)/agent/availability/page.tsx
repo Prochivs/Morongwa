@@ -89,7 +89,7 @@ export default function Page() {
                   placeholder="Reason or scheduling note (optional)"
                 />
               </div>
-              <Button className="w-full" type="submit">
+              <Button className="w-full" loading={create.isPending} type="submit">
                 Save availability
               </Button>
             </form>

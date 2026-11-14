@@ -156,7 +156,7 @@ export default function Page() {
               <Button
                 className="bg-[#1a1c27] hover:bg-brand sm:col-span-2"
                 onClick={() => save.mutate()}
-                disabled={save.isPending}
+                loading={save.isPending}
               >
                 Save bank details
               </Button>
@@ -231,7 +231,7 @@ export default function Page() {
                 defaultValue={new Date().toISOString().slice(0, 10)}
                 required
               />
-              <Button className="sm:col-span-2" type="submit">
+              <Button className="sm:col-span-2" loading={addPrice.isPending} type="submit">
                 Add pricing rule
               </Button>
             </form>

@@ -100,6 +100,7 @@ export function PaymentReviewRow({ payment }: { payment: Payment }) {
         <div className="mt-3 flex gap-2">
           <Button
             size="sm"
+            loading={decision.isPending && decision.variables === "verify"}
             disabled={
               notes.length < 3 ||
               decision.isPending ||
@@ -112,6 +113,7 @@ export function PaymentReviewRow({ payment }: { payment: Payment }) {
           <Button
             size="sm"
             variant="danger"
+            loading={decision.isPending && decision.variables === "reject"}
             disabled={
               notes.length < 3 ||
               decision.isPending ||

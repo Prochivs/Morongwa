@@ -171,7 +171,7 @@ export default function Page() {
               <Button
                 className="sm:col-span-2 lg:col-span-3"
                 type="submit"
-                disabled={create.isPending}
+                loading={create.isPending}
               >
                 Add agent account
               </Button>
@@ -212,6 +212,8 @@ export default function Page() {
                     {agent.assignments.length} active assignment(s)
                   </p>
                   <Button
+                    disabled={toggle.isPending}
+                    loading={toggle.isPending && toggle.variables?.id === agent.id}
                     size="sm"
                     variant={agent.available ? "outline" : "primary"}
                     onClick={() =>
