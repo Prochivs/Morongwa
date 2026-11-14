@@ -75,7 +75,7 @@ router.get("/admin/requests/:id", asyncHandler(async (request, response) => {
       institution: { include: { permissions: { include: { serviceType: true } } } },
       serviceType: true,
       payments: { include: { proofs: true, verifiedBy: { select: { fullName: true } } } },
-      assignments: { include: { agent: { include: { user: { select: { fullName: true, mobile: true } } } } } },
+      assignments: { orderBy: { createdAt: "desc" }, include: { agent: { include: { user: { select: { fullName: true, mobile: true } } } } } },
       taskUpdates: { orderBy: { createdAt: "asc" } },
       evidence: true,
       notes: { include: { author: { select: { fullName: true } } }, orderBy: { createdAt: "desc" } },

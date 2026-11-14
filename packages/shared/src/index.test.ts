@@ -5,6 +5,9 @@ describe("shared business contracts", () => {
   it("accepts only valid assignment transitions", () => {
     expect(canTransition("ASSIGNED", "ACCEPTED")).toBe(true);
     expect(canTransition("ASSIGNED", "COMPLETED")).toBe(false);
+    expect(canTransition("EN_ROUTE", "IN_PROGRESS")).toBe(true);
+    expect(canTransition("EN_ROUTE", "FAILED")).toBe(false);
+    expect(canTransition("ACCEPTED", "CANCELLED")).toBe(false);
     expect(canTransition("COMPLETED", "IN_PROGRESS")).toBe(false);
   });
 

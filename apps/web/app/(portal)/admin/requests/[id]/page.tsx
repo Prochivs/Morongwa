@@ -283,17 +283,37 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               {item.notes.length ? (
-                item.notes.map((note) => (
-                  <article
-                    className="border-b border-slate-100 py-3 last:border-0"
-                    key={note.id}
-                  >
-                    <p className="text-sm text-slate-700">{note.content}</p>
-                    <p className="mt-1 text-xs text-muted">
-                      {note.author.fullName} · {formatDate(note.createdAt)}
-                    </p>
-                  </article>
-                ))
+                item.notes.map((note) => {
+                  const isHelpRequest = note.content.startsWith(
+                    "Agent help request",
+                  );
+                  return (
+                    <article
+                      className={
+                        isHelpRequest
+                          ? "mb-3 rounded-xl border border-amber-200 bg-amber-50 p-4 last:mb-0"
+                          : "border-b border-slate-100 py-3 last:border-0"
+                      }
+                      key={note.id}
+                    >
+                      {isHelpRequest && (
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-700">
+                          Agent needs help
+                        </p>
+                      )}
+                      <p
+                        className={`text-sm ${isHelpRequest ? "text-amber-950" : "text-slate-700"}`}
+                      >
+                        {note.content}
+                      </p>
+                      <p
+                        className={`mt-1 text-xs ${isHelpRequest ? "text-amber-700" : "text-muted"}`}
+                      >
+                        {note.author.fullName} · {formatDate(note.createdAt)}
+                      </p>
+                    </article>
+                  );
+                })
               ) : (
                 <p className="text-sm text-muted">No internal notes.</p>
               )}

@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LoadingState } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
+
 type Detail = {
   id: string;
   status: string;
@@ -31,46 +33,147 @@ type Detail = {
     taskUpdates: { status: string; publicNote?: string; createdAt: string }[];
   };
 };
-const next: Record<string, { status: string; label: string }> = {
-  ASSIGNED: { status: "ACCEPTED", label: "Confirm assignment" },
-  ACCEPTED: { status: "EN_ROUTE", label: "Start journey" },
-  EN_ROUTE: { status: "ARRIVED", label: "Confirm arrival" },
-  ARRIVED: { status: "IN_PROGRESS", label: "Start assistance" },
-  IN_PROGRESS: { status: "COMPLETED", label: "Complete task" },
+
+type TransitionInput = {
+  status: string;
+  note?: string;
+  outcome?: string;
+  permittedReference?: string;
 };
+
+const nextAction: Record<string, { status: string; label: string; guidance: string }> = {
+  ASSIGNED: {
+    status: "ACCEPTED",
+    label: "Accept assignment",
+    guidance: "Confirm that you can handle this assignment.",
+  },
+  ACCEPTED: {
+    status: "EN_ROUTE",
+    label: "Start journey",
+    guidance: "Use this when you leave for the institution.",
+  },
+  EN_ROUTE: {
+    status: "IN_PROGRESS",
+    label: "Start assistance",
+    guidance: "Use this when you arrive and begin helping the customer.",
+  },
+  ARRIVED: {
+    status: "IN_PROGRESS",
+    label: "Start assistance",
+    guidance: "Use this when you begin helping the customer.",
+  },
+  IN_PROGRESS: {
+    status: "COMPLETED",
+    label: "Complete task",
+    guidance: "Finish the task and record the outcome.",
+  },
+};
+
+const progressSteps = ["Assigned", "Accepted", "On the way", "Working", "Done"];
+const progressIndex: Record<string, number> = {
+  ASSIGNED: 0,
+  ACCEPTED: 1,
+  EN_ROUTE: 2,
+  ARRIVED: 2,
+  IN_PROGRESS: 3,
+  COMPLETED: 4,
+};
+
+const helpReasons = [
+  ["CUSTOMER_UNAVAILABLE", "Customer unavailable"],
+  ["INSTITUTION_ISSUE", "Institution issue"],
+  ["TRAVEL_DELAY", "Travel delay"],
+  ["SAFETY_CONCERN", "Safety concern"],
+  ["OTHER", "Other issue"],
+] as const;
+
 export default function Page() {
   const params = useParams<{ id: string }>();
   const client = useQueryClient();
-  const [note, setNote] = useState("");
+  const [customerNote, setCustomerNote] = useState("");
   const [outcome, setOutcome] = useState("");
   const [reference, setReference] = useState("");
-  const [message, setMessage] = useState("");
+  const [declineReason, setDeclineReason] = useState("");
+  const [helpReason, setHelpReason] = useState("OTHER");
+  const [helpNote, setHelpNote] = useState("");
+  const [showUpdate, setShowUpdate] = useState(false);
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [showDecline, setShowDecline] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [message, setMessage] = useState<{ tone: "success" | "error"; text: string }>();
+
   const query = useQuery({
     queryKey: ["assignment", params.id],
     queryFn: () => apiFetch<Detail>(`/agent/assignments/${params.id}`),
   });
+
+  const refreshAssignment = () => {
+    void client.invalidateQueries({ queryKey: ["assignment", params.id] });
+    void client.invalidateQueries({ queryKey: ["agent-assignments"] });
+    void client.invalidateQueries({ queryKey: ["agent-dashboard"] });
+  };
+
   const transition = useMutation({
-    mutationFn: (status: string) =>
+    mutationFn: (input: TransitionInput) =>
       apiFetch(`/agent/assignments/${params.id}/status`, {
         method: "PATCH",
-        body: JSON.stringify({
-          status,
-          note,
-          outcome,
-          permittedReference: reference,
-        }),
+        body: JSON.stringify(input),
       }),
-    onSuccess: () => {
-      setMessage("Status updated.");
-      setNote("");
-      void client.invalidateQueries({ queryKey: ["assignment", params.id] });
+    onSuccess: (_data, input) => {
+      setMessage({
+        tone: "success",
+        text: input.status === "CANCELLED"
+          ? "Assignment declined. An administrator will reassign it."
+          : input.status === "COMPLETED"
+            ? "Task completed successfully."
+            : "Progress updated.",
+      });
+      setCustomerNote("");
+      setOutcome("");
+      setReference("");
+      setDeclineReason("");
+      setShowUpdate(false);
+      setShowCompletion(false);
+      setShowDecline(false);
+      refreshAssignment();
     },
-    onError: (error) =>
-      setMessage(error instanceof Error ? error.message : "Update failed"),
+    onError: (error) => setMessage({
+      tone: "error",
+      text: error instanceof Error ? error.message : "Unable to update this task.",
+    }),
   });
+
+  const requestHelp = useMutation({
+    mutationFn: () => apiFetch<{ message: string }>(`/agent/assignments/${params.id}/help`, {
+      method: "POST",
+      body: JSON.stringify({ reason: helpReason, note: helpNote }),
+    }),
+    onSuccess: (result) => {
+      setMessage({ tone: "success", text: result.message });
+      setHelpNote("");
+      setShowHelp(false);
+    },
+    onError: (error) => setMessage({
+      tone: "error",
+      text: error instanceof Error ? error.message : "Unable to notify an administrator.",
+    }),
+  });
+
   if (query.isLoading || !query.data) return <LoadingState />;
   const item = query.data;
-  const action = next[item.status];
+  const action = nextAction[item.status];
+  const currentStep = progressIndex[item.status];
+  const isActive = ["ACCEPTED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"].includes(item.status);
+
+  const runPrimaryAction = () => {
+    if (!action) return;
+    if (action.status === "COMPLETED") {
+      setShowCompletion(true);
+      return;
+    }
+    transition.mutate({ status: action.status, note: customerNote || undefined });
+  };
+
   return (
     <>
       <PageHeader
@@ -79,157 +182,223 @@ export default function Page() {
         description={`${item.request.institution.name} · ${formatDate(item.scheduledStartAt)}`}
         action={<Badge status={item.status} />}
       />
+
+      {typeof currentStep === "number" && (
+        <div className="mb-6 grid grid-cols-5 gap-2" aria-label="Task progress">
+          {progressSteps.map((step, index) => (
+            <div key={step}>
+              <div className={`h-1.5 rounded-full ${index <= currentStep ? "bg-brand" : "bg-slate-200"}`} />
+              <p className={`mt-2 text-[10px] sm:text-xs ${index <= currentStep ? "text-navy" : "text-muted"}`}>
+                {step}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {message && (
-        <p className="mb-5 rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
-          {message}
+        <p className={`mb-5 rounded-xl p-3 text-sm ${message.tone === "success" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`} role="status">
+          {message.text}
         </p>
       )}
+
       <div className="grid gap-6 xl:grid-cols-[1fr_.8fr]">
         <div className="space-y-6">
           <Card>
-            <CardHeader>
-              <h2 className="font-semibold text-navy">Task instructions</h2>
-            </CardHeader>
+            <CardHeader><h2 className="font-semibold text-navy">Task details</h2></CardHeader>
             <CardContent>
               <div className="flex gap-3">
                 <MapPin className="shrink-0 text-brand" />
                 <div>
-                  <p className="font-semibold text-navy">
-                    {item.request.institution.name}
-                  </p>
+                  <p className="font-semibold text-navy">{item.request.institution.name}</p>
                   <p className="mt-1 text-sm text-muted">
-                    {item.request.institution.address},{" "}
-                    {item.request.institution.city}
+                    {item.request.institution.address}, {item.request.institution.city}
                   </p>
                 </div>
               </div>
               {item.request.instructions && (
-                <p className="mt-5 rounded-lg bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">
                   {item.request.instructions}
                 </p>
               )}
               {item.request.institution.restrictions && (
-                <p className="mt-4 rounded-lg bg-amber-50 p-4 text-sm leading-6 text-amber-800">
+                <p className="mt-4 rounded-xl bg-amber-50 p-4 text-sm leading-6 text-amber-800">
                   {item.request.institution.restrictions}
                 </p>
               )}
             </CardContent>
           </Card>
+
           <Card>
-            <CardHeader>
-              <h2 className="font-semibold text-navy">Customer contact</h2>
-            </CardHeader>
+            <CardHeader><h2 className="font-semibold text-navy">Customer contact</h2></CardHeader>
             <CardContent>
-              <p className="font-semibold text-navy">
-                {item.request.contactName}
-              </p>
-              <a
-                className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-brand"
-                href={`tel:${item.request.contactMobile}`}
-              >
-                <Phone size={16} />
-                {item.request.contactMobile}
+              <p className="font-semibold text-navy">{item.request.contactName}</p>
+              <a className="mt-2 inline-flex items-center gap-2 text-sm font-normal text-brand" href={`tel:${item.request.contactMobile}`}>
+                <Phone size={16} />{item.request.contactMobile}
               </a>
               <p className="mt-4 text-xs leading-5 text-muted">
-                Use contact details only for this assignment. Never impersonate
-                the customer or request unnecessary private information.
+                Use these details only for this assignment. Never impersonate the customer.
               </p>
             </CardContent>
           </Card>
         </div>
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-navy">Update task progress</h2>
-          </CardHeader>
-          <CardContent>
-            {action ? (
-              <div className="space-y-4">
-                {item.status === "IN_PROGRESS" ? (
-                  <>
-                    <div>
-                      <label className="field-label">Task outcome</label>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader><h2 className="font-semibold text-navy">Next step</h2></CardHeader>
+            <CardContent>
+              {action ? (
+                <div>
+                  <p className="text-lg font-normal text-navy">{action.label}</p>
+                  <p className="mt-1 text-sm leading-6 text-muted">{action.guidance}</p>
+
+                  {showUpdate && action.status !== "COMPLETED" && (
+                    <div className="mt-5">
+                      <label className="field-label" htmlFor="customer-update">Customer update (optional)</label>
                       <textarea
-                        className="field h-28 py-3"
-                        value={outcome}
-                        onChange={(e) => setOutcome(e.target.value)}
-                        placeholder="Describe what was achieved without recording third-party private information."
+                        id="customer-update"
+                        className="field h-24 py-3"
+                        placeholder="Add a short update visible to the customer"
+                        value={customerNote}
+                        onChange={(event) => setCustomerNote(event.target.value)}
                       />
                     </div>
-                    <div>
-                      <label className="field-label">
-                        Permitted queue reference (optional)
-                      </label>
-                      <input
-                        className="field"
-                        placeholder="e.g. Queue number or permitted reference"
-                        value={reference}
-                        onChange={(e) => setReference(e.target.value)}
-                      />
+                  )}
+
+                  {showCompletion ? (
+                    <div className="mt-5 space-y-4">
+                      <div>
+                        <label className="field-label" htmlFor="task-outcome">What was completed?</label>
+                        <textarea
+                          id="task-outcome"
+                          className="field h-28 py-3"
+                          placeholder="Briefly describe the outcome"
+                          value={outcome}
+                          onChange={(event) => setOutcome(event.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="field-label" htmlFor="queue-reference">Queue or reference number (optional)</label>
+                        <input
+                          id="queue-reference"
+                          className="field"
+                          placeholder="Enter the permitted reference"
+                          value={reference}
+                          onChange={(event) => setReference(event.target.value)}
+                        />
+                      </div>
+                      <Button
+                        className="w-full bg-[#1a1c27] hover:bg-brand"
+                        loading={transition.isPending}
+                        disabled={outcome.trim().length < 5}
+                        onClick={() => transition.mutate({ status: "COMPLETED", outcome, permittedReference: reference || undefined })}
+                      >
+                        Confirm completion
+                      </Button>
+                      <button className="w-full text-xs text-muted hover:text-navy" onClick={() => setShowCompletion(false)} type="button">
+                        Go back
+                      </button>
                     </div>
-                  </>
-                ) : (
-                  <div>
-                    <label className="field-label">
-                      Public update note (optional)
-                    </label>
-                    <textarea
-                      className="field h-24 py-3"
-                      placeholder="Add a short update visible to the customer"
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                    />
-                  </div>
-                )}
-                <Button
-                  className="w-full"
-                  loading={transition.isPending && transition.variables === action.status}
-                  disabled={
-                    transition.isPending ||
-                    (item.status === "IN_PROGRESS" && outcome.length < 5)
-                  }
-                  onClick={() => transition.mutate(action.status)}
-                >
-                  {action.label}
-                </Button>
-                {["EN_ROUTE", "ARRIVED", "IN_PROGRESS"].includes(
-                  item.status,
-                ) && (
-                  <Button
-                    className="w-full"
-                    variant="danger"
-                    disabled={note.length < 5 || transition.isPending}
-                    loading={transition.isPending && transition.variables === "FAILED"}
-                    onClick={() => transition.mutate("FAILED")}
-                  >
-                    Report task failure
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-muted">
-                This assignment is finalised and cannot move to another state.
-              </p>
-            )}
-            <div className="mt-7 border-t border-slate-100 pt-5">
-              <h3 className="text-sm font-semibold text-navy">
-                Status history
-              </h3>
-              <div className="mt-3 space-y-3">
-                {item.request.taskUpdates.map((update) => (
-                  <div className="text-xs" key={update.createdAt}>
-                    <Badge status={update.status} />
-                    <span className="ml-2 text-muted">
-                      {formatDate(update.createdAt)}
-                    </span>
-                    {update.publicNote && (
-                      <p className="mt-1 text-slate-600">{update.publicNote}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                  ) : (
+                    <>
+                      <Button
+                        className="mt-5 w-full bg-[#1a1c27] hover:bg-brand"
+                        loading={transition.isPending}
+                        onClick={runPrimaryAction}
+                      >
+                        {action.label}
+                      </Button>
+                      {action.status !== "COMPLETED" && (
+                        <button className="mt-3 w-full text-xs text-brand hover:text-navy" onClick={() => setShowUpdate((visible) => !visible)} type="button">
+                          {showUpdate ? "Remove customer update" : "Add customer update"}
+                        </button>
+                      )}
+                    </>
+                  )}
+
+                  {item.status === "ASSIGNED" && (
+                    <div className="mt-6 border-t border-slate-100 pt-5">
+                      <button className="text-xs text-muted hover:text-red-700" onClick={() => setShowDecline((visible) => !visible)} type="button">
+                        I can’t take this assignment
+                      </button>
+                      {showDecline && (
+                        <div className="mt-4 space-y-3">
+                          <textarea
+                            className="field h-24 py-3"
+                            placeholder="Tell the administrator why"
+                            value={declineReason}
+                            onChange={(event) => setDeclineReason(event.target.value)}
+                          />
+                          <Button
+                            className="w-full"
+                            variant="outline"
+                            loading={transition.isPending}
+                            disabled={declineReason.trim().length < 5}
+                            onClick={() => transition.mutate({ status: "CANCELLED", note: declineReason })}
+                          >
+                            Decline assignment
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {isActive && (
+                    <div className="mt-6 border-t border-slate-100 pt-5">
+                      <button className="text-xs text-muted hover:text-navy" onClick={() => setShowHelp((visible) => !visible)} type="button">
+                        Need help?
+                      </button>
+                      {showHelp && (
+                        <div className="mt-4 space-y-3">
+                          <select className="field" value={helpReason} onChange={(event) => setHelpReason(event.target.value)}>
+                            {helpReasons.map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+                          </select>
+                          <textarea
+                            className="field h-24 py-3"
+                            placeholder="Explain what is happening"
+                            value={helpNote}
+                            onChange={(event) => setHelpNote(event.target.value)}
+                          />
+                          <Button
+                            className="w-full"
+                            variant="outline"
+                            loading={requestHelp.isPending}
+                            disabled={helpNote.trim().length < 5}
+                            onClick={() => requestHelp.mutate()}
+                          >
+                            Notify administrator
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <p className="text-lg font-normal text-navy">
+                    {item.status === "COMPLETED" ? "Task completed" : "No further action"}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-muted">
+                    {item.status === "COMPLETED" ? "This assignment has been successfully completed." : "This assignment is closed and cannot be updated."}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><h2 className="font-semibold text-navy">Status history</h2></CardHeader>
+            <CardContent className="space-y-3">
+              {item.request.taskUpdates.length ? item.request.taskUpdates.map((update) => (
+                <div className="text-xs" key={`${update.status}-${update.createdAt}`}>
+                  <Badge status={update.status} />
+                  <span className="ml-2 text-muted">{formatDate(update.createdAt)}</span>
+                  {update.publicNote && <p className="mt-1 text-slate-600">{update.publicNote}</p>}
+                </div>
+              )) : <p className="text-sm text-muted">No updates yet.</p>}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );

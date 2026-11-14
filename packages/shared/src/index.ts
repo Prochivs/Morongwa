@@ -179,10 +179,10 @@ export type ApiResponse<T> = ApiSuccess<T> | ApiFailure;
 
 export const assignmentTransitions: Record<AssignmentStatus, readonly AssignmentStatus[]> = {
   ASSIGNED: ["ACCEPTED", "CANCELLED"],
-  ACCEPTED: ["EN_ROUTE", "CANCELLED"],
-  EN_ROUTE: ["ARRIVED", "FAILED"],
-  ARRIVED: ["IN_PROGRESS", "FAILED"],
-  IN_PROGRESS: ["COMPLETED", "FAILED"],
+  ACCEPTED: ["EN_ROUTE"],
+  EN_ROUTE: ["ARRIVED", "IN_PROGRESS"],
+  ARRIVED: ["IN_PROGRESS"],
+  IN_PROGRESS: ["COMPLETED"],
   COMPLETED: [],
   FAILED: [],
   CANCELLED: [],
