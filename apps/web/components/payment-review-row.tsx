@@ -40,16 +40,8 @@ export function PaymentReviewRow({ payment }: { payment: Payment }) {
       setError(error instanceof Error ? error.message : "Action failed"),
   });
   return (
-    <div className="relative isolate grid gap-5 overflow-hidden border-b border-slate-100 bg-gradient-to-br from-[#f4fbff] via-white to-white p-5 last:border-0 lg:grid-cols-[1fr_.7fr_.8fr]">
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[#009de7]/15 blur-3xl"
-      />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-24 left-1/3 h-48 w-48 rounded-full bg-sky-200/25 blur-3xl"
-      />
-      <div className="relative z-10 py-2">
+    <div className="grid gap-5 border-b border-slate-100 p-5 last:border-0 lg:grid-cols-[1fr_.7fr_.8fr]">
+      <div>
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-semibold text-navy">{payment.request.reference}</p>
           <Badge status={payment.status} />
@@ -74,7 +66,7 @@ export function PaymentReviewRow({ payment }: { payment: Payment }) {
           Bank reference: {payment.paymentReference ?? "Not supplied"}
         </p>
       </div>
-      <div className="relative z-10 rounded-2xl border border-white/80 bg-white/70 p-4 shadow-[0_12px_30px_rgba(0,157,231,0.08)] backdrop-blur-md">
+      <div>
         <p className="text-xs font-semibold uppercase tracking-wider text-muted">
           Private proof
         </p>
@@ -95,9 +87,9 @@ export function PaymentReviewRow({ payment }: { payment: Payment }) {
           <p className="mt-2 text-sm text-muted">No proof uploaded.</p>
         )}
       </div>
-      <div className="relative z-10 rounded-2xl border border-white/80 bg-white/70 p-4 shadow-[0_12px_30px_rgba(0,157,231,0.08)] backdrop-blur-md">
+      <div>
         <textarea
-          className="field h-20 bg-white/90 py-2"
+          className="field h-20 py-2"
           placeholder="Verification notes (required)"
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
