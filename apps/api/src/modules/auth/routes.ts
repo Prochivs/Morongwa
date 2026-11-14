@@ -22,32 +22,47 @@ function publicUser(user: { id: string; email: string; mobile: string; fullName:
   return { id: user.id, email: user.email, mobile: user.mobile, fullName: user.fullName, role: user.role, emailVerified: Boolean(user.emailVerifiedAt) };
 }
 
-async function issueSession(response: Parameters<typeof ok>[0], request: Parameters<typeof audit>[0], userId: string) {
+function sessionCredentials(request: Parameters<typeof audit>[0]) {
   const token = createToken();
   const csrf = createToken();
   const expiresAt = new Date(Date.now() + sessionDurationMs);
-  await prisma.session.create({
-    data: { tokenHash: hashToken(token), csrfHash: hashToken(csrf), userId, expiresAt, ipAddress: request.ip, userAgent: request.get("user-agent") },
-  });
+  return {
+    token,
+    csrf,
+    expiresAt,
+    record: { tokenHash: hashToken(token), csrfHash: hashToken(csrf), expiresAt, ipAddress: request.ip, userAgent: request.get("user-agent") },
+  };
+}
+
+function setSessionCookies(response: Parameters<typeof ok>[0], session: ReturnType<typeof sessionCredentials>) {
+  const { token, csrf, expiresAt } = session;
   response.cookie(SESSION_COOKIE, token, { ...cookieBase, httpOnly: true, expires: expiresAt });
   response.cookie(CSRF_COOKIE, csrf, { ...cookieBase, httpOnly: false, expires: expiresAt });
-  return csrf;
+}
+
+async function issueSession(response: Parameters<typeof ok>[0], request: Parameters<typeof audit>[0], userId: string) {
+  const session = sessionCredentials(request);
+  await prisma.session.create({ data: { ...session.record, userId } });
+  setSessionCookies(response, session);
+  return session.csrf;
 }
 
 router.post("/register", asyncHandler(async (request, response) => {
   const input = parseBody(registerSchema, request.body);
   const exists = await prisma.user.findFirst({ where: { OR: [{ email: input.email }, { mobile: input.mobile }] }, select: { id: true } });
   if (exists) throw new AppError(409, "ACCOUNT_EXISTS", "An account already uses that email address or mobile number");
-  const passwordHash = await bcrypt.hash(input.password, 12);
+  const passwordHash = await bcrypt.hash(input.password, env.PASSWORD_HASH_ROUNDS);
+  const session = sessionCredentials(request);
   const user = await prisma.$transaction(async (transaction) => {
     const created = await transaction.user.create({
       data: { email: input.email, mobile: input.mobile, fullName: input.fullName, passwordHash, customerProfile: { create: { termsAt: new Date(), privacyAt: new Date() } } },
     });
     await transaction.auditLog.create({ data: { actorId: created.id, action: "AUTH_REGISTER", entityType: "User", entityId: created.id, ipAddress: request.ip } });
+    await transaction.session.create({ data: { ...session.record, userId: created.id } });
     return created;
   });
-  const csrfToken = await issueSession(response, request, user.id);
-  return ok(response, { user: publicUser(user), csrfToken }, 201);
+  setSessionCookies(response, session);
+  return ok(response, { user: publicUser(user), csrfToken: session.csrf }, 201);
 }));
 
 router.post("/login", asyncHandler(async (request, response) => {
@@ -92,7 +107,7 @@ router.post("/reset-password", asyncHandler(async (request, response) => {
   const input = parseBody(z.object({ token: z.string().min(20), password: passwordSchema, passwordConfirmation: z.string() }).refine((value) => value.password === value.passwordConfirmation, { path: ["passwordConfirmation"], message: "Passwords do not match" }), request.body);
   const reset = await prisma.passwordReset.findUnique({ where: { tokenHash: hashToken(input.token) } });
   if (!reset || reset.usedAt || reset.expiresAt <= new Date()) throw new AppError(400, "RESET_INVALID", "This password reset link is invalid or expired");
-  const passwordHash = await bcrypt.hash(input.password, 12);
+  const passwordHash = await bcrypt.hash(input.password, env.PASSWORD_HASH_ROUNDS);
   await prisma.$transaction([
     prisma.user.update({ where: { id: reset.userId }, data: { passwordHash } }),
     prisma.passwordReset.update({ where: { id: reset.id }, data: { usedAt: new Date() } }),

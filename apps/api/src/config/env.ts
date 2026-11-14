@@ -6,6 +6,7 @@ const envSchema = z.object({
   API_PORT: z.coerce.number().default(4000),
   DATABASE_URL: z.string().min(1),
   SESSION_SECRET: z.string().min(32),
+  PASSWORD_HASH_ROUNDS: z.coerce.number().int().min(10).max(14).default(10),
   COOKIE_DOMAIN: z.string().optional(),
   COOKIE_SECURE: z.coerce.boolean().default(false),
   APP_URL: z.string().url().default("http://localhost:8080"),

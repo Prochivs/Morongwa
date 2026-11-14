@@ -9,15 +9,17 @@ describe("shared business contracts", () => {
   });
 
   it("requires strong matching passwords and Botswana mobile numbers", () => {
-    expect(registerSchema.safeParse({
+    const registration = registerSchema.safeParse({
       fullName: "Test Customer",
       email: "customer@example.com",
-      mobile: "+26771123456",
+      mobile: "+267 71 123 456",
       password: "QueueMateDev!2026",
       passwordConfirmation: "QueueMateDev!2026",
       acceptTerms: true,
       acceptPrivacy: true,
-    }).success).toBe(true);
+    });
+    expect(registration.success).toBe(true);
+    if (registration.success) expect(registration.data.mobile).toBe("+26771123456");
   });
 
   it("rejects a request without the mandatory acknowledgements", () => {

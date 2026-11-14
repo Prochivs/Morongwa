@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { addDays, endOfDay, startOfDay, startOfMonth } from "date-fns";
 import { agentSchema, assignmentSchema, institutionSchema, objectIdSchema, paymentDecisionSchema, requestDecisionSchema } from "@queuemate/shared";
 import { prisma } from "../../config/prisma.js";
+import { env } from "../../config/env.js";
 import { authenticate, authorise, requireCsrf } from "../../middleware/auth.js";
 import { audit } from "../../services/audit.js";
 import { notify } from "../../services/notifications.js";
@@ -181,7 +182,7 @@ router.post("/admin/agents", requireCsrf, asyncHandler(async (request, response)
   if (existingUser) throw new AppError(409, "ACCOUNT_EXISTS", "An account already uses that email address or mobile number");
   const agentReference = `AGENT-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
   const agent = await prisma.user.create({
-    data: { fullName: input.fullName, email: input.email, mobile: input.mobile, passwordHash: await bcrypt.hash(input.password, 12), role: "AGENT", status: "ACTIVE", emailVerifiedAt: new Date(), agentProfile: { create: { agentReference, emergencyContact: input.emergencyContact, onboardingComplete: true, available: input.available, hourlyRate: 0 } }, notifications: { create: { channel: "IN_APP", event: "AGENT_ACCOUNT_CREATED", title: "Welcome to QueueMate", message: "Your agent account is ready.", deliveryStatus: "SENT", sentAt: new Date() } } },
+    data: { fullName: input.fullName, email: input.email, mobile: input.mobile, passwordHash: await bcrypt.hash(input.password, env.PASSWORD_HASH_ROUNDS), role: "AGENT", status: "ACTIVE", emailVerifiedAt: new Date(), agentProfile: { create: { agentReference, emergencyContact: input.emergencyContact, onboardingComplete: true, available: input.available, hourlyRate: 0 } }, notifications: { create: { channel: "IN_APP", event: "AGENT_ACCOUNT_CREATED", title: "Welcome to QueueMate", message: "Your agent account is ready.", deliveryStatus: "SENT", sentAt: new Date() } } },
     select: { id: true, fullName: true, email: true, mobile: true, status: true, agentProfile: true },
   });
   await audit(request, "AGENT_CREATED", "AgentProfile", agent.agentProfile!.id);

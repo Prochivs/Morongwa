@@ -25,7 +25,8 @@ export type AssignmentStatus = (typeof assignmentStatuses)[number];
 export const botswanaPhoneSchema = z
   .string()
   .trim()
-  .regex(/^(?:\+267|267)?(?:7[1-8]|[2-6][0-9])[0-9]{6}$/, "Enter a valid Botswana mobile number");
+  .transform((value) => value.replace(/[\s-]/g, ""))
+  .pipe(z.string().regex(/^(?:\+267|267)?(?:7[1-8]|[2-6][0-9])[0-9]{6}$/, "Enter a valid Botswana mobile number"));
 
 export const passwordSchema = z
   .string()
