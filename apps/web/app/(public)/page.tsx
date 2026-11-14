@@ -19,18 +19,24 @@ function SectionShape({ side, dark = false }: { side: "left" | "right"; dark?: b
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute inset-y-0 hidden w-[430px] md:block ${
-        side === "left" ? "-left-28" : "-right-28"
+      className={`pointer-events-none absolute inset-y-0 hidden w-[500px] md:block ${
+        side === "left" ? "-left-14" : "-right-14"
       }`}
     >
-      <Image
-        alt=""
-        className={`object-cover ${side === "right" ? "-scale-x-100" : ""} ${
-          dark ? "opacity-[.09]" : "brightness-0 opacity-[.045]"
-        }`}
-        fill
-        sizes="430px"
-        src="/images/section-side-shape.png"
+      <div
+        className={`absolute inset-0 bg-gradient-to-br from-[#009de7] via-[#32c5ff] to-[#7457ff] ${
+          side === "right" ? "-scale-x-100" : ""
+        } ${dark ? "opacity-[.42]" : "opacity-[.28]"}`}
+        style={{
+          WebkitMaskImage: "url('/images/section-side-shape.png')",
+          WebkitMaskPosition: "center",
+          WebkitMaskRepeat: "no-repeat",
+          WebkitMaskSize: "cover",
+          maskImage: "url('/images/section-side-shape.png')",
+          maskPosition: "center",
+          maskRepeat: "no-repeat",
+          maskSize: "cover",
+        }}
       />
     </div>
   );
