@@ -195,7 +195,7 @@ export default function Page() {
 
       {typeof currentStep === "number" && (
         <div
-          className="mb-6 rounded-xl border border-slate-200 bg-white px-4 py-5 sm:px-7"
+          className="mb-6 px-1 py-4 sm:px-2"
           aria-label="Task progress"
         >
           <div className="grid grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto_1fr_auto] items-center">
