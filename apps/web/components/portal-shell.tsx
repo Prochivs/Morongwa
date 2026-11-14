@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { BarChart3, Bell, Building2, CalendarDays, ClipboardList, CreditCard, LayoutDashboard, LogOut, Menu, Plus, Settings, Users, X } from "lucide-react";
+import { BarChart3, Bell, Building2, CalendarDays, ClipboardList, CreditCard, LayoutDashboard, LogOut, Menu, Plus, Settings, UserRound, Users, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -10,7 +10,7 @@ import { Brand } from "./brand";
 
 type Me = { id: string; fullName: string; email: string; role: "CUSTOMER" | "ADMIN" | "AGENT" };
 const navigation = {
-  CUSTOMER: [[LayoutDashboard,"Home","/customer"],[Plus,"Request help","/customer/requests/new"],[ClipboardList,"Requests","/customer/requests"]],
+  CUSTOMER: [[LayoutDashboard,"Home","/customer"],[Plus,"Request help","/customer/requests/new"],[ClipboardList,"Requests","/customer/requests"],[UserRound,"Profile","/customer/profile"]],
   ADMIN: [[LayoutDashboard,"Overview","/admin"],[ClipboardList,"Requests","/admin/requests"],[CreditCard,"Payments","/admin/payments"],[Users,"Agents","/admin/agents"],[CalendarDays,"Schedule","/admin/schedule"],[Building2,"Institutions","/admin/institutions"],[BarChart3,"Reports","/admin/reports"],[Settings,"Settings","/admin/settings"]],
   AGENT: [[LayoutDashboard,"Overview","/agent"],[ClipboardList,"Assignments","/agent/assignments"],[CalendarDays,"Availability","/agent/availability"],[CreditCard,"Earnings","/agent/earnings"]],
 } as const;

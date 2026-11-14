@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canTransition, createRequestSchema, registerSchema } from "./index";
+import { canTransition, createRequestSchema, customerProfileSchema, registerSchema, reviewSchema } from "./index";
 
 describe("shared business contracts", () => {
   it("accepts only valid assignment transitions", () => {
@@ -22,5 +22,28 @@ describe("shared business contracts", () => {
 
   it("rejects a request without the mandatory acknowledgements", () => {
     expect(createRequestSchema.safeParse({}).success).toBe(false);
+  });
+
+  it("validates customer profile updates", () => {
+    expect(customerProfileSchema.safeParse({
+      fullName: "Neo Molefe",
+      email: "NEO@example.com",
+      mobile: "+26771123456",
+      altMobile: "",
+      address: "Main Mall",
+      city: "Gaborone",
+    }).success).toBe(true);
+    expect(customerProfileSchema.safeParse({
+      fullName: "N",
+      email: "not-an-email",
+      mobile: "123",
+      city: "Gaborone",
+    }).success).toBe(false);
+  });
+
+  it("accepts only ratings from one to five", () => {
+    expect(reviewSchema.safeParse({ rating: 5, comment: "Helpful and professional." }).success).toBe(true);
+    expect(reviewSchema.safeParse({ rating: 0 }).success).toBe(false);
+    expect(reviewSchema.safeParse({ rating: 6 }).success).toBe(false);
   });
 });

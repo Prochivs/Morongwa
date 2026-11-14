@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Prisma } from "@prisma/client";
 import { fromZonedTime } from "date-fns-tz";
-import { cancellationSchema, createRequestSchema } from "@queuemate/shared";
+import { cancellationSchema, createRequestSchema, customerProfileSchema, reviewSchema } from "@queuemate/shared";
 import { env } from "../../config/env.js";
 import { prisma } from "../../config/prisma.js";
 import { authenticate, authorise, requireCsrf } from "../../middleware/auth.js";
@@ -21,13 +21,19 @@ router.get("/customers/profile", asyncHandler(async (request, response) => {
 }));
 
 router.patch("/customers/profile", requireCsrf, asyncHandler(async (request, response) => {
-  const allowed = (({ fullName, mobile, altMobile, address }: Record<string, unknown>) => ({ fullName, mobile, altMobile, address }))(request.body);
+  const input = parseBody(customerProfileSchema, request.body);
+  const duplicate = await prisma.user.findFirst({
+    where: { id: { not: request.auth!.userId }, OR: [{ email: input.email }, { mobile: input.mobile }] },
+    select: { id: true },
+  });
+  if (duplicate) throw new AppError(409, "PROFILE_CONFLICT", "Another account already uses that email address or mobile number");
   const profile = await prisma.user.update({
     where: { id: request.auth!.userId },
     data: {
-      ...(typeof allowed.fullName === "string" ? { fullName: allowed.fullName.trim() } : {}),
-      ...(typeof allowed.mobile === "string" ? { mobile: allowed.mobile.trim() } : {}),
-      customerProfile: { update: { ...(typeof allowed.altMobile === "string" ? { altMobile: allowed.altMobile.trim() } : {}), ...(typeof allowed.address === "string" ? { address: allowed.address.trim() } : {}) } },
+      fullName: input.fullName,
+      email: input.email,
+      mobile: input.mobile,
+      customerProfile: { update: { altMobile: input.altMobile || null, address: input.address || null, city: input.city } },
     },
     select: { id: true, fullName: true, email: true, mobile: true, customerProfile: true },
   });
@@ -108,10 +114,36 @@ router.get("/requests/:id", asyncHandler(async (request, response) => {
       serviceType: { select: { name: true } }, payments: { include: { proofs: { select: { id: true, originalName: true, uploadedAt: true } } } },
       assignments: { orderBy: { createdAt: "desc" }, take: 1, include: { agent: { include: { user: { select: { fullName: true, mobile: true } } } } } },
       taskUpdates: { select: { status: true, publicNote: true, createdAt: true }, orderBy: { createdAt: "asc" } },
+      review: { select: { id: true, rating: true, comment: true, approved: true, createdAt: true } },
     },
   });
   if (!item) throw new AppError(404, "REQUEST_NOT_FOUND", "Request not found");
   return ok(response, item);
+}));
+
+router.post("/requests/:id/review", requireCsrf, asyncHandler(async (request, response) => {
+  const input = parseBody(reviewSchema, request.body);
+  const item = await prisma.serviceRequest.findFirst({
+    where: { id: request.params.id, customerId: request.auth!.userId, OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] },
+    select: { id: true, requestStatus: true, review: { select: { id: true } } },
+  });
+  if (!item) throw new AppError(404, "REQUEST_NOT_FOUND", "Request not found");
+  if (item.requestStatus !== "COMPLETED") throw new AppError(409, "REVIEW_NOT_ALLOWED", "You can review this request after it is completed");
+  if (item.review) throw new AppError(409, "REVIEW_EXISTS", "A review has already been submitted for this request");
+
+  try {
+    const review = await prisma.review.create({
+      data: { requestId: item.id, rating: input.rating, comment: input.comment || null },
+      select: { id: true, rating: true, comment: true, approved: true, createdAt: true },
+    });
+    await audit(request, "CUSTOMER_REVIEW_SUBMITTED", "Review", review.id, undefined, { requestId: item.id, rating: review.rating });
+    return ok(response, review, 201);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      throw new AppError(409, "REVIEW_EXISTS", "A review has already been submitted for this request");
+    }
+    throw error;
+  }
 }));
 
 router.post("/requests/:id/cancel", requireCsrf, asyncHandler(async (request, response) => {

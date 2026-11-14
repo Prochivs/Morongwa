@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LoadingState } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
 import { PaymentUpload } from "@/components/payment-upload";
+import { ReviewSubmission, type RequestReview } from "@/components/request-review";
 
 type Detail = {
   id: string;
@@ -43,6 +44,7 @@ type Detail = {
     agent: { user: { fullName: string; mobile: string } };
   }[];
   taskUpdates: { status: string; publicNote?: string; createdAt: string }[];
+  review?: RequestReview | null;
 };
 
 const milestones = ["Request sent", "Payment confirmed", "Request approved", "Agent on the way", "Completed"];
@@ -173,6 +175,8 @@ export default function Page() {
             <PaymentUpload requestId={item.id} reference={item.reference} disabled={false} />
           </div>
         )}
+
+        {item.requestStatus === "COMPLETED" && <ReviewSubmission requestId={item.id} review={item.review} />}
       </div>
     </>
   );

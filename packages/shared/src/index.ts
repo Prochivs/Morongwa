@@ -79,6 +79,20 @@ export const createRequestSchema = z.object({
 
 export const cancellationSchema = z.object({ reason: z.string().trim().min(10).max(500) });
 
+export const customerProfileSchema = z.object({
+  fullName: z.string().trim().min(2, "Enter your full name").max(120),
+  email: z.string().trim().email("Enter a valid email address").transform((value) => value.toLowerCase()),
+  mobile: botswanaPhoneSchema,
+  altMobile: botswanaPhoneSchema.optional().or(z.literal("")),
+  address: z.string().trim().max(300).optional().or(z.literal("")),
+  city: z.string().trim().min(2, "Enter your city").max(100),
+});
+
+export const reviewSchema = z.object({
+  rating: z.coerce.number().int().min(1, "Choose a rating").max(5),
+  comment: z.string().trim().max(1000, "Keep your review under 1,000 characters").optional().or(z.literal("")),
+});
+
 export const paymentProofMetadataSchema = z.object({
   amountSubmitted: z.coerce.number().positive().max(100000),
   paymentReference: z.string().trim().min(3).max(100),
@@ -150,6 +164,8 @@ export const availabilitySchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateRequestInput = z.infer<typeof createRequestSchema>;
+export type CustomerProfileInput = z.infer<typeof customerProfileSchema>;
+export type ReviewInput = z.infer<typeof reviewSchema>;
 
 export type ApiSuccess<T> = { success: true; data: T; meta?: Record<string, unknown> };
 export type ApiFailure = { success: false; error: { code: string; message: string; details?: unknown } };

@@ -24,6 +24,7 @@ export function createApp() {
     redact: [
       "req.headers.authorization",
       "req.headers.cookie",
+      "req.headers['x-csrf-token']",
       "req.headers['x-vercel-oidc-token']",
       "req.headers['x-vercel-proxy-signature']",
       "req.body.password",
