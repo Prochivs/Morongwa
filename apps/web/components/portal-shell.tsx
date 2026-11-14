@@ -36,7 +36,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
   if (me.isLoading || !me.data) return <div className="grid min-h-screen place-items-center bg-canvas"><BouncingSquares /></div>;
   const links = navigation[me.data.role];
   return (
-    <div className={cn("min-h-screen bg-canvas", me.data.role === "ADMIN" && "portal-admin")}>
+    <div
+      className={cn(
+        "min-h-screen bg-canvas",
+        me.data.role === "ADMIN" && "portal-admin",
+        me.data.role === "AGENT" && "portal-agent",
+      )}
+    >
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200 bg-white p-5 text-navy shadow-[4px_0_24px_rgba(15,23,42,.04)] transition-transform duration-300 ease-out lg:translate-x-0",
