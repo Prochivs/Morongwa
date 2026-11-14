@@ -70,6 +70,7 @@ const nextAction: Record<string, { status: string; label: string; guidance: stri
 };
 
 const progressSteps = ["Assigned", "Accepted", "On the way", "Working", "Done"];
+const historyPageSize = 5;
 const progressIndex: Record<string, number> = {
   ASSIGNED: 0,
   ACCEPTED: 1,
@@ -100,6 +101,7 @@ export default function Page() {
   const [showCompletion, setShowCompletion] = useState(false);
   const [showDecline, setShowDecline] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
   const [message, setMessage] = useState<{ tone: "success" | "error"; text: string }>();
 
   const query = useQuery({
@@ -135,6 +137,7 @@ export default function Page() {
       setShowUpdate(false);
       setShowCompletion(false);
       setShowDecline(false);
+      setHistoryPage(1);
       refreshAssignment();
     },
     onError: (error) => setMessage({
@@ -164,6 +167,13 @@ export default function Page() {
   const action = nextAction[item.status];
   const currentStep = progressIndex[item.status];
   const isActive = ["ACCEPTED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"].includes(item.status);
+  const history = [...item.request.taskUpdates].sort(
+    (left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
+  );
+  const historyPageCount = Math.max(1, Math.ceil(history.length / historyPageSize));
+  const safeHistoryPage = Math.min(historyPage, historyPageCount);
+  const historyStart = (safeHistoryPage - 1) * historyPageSize;
+  const visibleHistory = history.slice(historyStart, historyStart + historyPageSize);
 
   const runPrimaryAction = () => {
     if (!action) return;
@@ -433,8 +443,8 @@ export default function Page() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {item.request.taskUpdates.length ? (
-                item.request.taskUpdates.map((update) => (
+              {visibleHistory.length ? (
+                visibleHistory.map((update) => (
                   <tr
                     className="transition-colors hover:bg-slate-50"
                     key={`${update.status}-${update.createdAt}`}
@@ -460,6 +470,34 @@ export default function Page() {
             </tbody>
           </table>
         </div>
+        {history.length > historyPageSize && (
+          <div className="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              Showing {historyStart + 1}–{Math.min(historyStart + historyPageSize, history.length)} of {history.length} updates
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                className="rounded-lg border border-slate-200 px-3 py-2 text-navy hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={safeHistoryPage === 1}
+                onClick={() => setHistoryPage((page) => Math.max(1, page - 1))}
+                type="button"
+              >
+                Previous
+              </button>
+              <span className="min-w-12 text-center">
+                {safeHistoryPage} / {historyPageCount}
+              </span>
+              <button
+                className="rounded-lg border border-slate-200 px-3 py-2 text-navy hover:border-brand hover:text-brand disabled:cursor-not-allowed disabled:opacity-40"
+                disabled={safeHistoryPage === historyPageCount}
+                onClick={() => setHistoryPage((page) => Math.min(historyPageCount, page + 1))}
+                type="button"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </Card>
     </>
   );
