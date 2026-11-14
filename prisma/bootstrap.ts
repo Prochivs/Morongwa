@@ -15,7 +15,7 @@ async function main() {
 
   const institution = await prisma.institution.upsert({
     where: { slug: "queuemate-service-centre" },
-    update: { active: true, deletedAt: null, lastPermissionReviewAt: new Date() },
+    update: { active: true, deletedAt: null, restrictions: null, lastPermissionReviewAt: new Date() },
     create: {
       name: "QueueMate Service Centre",
       slug: "queuemate-service-centre",
@@ -24,7 +24,7 @@ async function main() {
       description: "Queue assistance requests available for testing and operational review.",
       active: true,
       deletedAt: null,
-      restrictions: "Every request is reviewed before approval. Availability does not imply an external partnership.",
+      restrictions: null,
       estimatedDurationMinutes: 120,
       lastPermissionReviewAt: new Date(),
     },
