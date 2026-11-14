@@ -154,7 +154,7 @@ export default function Page() {
                 />
               </div>
               <Button
-                className="sm:col-span-2"
+                className="bg-[#1a1c27] hover:bg-brand sm:col-span-2"
                 onClick={() => save.mutate()}
                 disabled={save.isPending}
               >
