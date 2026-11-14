@@ -161,6 +161,7 @@ export default function Page() {
                       </label>
                       <input
                         className="field"
+                        placeholder="e.g. Queue number or permitted reference"
                         value={reference}
                         onChange={(e) => setReference(e.target.value)}
                       />
@@ -173,6 +174,7 @@ export default function Page() {
                     </label>
                     <textarea
                       className="field h-24 py-3"
+                      placeholder="Add a short update visible to the customer"
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                     />

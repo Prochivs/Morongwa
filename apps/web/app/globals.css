@@ -40,3 +40,6 @@ a, button, input, textarea, select { transition: color .2s ease, background-colo
 .portal-admin main th { font-size: 11px; font-weight: 500; }
 .portal-admin main td,
 .portal-admin main td a { font-weight: 400; }
+
+form button[data-variant="primary"] { background-color: #1a1c27; color: #fff; }
+form button[data-variant="primary"]:hover { background-color: #000; color: #fff; }
