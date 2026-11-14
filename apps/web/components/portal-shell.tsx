@@ -15,6 +15,17 @@ const navigation = {
   AGENT: [[LayoutDashboard,"Overview","/agent"],[ClipboardList,"Assignments","/agent/assignments"],[CalendarDays,"Availability","/agent/availability"],[CreditCard,"Earnings","/agent/earnings"]],
 } as const;
 
+const portalRoots = new Set(["/customer", "/admin", "/agent"]);
+
+function isNavigationActive(pathname: string, href: string) {
+  if (pathname === href) return true;
+  if (portalRoots.has(href)) return false;
+  if (href === "/customer/requests" && pathname === "/customer/requests/new") {
+    return false;
+  }
+  return pathname.startsWith(`${href}/`);
+}
+
 export function PortalShell({ children }: { children: ReactNode }) {
   const pathname = usePathname(); const router = useRouter(); const [open, setOpen] = useState(false);
   const me = useQuery({ queryKey: ["me"], queryFn: () => apiFetch<Me>("/auth/me"), retry: false });
@@ -50,7 +61,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
         <nav className={`${me.data.role === "CUSTOMER" ? "mt-10" : "mt-6"} space-y-1.5`}>
           {links.map(([Icon, label, href]) => {
-            const active = pathname === href || (href === "/customer" ? false : href === "/customer/requests" ? pathname.startsWith(`${href}/`) && pathname !== "/customer/requests/new" : href !== "/customer/requests/new" && pathname.startsWith(`${href}/`));
+            const active = isNavigationActive(pathname, href);
             return (
               <Link
                 onClick={() => setOpen(false)}
