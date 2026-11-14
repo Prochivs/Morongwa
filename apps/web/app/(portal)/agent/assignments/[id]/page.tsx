@@ -386,20 +386,51 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader><h2 className="font-semibold text-navy">Status history</h2></CardHeader>
-            <CardContent className="space-y-3">
-              {item.request.taskUpdates.length ? item.request.taskUpdates.map((update) => (
-                <div className="text-xs" key={`${update.status}-${update.createdAt}`}>
-                  <Badge status={update.status} />
-                  <span className="ml-2 text-muted">{formatDate(update.createdAt)}</span>
-                  {update.publicNote && <p className="mt-1 text-slate-600">{update.publicNote}</p>}
-                </div>
-              )) : <p className="text-sm text-muted">No updates yet.</p>}
-            </CardContent>
-          </Card>
         </div>
       </div>
+
+      <Card className="mt-6 overflow-hidden">
+        <CardHeader>
+          <h2 className="font-semibold text-navy">Status history</h2>
+        </CardHeader>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[680px] text-left text-sm">
+            <thead className="border-b border-slate-100 bg-slate-50 text-[11px] uppercase tracking-[.08em] text-muted">
+              <tr>
+                <th className="px-5 py-4 font-medium">Status</th>
+                <th className="px-5 py-4 font-medium">Update</th>
+                <th className="px-5 py-4 font-medium">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {item.request.taskUpdates.length ? (
+                item.request.taskUpdates.map((update) => (
+                  <tr
+                    className="transition-colors hover:bg-slate-50"
+                    key={`${update.status}-${update.createdAt}`}
+                  >
+                    <td className="px-5 py-4">
+                      <Badge className="whitespace-nowrap" status={update.status} />
+                    </td>
+                    <td className="px-5 py-4 text-slate-600">
+                      {update.publicNote || "No customer update"}
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-4 text-muted">
+                      {formatDate(update.createdAt)}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="px-5 py-8 text-center text-muted" colSpan={3}>
+                    No status updates yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </>
   );
 }
