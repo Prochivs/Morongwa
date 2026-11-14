@@ -21,10 +21,22 @@ a, button, input, textarea, select { transition: color .2s ease, background-colo
   .container-shell { @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10; }
   .eyebrow { @apply flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[.12em] text-brand; }
   .eyebrow::before { content: ""; @apply block h-px w-6 bg-current; }
-  .page-title { @apply text-3xl font-medium tracking-[-.035em] text-navy sm:text-4xl; }
+  .page-title { @apply text-[26px] font-normal tracking-[-.035em] text-navy sm:text-[30px]; }
   .panel { @apply rounded-2xl border border-black/10 bg-white shadow-card; }
   .field { @apply flex h-11 w-full rounded-xl border border-black/15 bg-white px-3 text-sm text-ink placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100; }
   select.field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-position: right 1rem center; background-repeat: no-repeat; background-size: 1rem; padding-right: 3rem; }
   .field-label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
   .field-error { @apply mt-1 text-xs font-medium text-red-600; }
 }
+
+.portal-admin main .eyebrow { font-weight: 500; }
+.portal-admin main .panel h2 { font-size: 15px; font-weight: 400; }
+.portal-admin main .panel .font-medium,
+.portal-admin main .panel .font-semibold { font-weight: 400; }
+.portal-admin main .panel .font-bold { font-weight: 500; }
+.portal-admin main .panel .text-3xl { font-size: 24px; line-height: 32px; font-weight: 400; }
+.portal-admin main button { font-size: 12px; font-weight: 400; }
+.portal-admin main table { font-size: 13px; }
+.portal-admin main th { font-size: 11px; font-weight: 500; }
+.portal-admin main td,
+.portal-admin main td a { font-weight: 400; }

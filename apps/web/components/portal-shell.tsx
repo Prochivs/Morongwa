@@ -24,14 +24,14 @@ export function PortalShell({ children }: { children: ReactNode }) {
   if (me.isLoading || !me.data) return <div className="grid min-h-screen place-items-center bg-canvas"><div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-100 border-t-brand" /></div>;
   const links = navigation[me.data.role];
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className={cn("min-h-screen bg-canvas", me.data.role === "ADMIN" && "portal-admin")}>
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-72 border-r border-slate-200 bg-white p-5 text-navy shadow-[4px_0_24px_rgba(15,23,42,.04)] transition-transform duration-300 ease-out lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="-mx-5 flex items-center justify-between border-b border-slate-200 px-5 pb-5">
+        <div className="-mx-5 -mt-5 flex h-16 items-center justify-between border-b border-black/10 px-5">
           <Brand />
           <button className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-navy lg:hidden" onClick={() => setOpen(false)}>
             <X />
@@ -40,9 +40,9 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
         {me.data.role !== "CUSTOMER" && (
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p className="truncate text-sm font-medium text-navy">{me.data.fullName}</p>
+            <p className="truncate text-sm font-normal text-navy">{me.data.fullName}</p>
             <p className="mt-1 truncate text-xs text-muted">{me.data.email}</p>
-            <span className="mt-3 inline-block rounded-lg bg-brand px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[.12em] text-white">
+            <span className="mt-3 inline-block rounded-lg bg-brand px-2.5 py-1 text-[9px] font-normal uppercase tracking-[.12em] text-white">
               {me.data.role.toLowerCase()}
             </span>
           </div>
