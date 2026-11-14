@@ -147,10 +147,8 @@ export const agentSchema = z
     fullName: z.string().trim().min(2).max(120),
     email: z.string().trim().email().transform((value) => value.toLowerCase()),
     mobile: botswanaPhoneSchema,
-    agentReference: z.string().trim().regex(/^AGENT-[A-Z0-9-]+$/),
     emergencyContact: z.string().trim().max(160).optional(),
     available: z.boolean().default(false),
-    hourlyRate: z.coerce.number().min(0).max(10000).default(0),
     password: passwordSchema,
     passwordConfirmation: z.string(),
   })

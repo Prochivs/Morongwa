@@ -29,8 +29,6 @@ describe("shared business contracts", () => {
       fullName: "Kago Agent",
       email: "agent@example.com",
       mobile: "+26772123456",
-      agentReference: "AGENT-003",
-      hourlyRate: 50,
       password: "QueueMateAgent!2026",
       passwordConfirmation: "QueueMateAgent!2026",
     };

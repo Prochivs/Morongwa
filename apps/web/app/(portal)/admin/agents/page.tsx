@@ -34,10 +34,8 @@ export default function Page() {
           fullName: form.get("fullName"),
           email: form.get("email"),
           mobile: form.get("mobile"),
-          agentReference: form.get("agentReference"),
           emergencyContact: form.get("emergencyContact"),
           available: false,
-          hourlyRate: Number(form.get("hourlyRate")),
           password: form.get("password"),
           passwordConfirmation: form.get("passwordConfirmation"),
         }),
@@ -108,21 +106,6 @@ export default function Page() {
                 className="field"
                 name="mobile"
                 placeholder="+267 71..."
-                required
-              />
-              <input
-                className="field"
-                name="agentReference"
-                placeholder="AGENT-003"
-                required
-              />
-              <input
-                className="field"
-                name="hourlyRate"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Hourly compensation"
                 required
               />
               <input

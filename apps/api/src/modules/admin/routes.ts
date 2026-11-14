@@ -177,14 +177,11 @@ router.get("/admin/agents", asyncHandler(async (_request, response) => {
 
 router.post("/admin/agents", requireCsrf, asyncHandler(async (request, response) => {
   const input = parseBody(agentSchema, request.body);
-  const [existingUser, existingReference] = await Promise.all([
-    prisma.user.findFirst({ where: { OR: [{ email: input.email }, { mobile: input.mobile }] }, select: { id: true } }),
-    prisma.agentProfile.findUnique({ where: { agentReference: input.agentReference }, select: { id: true } }),
-  ]);
+  const existingUser = await prisma.user.findFirst({ where: { OR: [{ email: input.email }, { mobile: input.mobile }] }, select: { id: true } });
   if (existingUser) throw new AppError(409, "ACCOUNT_EXISTS", "An account already uses that email address or mobile number");
-  if (existingReference) throw new AppError(409, "AGENT_REFERENCE_EXISTS", "That agent reference is already in use");
+  const agentReference = `AGENT-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
   const agent = await prisma.user.create({
-    data: { fullName: input.fullName, email: input.email, mobile: input.mobile, passwordHash: await bcrypt.hash(input.password, 12), role: "AGENT", status: "ACTIVE", emailVerifiedAt: new Date(), agentProfile: { create: { agentReference: input.agentReference, emergencyContact: input.emergencyContact, onboardingComplete: true, available: input.available, hourlyRate: input.hourlyRate } }, notifications: { create: { channel: "IN_APP", event: "AGENT_ACCOUNT_CREATED", title: "Welcome to QueueMate", message: "Your agent account is ready.", deliveryStatus: "SENT", sentAt: new Date() } } },
+    data: { fullName: input.fullName, email: input.email, mobile: input.mobile, passwordHash: await bcrypt.hash(input.password, 12), role: "AGENT", status: "ACTIVE", emailVerifiedAt: new Date(), agentProfile: { create: { agentReference, emergencyContact: input.emergencyContact, onboardingComplete: true, available: input.available, hourlyRate: 0 } }, notifications: { create: { channel: "IN_APP", event: "AGENT_ACCOUNT_CREATED", title: "Welcome to QueueMate", message: "Your agent account is ready.", deliveryStatus: "SENT", sentAt: new Date() } } },
     select: { id: true, fullName: true, email: true, mobile: true, status: true, agentProfile: true },
   });
   await audit(request, "AGENT_CREATED", "AgentProfile", agent.agentProfile!.id);
