@@ -6,7 +6,7 @@ export function BouncingSquares({ compact = false, inverse = false }: { compact?
       {[0, 1, 2].map((index) => (
         <span
           aria-hidden="true"
-          className={`${compact ? "h-1.5 w-1.5" : "h-2.5 w-2.5"} animate-bounce rounded-[2px] ${inverse ? "bg-white" : "bg-brand"}`}
+          className={`${compact ? "loading-square-compact h-1.5 w-1.5" : "h-2.5 w-2.5"} loading-square rounded-[2px] ${inverse ? "bg-white" : "bg-brand"}`}
           key={index}
           style={{ animationDelay: `${index * 120}ms` }}
         />
