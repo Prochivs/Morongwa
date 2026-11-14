@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MapPin, Phone } from "lucide-react";
+import { Check, MapPin, Phone } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -184,15 +184,45 @@ export default function Page() {
       />
 
       {typeof currentStep === "number" && (
-        <div className="mb-6 grid grid-cols-5 gap-2" aria-label="Task progress">
-          {progressSteps.map((step, index) => (
-            <div key={step}>
-              <div className={`h-1.5 rounded-full ${index <= currentStep ? "bg-brand" : "bg-slate-200"}`} />
-              <p className={`mt-2 text-[10px] sm:text-xs ${index <= currentStep ? "text-navy" : "text-muted"}`}>
+        <div
+          className="mb-6 rounded-xl border border-slate-200 bg-white px-4 py-5 sm:px-7"
+          aria-label="Task progress"
+        >
+          <div className="grid grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto_1fr_auto] items-center">
+            {progressSteps.map((step, index) => {
+              const completed = index < currentStep || (currentStep === progressSteps.length - 1 && index === currentStep);
+              const current = index === currentStep && !completed;
+              return (
+                <div className="contents" key={step}>
+                  <div
+                    aria-current={current ? "step" : undefined}
+                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-medium sm:h-11 sm:w-11 ${
+                      completed
+                        ? "bg-brand text-white"
+                        : current
+                          ? "border-[3px] border-brand bg-white text-brand"
+                          : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {completed ? <Check size={18} strokeWidth={2.5} /> : index + 1}
+                  </div>
+                  {index < progressSteps.length - 1 && (
+                    <div className={`h-1 ${index < currentStep ? "bg-brand" : "bg-slate-200"}`} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-3 grid grid-cols-5 gap-1 text-center">
+            {progressSteps.map((step, index) => (
+              <p
+                className={`text-[9px] sm:text-xs ${index === currentStep ? "font-medium text-navy" : "text-muted"}`}
+                key={step}
+              >
                 {step}
               </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
