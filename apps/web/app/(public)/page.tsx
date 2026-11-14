@@ -15,6 +15,27 @@ const assurances = [
   ["Updates from start to finish", "Follow approval, assignment, arrival and completion from your phone.", false],
 ] as const;
 
+function SectionShape({ side, dark = false }: { side: "left" | "right"; dark?: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-y-0 hidden w-[430px] md:block ${
+        side === "left" ? "-left-28" : "-right-28"
+      }`}
+    >
+      <Image
+        alt=""
+        className={`object-cover ${side === "right" ? "-scale-x-100" : ""} ${
+          dark ? "opacity-[.09]" : "brightness-0 opacity-[.045]"
+        }`}
+        fill
+        sizes="430px"
+        src="/images/section-side-shape.png"
+      />
+    </div>
+  );
+}
+
 export default function HomePage() {
   return <>
     <section className="relative min-h-[720px] overflow-hidden bg-blue-50 sm:min-h-[780px] lg:min-h-[760px]">
@@ -32,8 +53,9 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="bg-[#1a1c27] py-16 text-white sm:py-20">
-      <div className="container-shell">
+    <section className="relative overflow-hidden bg-[#1a1c27] py-16 text-white sm:py-20">
+      <SectionShape side="left" dark />
+      <div className="container-shell relative z-10">
         <h2 className="text-center text-[2rem] font-medium tracking-[-.045em] sm:text-[2.5rem]">We wait. You keep moving.</h2>
         <div className="mt-12 grid gap-0 border-t border-white/20 md:grid-cols-3">
           {steps.map(([title, description], index) => <article className={`py-7 md:px-8 md:py-8 ${index > 0 ? "border-t border-white/20 md:border-l md:border-t-0" : ""}`} key={title}>
@@ -43,15 +65,17 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="bg-white py-20 sm:py-28">
-      <div className="container-shell grid gap-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
+    <section className="relative overflow-hidden bg-white py-20 sm:py-28">
+      <SectionShape side="right" />
+      <div className="container-shell relative z-10 grid gap-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
         <div><p className="eyebrow">Built for confidence</p><h2 className="mt-5 max-w-xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl">Know what is happening at every step.</h2><p className="mt-6 max-w-lg text-base leading-8 text-muted">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p></div>
         <div className="border-t border-navy/15">{assurances.map(([title, description, highlighted]) => <div className="grid gap-3 border-b border-navy/15 py-7 sm:grid-cols-[.75fr_1.25fr]" key={title}><h3 className="font-medium text-navy">{title}</h3><p className={`text-sm leading-7 ${highlighted ? "text-brand" : "text-muted"}`}>{description}</p></div>)}</div>
       </div>
     </section>
 
-    <section className="bg-white pb-14 pt-6 sm:pb-16 sm:pt-8" id="pricing-section">
-      <div className="container-shell">
+    <section className="relative overflow-hidden bg-white pb-14 pt-6 sm:pb-16 sm:pt-8" id="pricing-section">
+      <SectionShape side="left" />
+      <div className="container-shell relative z-10">
         <div className="pb-4 sm:pb-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]">See the fee before you commit.</h2>
@@ -62,8 +86,9 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section aria-labelledby="reviews-heading" className="bg-white pb-20 pt-16 sm:pb-28 sm:pt-24">
-      <div className="container-shell">
+    <section aria-labelledby="reviews-heading" className="relative overflow-hidden bg-white pb-20 pt-16 sm:pb-28 sm:pt-24">
+      <SectionShape side="right" />
+      <div className="container-shell relative z-10">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]" id="reviews-heading">What our customers say.</h2>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Customer stories rotate automatically. Sample content is clearly marked until approved QueueMate reviews are published.</p>
