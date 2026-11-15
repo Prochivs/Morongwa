@@ -24,6 +24,13 @@ function SectionShape({ side, dark = false }: { side: "left" | "right"; dark?: b
       }`}
     >
       <div
+        className={`absolute inset-[6%] rounded-full blur-3xl ${
+          dark
+            ? "bg-gradient-to-br from-brand/35 via-cyan-400/25 to-violet-500/30"
+            : "bg-gradient-to-br from-blue-100 via-cyan-50 to-violet-100 opacity-90"
+        }`}
+      />
+      <div
         className={`absolute inset-0 bg-gradient-to-br from-[#009de7] via-[#32c5ff] to-[#7457ff] ${
           side === "right" ? "-scale-x-100" : ""
         } ${dark ? "opacity-[.42]" : "opacity-[.28]"}`}
