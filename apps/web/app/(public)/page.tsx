@@ -55,7 +55,7 @@ export default function HomePage() {
       <Image className="object-cover object-[68%_35%]" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" fill sizes="100vw" priority />
       <div className="absolute inset-0 bg-white/70 dark:bg-[#08111f]/75 sm:bg-gradient-to-r sm:from-white sm:via-white/70 sm:to-transparent sm:dark:from-[#08111f] sm:dark:via-[#08111f]/75" />
       <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1488px] items-center px-5 py-14 sm:min-h-[780px] sm:px-8 lg:min-h-[760px] lg:px-16 lg:py-0">
-        <div className="max-w-[600px] rounded-[24px] bg-white/80 p-6 pb-20 shadow-card backdrop-blur-sm sm:p-8 sm:pb-20 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0">
+        <div className="max-w-[600px] rounded-[24px] bg-white/80 p-6 pb-20 shadow-card backdrop-blur-sm sm:p-8 sm:pb-20 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0" data-aos="fade-up">
           <p className="eyebrow">Queue assistance · Gaborone</p>
           <h1 className="mt-7 max-w-[570px] text-[42px] font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-6xl lg:text-[62px]">Your day should not stop for a queue.</h1>
           <p className="mt-5 max-w-xl text-sm leading-7 text-muted">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
@@ -69,9 +69,9 @@ export default function HomePage() {
     <section className="relative overflow-hidden bg-[#1a1c27] py-16 text-white sm:py-20">
       <SectionShape side="left" dark />
       <div className="container-shell relative z-10">
-        <h2 className="text-center text-[2rem] font-medium tracking-[-.045em] sm:text-[2.5rem]">We wait. You keep moving.</h2>
+        <h2 className="text-center text-[2rem] font-medium tracking-[-.045em] sm:text-[2.5rem]" data-aos="fade-up">We wait. You keep moving.</h2>
         <div className="mt-12 grid gap-0 border-t border-white/20 md:grid-cols-3">
-          {steps.map(([title, description], index) => <article className={`py-7 md:px-8 md:py-8 ${index > 0 ? "border-t border-white/20 md:border-l md:border-t-0" : ""}`} key={title}>
+          {steps.map(([title, description], index) => <article className={`py-7 md:px-8 md:py-8 ${index > 0 ? "border-t border-white/20 md:border-l md:border-t-0" : ""}`} data-aos="fade-up" data-aos-delay={index * 90} key={title}>
             <h3 className="font-medium text-white">{title}</h3><p className="mt-3 max-w-xs text-sm leading-6 text-white/65">{description}</p>
           </article>)}
         </div>
@@ -80,7 +80,7 @@ export default function HomePage() {
 
     <section className="overflow-hidden bg-[#f4f8fb] py-20 dark:bg-[#0b1422] sm:py-24">
       <div className="container-shell grid items-center gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
-        <div className="max-w-lg">
+        <div className="max-w-lg" data-aos="fade-right">
           <p className="eyebrow">QueueMate in motion</p>
           <h2 className="mt-5 text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[44px]">Someone keeps your place. You keep your day.</h2>
           <p className="mt-6 text-sm leading-7 text-muted">From assignment to arrival, every request stays visible. You receive clear updates while a verified agent handles the permitted queue on your behalf.</p>
@@ -88,10 +88,10 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-12 items-end gap-4 sm:gap-6">
-          <figure className="relative col-span-7 h-[360px] overflow-hidden rounded-[20px] bg-white shadow-card sm:h-[500px]">
+          <figure className="relative col-span-7 h-[360px] overflow-hidden rounded-[20px] bg-white shadow-card sm:h-[500px]" data-aos="fade-up">
             <Image className="object-cover object-[54%_center]" src="/images/queuemate-agent-service-centre.png" alt="A QueueMate agent checking an assignment while waiting at a service centre" fill sizes="(max-width: 1024px) 58vw, 38vw" />
           </figure>
-          <figure className="relative col-span-5 mb-8 h-[270px] overflow-hidden rounded-[20px] bg-[#1a1c27] shadow-card sm:mb-12 sm:h-[380px]">
+          <figure className="relative col-span-5 mb-8 h-[270px] overflow-hidden rounded-[20px] bg-[#1a1c27] shadow-card sm:mb-12 sm:h-[380px]" data-aos="fade-up" data-aos-delay="120">
             <Image className="object-cover object-[66%_center]" src="/images/queuemate-hero-gaborone.png" alt="A customer checking her phone near a queue" fill sizes="(max-width: 1024px) 42vw, 28vw" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#1a1c27]/80 to-transparent px-4 pb-4 pt-16 sm:px-5 sm:pb-5">
               <p className="text-xs leading-5 text-white/85">Clear updates, wherever your day takes you.</p>
@@ -104,15 +104,15 @@ export default function HomePage() {
     <section className="relative overflow-hidden bg-white py-20 sm:py-28">
       <SectionShape side="right" />
       <div className="container-shell relative z-10 grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
-        <div className="lg:sticky lg:top-32 lg:self-start">
+        <div className="lg:sticky lg:top-32 lg:self-start" data-aos="fade-right">
           <p className="eyebrow">Built for confidence</p>
           <h2 className="mt-5 max-w-xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl">Know what is happening at every step.</h2>
           <p className="mt-6 max-w-lg text-base leading-8 text-muted">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p>
           <div className="mt-9 h-px w-24 bg-brand" />
         </div>
         <div className="space-y-4">
-          {assurances.map(([number, title, description]) => (
-            <article className="group relative overflow-hidden rounded-[18px] border border-navy/10 bg-white p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand/50 hover:shadow-card dark:border-white/10 dark:bg-white/5 dark:hover:border-brand/60 sm:p-7" key={title}>
+          {assurances.map(([number, title, description], index) => (
+            <article className="group relative overflow-hidden rounded-[18px] border border-navy/10 bg-white p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand/50 hover:shadow-card dark:border-white/10 dark:bg-white/5 dark:hover:border-brand/60 sm:p-7" data-aos="fade-up" data-aos-delay={index * 90} key={title}>
               <span className="absolute inset-y-0 left-0 w-1 origin-bottom scale-y-0 bg-brand transition-transform duration-300 ease-out group-hover:scale-y-100" />
               <div className="grid gap-4 sm:grid-cols-[52px_.8fr_1.2fr] sm:items-start sm:gap-6">
                 <span className="text-xs font-medium tracking-[.14em] text-brand">{number}</span>
@@ -129,11 +129,11 @@ export default function HomePage() {
       <SectionShape side="left" />
       <div className="container-shell relative z-10">
         <div className="pb-4 sm:pb-6">
-          <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-2xl text-center" data-aos="fade-up">
             <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]">See the fee before you commit.</h2>
             <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Exact pricing is calculated and saved with every request. No hidden changes after submission.</p>
           </div>
-          <div className="mx-auto mt-8 max-w-6xl"><PricingPreview layout="plans" /></div>
+          <div className="mx-auto mt-8 max-w-6xl" data-aos="fade-up" data-aos-delay="100"><PricingPreview layout="plans" /></div>
         </div>
       </div>
     </section>
@@ -141,11 +141,11 @@ export default function HomePage() {
     <section aria-labelledby="reviews-heading" className="relative overflow-hidden bg-white pb-20 pt-16 sm:pb-28 sm:pt-24">
       <SectionShape side="right" />
       <div className="container-shell relative z-10">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-2xl text-center" data-aos="fade-up">
           <h2 className="text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[42px]" id="reviews-heading">What our customers say.</h2>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-muted">Customer stories rotate automatically. Sample content is clearly marked until approved QueueMate reviews are published.</p>
         </div>
-        <div className="mt-10 w-full"><ReviewPreview /></div>
+        <div className="mt-10 w-full" data-aos="fade-up" data-aos-delay="100"><ReviewPreview /></div>
       </div>
     </section>
 

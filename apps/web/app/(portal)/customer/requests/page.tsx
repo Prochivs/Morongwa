@@ -52,30 +52,50 @@ export default function Page() {
       ) : !query.data?.length ? (
         <Card><EmptyState title="No requests yet" message="Your queue assistance requests will appear here." /></Card>
       ) : (
-        <div className="grid gap-4">
-          {query.data.map((item) => (
-            <Link href={`/customer/requests/${item.id}`} key={item.id}>
-              <Card className="p-5 transition hover:-translate-y-px hover:border-brand/40 hover:shadow-md sm:p-6">
-                <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h2 className="text-[15px] font-normal text-navy">{item.institution.name}</h2>
-                    <p className="mt-1 text-[11px] text-muted">{item.reference} · Submitted {formatDate(item.createdAt)}</p>
-                    <p className="mt-4 text-[13px] text-slate-600">
+        <Card className="overflow-hidden" data-aos="fade-up">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px] text-left text-[13px]">
+              <thead className="border-b border-slate-100 bg-slate-50 text-[11px] uppercase tracking-[.08em] text-muted">
+                <tr>
+                  <th className="px-5 py-4 font-medium">Reference</th>
+                  <th className="px-5 py-4 font-medium">Institution</th>
+                  <th className="px-5 py-4 font-medium">Scheduled</th>
+                  <th className="px-5 py-4 font-medium">Fee</th>
+                  <th className="px-5 py-4 font-medium">Payment</th>
+                  <th className="px-5 py-4 font-medium">Request</th>
+                  <th className="px-5 py-4 font-medium"><span className="sr-only">Open request</span></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {query.data.map((item) => (
+                  <tr className="transition-colors hover:bg-slate-50" key={item.id}>
+                    <td className="px-5 py-4">
+                      <Link className="font-medium text-brand hover:text-navy" href={`/customer/requests/${item.id}`}>
+                        {item.reference}
+                      </Link>
+                      <p className="mt-1 whitespace-nowrap text-[10px] text-muted">Submitted {formatDate(item.createdAt)}</p>
+                    </td>
+                    <td className="px-5 py-4">
+                      <p className="text-navy">{item.institution.name}</p>
+                      <p className="mt-1 text-[11px] text-muted">{item.institution.city}</p>
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-4 text-slate-600">
                       {new Date(item.requestedDate).toLocaleDateString("en-BW")} at {item.preferredArrivalTime}
-                    </p>
-                  </div>
-                  <div className="sm:min-w-[270px] sm:text-right">
-                    <p className="text-[13px] font-normal text-navy">{formatCurrency(item.quotedAmount, item.currency)}</p>
-                    <div className="mt-3 flex flex-wrap gap-2 sm:justify-end">
-                      <Badge status={item.paymentStatus} />
-                      <Badge status={item.requestStatus} />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-4 text-navy">{formatCurrency(item.quotedAmount, item.currency)}</td>
+                    <td className="px-5 py-4"><Badge className="whitespace-nowrap" status={item.paymentStatus} /></td>
+                    <td className="px-5 py-4"><Badge className="whitespace-nowrap" status={item.requestStatus} /></td>
+                    <td className="px-5 py-4 text-right">
+                      <Link className="whitespace-nowrap text-xs font-normal text-brand hover:text-navy" href={`/customer/requests/${item.id}`}>
+                        View details
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
     </>
   );

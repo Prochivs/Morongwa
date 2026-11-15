@@ -16,7 +16,7 @@ export function ContentPage({ eyebrow, title, intro, children, headerImage = "/i
         {headerImage && (
           <Image alt="" aria-hidden="true" className="object-cover object-center" fill sizes="100vw" src={headerImage} />
         )}
-        <div className="container-shell relative flex min-h-[340px] flex-col justify-center py-10 sm:h-[360px] sm:min-h-0 sm:py-12">
+        <div className="container-shell relative flex min-h-[340px] flex-col justify-center py-10 sm:h-[360px] sm:min-h-0 sm:py-12" data-aos="fade-up">
           <p className="eyebrow">{eyebrow}</p>
           <h1 className="mt-4 max-w-4xl text-[30px] font-light tracking-tight text-navy sm:text-[42px]">{title}</h1>
           <p className="mt-6 max-w-2xl text-lg font-light leading-8 text-muted">{intro}</p>
@@ -31,4 +31,4 @@ export function ContentPage({ eyebrow, title, intro, children, headerImage = "/i
   );
 }
 
-export function ProseSection({ title, children }: { title: string; children: ReactNode }) { return <section><h2 className="text-[15px] font-medium text-navy">{title}</h2><div className="mt-3 space-y-3 text-sm leading-7 text-slate-600">{children}</div></section>; }
+export function ProseSection({ title, children }: { title: string; children: ReactNode }) { return <section data-aos="fade-up"><h2 className="text-[15px] font-medium text-navy">{title}</h2><div className="mt-3 space-y-3 text-sm leading-7 text-slate-600">{children}</div></section>; }
