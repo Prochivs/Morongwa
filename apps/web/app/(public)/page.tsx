@@ -80,7 +80,7 @@ export default function HomePage() {
 
     <section className="overflow-hidden bg-[#f4f8fb] py-20 dark:bg-[#0b1422] sm:py-24">
       <div className="container-shell grid items-center gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
-        <div className="max-w-lg" data-aos="fade-right">
+        <div className="max-w-lg" data-aos="fade-up">
           <p className="eyebrow">QueueMate in motion</p>
           <h2 className="mt-5 text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[44px]">Someone keeps your place. You keep your day.</h2>
           <p className="mt-6 text-sm leading-7 text-muted">From assignment to arrival, every request stays visible. You receive clear updates while a verified agent handles the permitted queue on your behalf.</p>
@@ -104,7 +104,7 @@ export default function HomePage() {
     <section className="relative overflow-hidden bg-white py-20 sm:py-28">
       <SectionShape side="right" />
       <div className="container-shell relative z-10 grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
-        <div className="lg:sticky lg:top-32 lg:self-start" data-aos="fade-right">
+        <div className="lg:sticky lg:top-32 lg:self-start" data-aos="fade-up">
           <p className="eyebrow">Built for confidence</p>
           <h2 className="mt-5 max-w-xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl">Know what is happening at every step.</h2>
           <p className="mt-6 max-w-lg text-base leading-8 text-muted">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p>
