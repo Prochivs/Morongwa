@@ -9,7 +9,7 @@ import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { LoadingState } from "@/components/data-state";
+import { TableSkeleton } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
 
 type Detail = {
@@ -162,7 +162,15 @@ export default function Page() {
     }),
   });
 
-  if (query.isLoading || !query.data) return <LoadingState />;
+  if (query.isLoading || !query.data) return (
+    <>
+      <PageHeader eyebrow="Assigned task" title="Loading assignment" description="Getting the latest task details and status updates." />
+      <Card className="overflow-hidden">
+        <CardHeader><h2 className="font-semibold text-navy">Status history</h2></CardHeader>
+        <TableSkeleton headers={["Status", "Update", "Date"]} minWidth={680} />
+      </Card>
+    </>
+  );
   const item = query.data;
   const action = nextAction[item.status];
   const currentStep = progressIndex[item.status];

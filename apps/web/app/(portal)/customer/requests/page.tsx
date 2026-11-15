@@ -8,7 +8,7 @@ import { apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { EmptyState, LoadingState } from "@/components/data-state";
+import { EmptyState, TableSkeleton } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
 
 type Item = {
@@ -48,7 +48,7 @@ export default function Page() {
       />
 
       {query.isLoading ? (
-        <Card><LoadingState /></Card>
+        <Card className="overflow-hidden"><TableSkeleton headers={["Reference", "Institution", "Scheduled", "Fee", "Payment", "Request", ""]} minWidth={900} /></Card>
       ) : !query.data?.length ? (
         <Card><EmptyState title="No requests yet" message="Your queue assistance requests will appear here." /></Card>
       ) : (

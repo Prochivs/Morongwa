@@ -6,7 +6,7 @@ import { apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { EmptyState, LoadingState } from "@/components/data-state";
+import { EmptyState, TableSkeleton } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
 
 type Item = {
@@ -37,7 +37,7 @@ export default function Page() {
       />
       <Card className="overflow-hidden">
         {query.isLoading ? (
-          <LoadingState />
+          <TableSkeleton headers={["Reference", "Institution", "Location", "Scheduled", "Status"]} minWidth={850} />
         ) : !query.data?.length ? (
           <EmptyState
             title="No assignments"
