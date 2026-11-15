@@ -18,8 +18,8 @@ export function ContentPage({ eyebrow, title, intro, children, headerImage = "/i
         )}
         <div className="container-shell relative flex min-h-[340px] flex-col justify-center py-10 sm:h-[360px] sm:min-h-0 sm:py-12" data-aos="fade-up">
           <p className="eyebrow">{eyebrow}</p>
-          <h1 className="mt-4 max-w-4xl text-[30px] font-light tracking-tight text-navy sm:text-[42px]">{title}</h1>
-          <p className="mt-6 max-w-2xl text-lg font-light leading-8 text-muted">{intro}</p>
+          <h1 className="mt-4 max-w-4xl text-[30px] font-light tracking-tight text-navy dark:text-[#1a1c27] sm:text-[42px]">{title}</h1>
+          <p className="mt-6 max-w-2xl text-lg font-light leading-8 text-muted dark:text-slate-600">{intro}</p>
         </div>
       </section>
       <section className="container-shell py-14 sm:py-20">
