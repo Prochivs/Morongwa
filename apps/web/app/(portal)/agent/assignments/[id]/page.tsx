@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, MapPin, Phone } from "lucide-react";
+import { MapPin, Phone } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -195,44 +195,23 @@ export default function Page() {
 
       {typeof currentStep === "number" && (
         <div
-          className="mb-6 px-1 py-4 sm:px-2"
+          className="mb-7 overflow-x-auto pb-2 pt-3"
           aria-label="Task progress"
         >
-          <div className="grid grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto_1fr_auto] items-center">
+          <ol className="grid min-w-[620px] grid-cols-5 gap-3 sm:gap-4">
             {progressSteps.map((step, index) => {
-              const completed = index < currentStep || (currentStep === progressSteps.length - 1 && index === currentStep);
-              const current = index === currentStep && !completed;
+              const reached = index <= currentStep;
+              const current = index === currentStep;
               return (
-                <div className="contents" key={step}>
-                  <div
-                    aria-current={current ? "step" : undefined}
-                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-medium sm:h-11 sm:w-11 ${
-                      completed
-                        ? "bg-brand text-white"
-                        : current
-                          ? "border-[3px] border-brand bg-white text-brand"
-                          : "bg-slate-200 text-slate-500"
-                    }`}
-                  >
-                    {completed ? <Check size={18} strokeWidth={2.5} /> : index + 1}
-                  </div>
-                  {index < progressSteps.length - 1 && (
-                    <div className={`h-1 ${index < currentStep ? "bg-brand" : "bg-slate-200"}`} />
-                  )}
-                </div>
+                <li aria-current={current ? "step" : undefined} className="min-w-0" key={step}>
+                  <div className={`h-1.5 w-full rounded-full transition-colors duration-300 ${reached ? "bg-brand" : "bg-slate-200 dark:bg-slate-700"}`} />
+                  <p className={`mt-3 text-[11px] font-normal transition-colors sm:text-xs ${current ? "text-brand" : "text-muted"}`}>
+                    {index + 1}. {step}
+                  </p>
+                </li>
               );
             })}
-          </div>
-          <div className="mt-3 grid grid-cols-5 gap-1 text-center">
-            {progressSteps.map((step, index) => (
-              <p
-                className={`text-[9px] sm:text-xs ${index === currentStep ? "font-medium text-navy" : "text-muted"}`}
-                key={step}
-              >
-                {step}
-              </p>
-            ))}
-          </div>
+          </ol>
         </div>
       )}
 

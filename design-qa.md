@@ -111,3 +111,41 @@
 - P3: when more than three approved reviews exist, add a browser-level interaction test that clicks both paging controls and records the state transition.
 
 final result: passed
+
+---
+
+# Agent progress tracker design QA
+
+- Source visual truth: user-provided inline reference image in the active conversation (1784 × 113 px).
+- Implementation screenshot: `/private/tmp/queuemate-tracker-implementation.png`.
+- Viewport: 1800 × 220 CSS px at device scale factor 1.
+- Implementation pixels: 1800 × 220 px.
+- Density normalization: both references evaluated at approximately 1×; comparison focused on the tracker region rather than surrounding canvas height.
+- State: light theme, step 2 current, step 1 completed, remaining steps upcoming.
+
+**Full-view comparison evidence**
+
+The source and rendered implementation were opened in the same active comparison context. Both use separate equal-width horizontal progress bars with compact numbered labels below. Reached steps use QueueMate blue, the active label uses the same blue, and upcoming steps use a pale neutral track with muted copy. The implementation intentionally uses five columns because the real agent workflow has five stages; the source contains four illustrative stages.
+
+**Focused region comparison evidence**
+
+The tracker itself was reviewed at full readable size. Bar thickness, rounded ends, label offset, active-state color, neutral-state contrast, and column gaps match the reference closely. The implementation width follows the portal's existing `max-w-7xl` content boundary rather than stretching to the screenshot's full-width frame.
+
+**Findings**
+
+- No actionable P0, P1, or P2 mismatch remains.
+- Typography: Poppins, 11–12 px labels, normal weight, and compact line height match the existing portal and the reference's restrained treatment.
+- Spacing: equal tracks, 12–16 px inter-track gaps, and 12 px label offset reproduce the reference rhythm.
+- Colors: reached/current states use `#009de7`; upcoming states use the established slate token and retain dark-theme contrast.
+- Image quality and asset fidelity: no raster imagery, icons, or custom assets are present in this UI control.
+- Copy: labels use the real QueueMate agent workflow: Assigned, Accepted, On the way, Working, Done.
+
+**Comparison history**
+
+- Initial pass: the rendered implementation matched the requested styling. No P0/P1/P2 correction loop was required.
+
+**Follow-up polish**
+
+- None required for this scoped replacement.
+
+final result: passed
