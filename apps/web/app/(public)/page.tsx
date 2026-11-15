@@ -78,6 +78,29 @@ export default function HomePage() {
       </div>
     </section>
 
+    <section className="overflow-hidden bg-[#f4f8fb] py-20 sm:py-24">
+      <div className="container-shell grid items-center gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
+        <div className="max-w-lg">
+          <p className="eyebrow">QueueMate in motion</p>
+          <h2 className="mt-5 text-4xl font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-[44px]">Someone keeps your place. You keep your day.</h2>
+          <p className="mt-6 text-sm leading-7 text-muted">From assignment to arrival, every request stays visible. You receive clear updates while a verified agent handles the permitted queue on your behalf.</p>
+          <Link className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-brand hover:text-navy" href="/how-it-works">See how the service works <ArrowRight size={16} /></Link>
+        </div>
+
+        <div className="grid grid-cols-12 items-end gap-4 sm:gap-6">
+          <figure className="relative col-span-7 h-[360px] overflow-hidden rounded-[20px] bg-white shadow-card sm:h-[500px]">
+            <Image className="object-cover object-[54%_center]" src="/images/queuemate-agent-service-centre.png" alt="A QueueMate agent checking an assignment while waiting at a service centre" fill sizes="(max-width: 1024px) 58vw, 38vw" />
+          </figure>
+          <figure className="relative col-span-5 mb-8 h-[270px] overflow-hidden rounded-[20px] bg-[#1a1c27] shadow-card sm:mb-12 sm:h-[380px]">
+            <Image className="object-cover object-[66%_center]" src="/images/queuemate-hero-gaborone.png" alt="A customer checking her phone near a queue" fill sizes="(max-width: 1024px) 42vw, 28vw" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#1a1c27]/80 to-transparent px-4 pb-4 pt-16 sm:px-5 sm:pb-5">
+              <p className="text-xs leading-5 text-white/85">Clear updates, wherever your day takes you.</p>
+            </div>
+          </figure>
+        </div>
+      </div>
+    </section>
+
     <section className="relative overflow-hidden bg-white py-20 sm:py-28">
       <SectionShape side="right" />
       <div className="container-shell relative z-10 grid gap-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
