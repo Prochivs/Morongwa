@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { BouncingSquares } from "./data-state";
 import { Brand } from "./brand";
 import { ThemeToggle } from "./theme-toggle";
+import { PortalMotionProvider } from "./portal-motion";
 
 type Me = { id: string; fullName: string; email: string; role: "CUSTOMER" | "ADMIN" | "AGENT" };
 const navigation = {
@@ -100,7 +101,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           <p className="hidden text-xs font-normal text-muted sm:block">{me.data.role === "CUSTOMER" ? "QueueMate" : "QueueMate Operations Platform"}</p>
           <div className="flex items-center gap-2"><ThemeToggle /><Link aria-label={me.data.role === "CUSTOMER" ? "Notifications" : "Account overview"} className="relative rounded-xl p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white" href={me.data.role === "CUSTOMER" ? "/customer/notifications" : `/${me.data.role.toLowerCase()}`}><Bell size={20} /></Link></div>
         </header>
-        <main className="mx-auto max-w-7xl p-5 sm:p-8 lg:p-10">{children}</main>
+        <main className="mx-auto max-w-7xl p-5 sm:p-8 lg:p-10"><PortalMotionProvider>{children}</PortalMotionProvider></main>
       </div>
     </div>
   );
