@@ -89,7 +89,7 @@ export default function HomePage() {
 
         <div className="grid grid-cols-12 items-end gap-4 sm:gap-6">
           <figure className="relative col-span-7 h-[360px] overflow-hidden rounded-[20px] bg-white shadow-card sm:h-[500px]" data-aos="fade-up">
-            <Image className="object-cover object-[54%_center]" src="/images/queuemate-agent-service-centre.png" alt="A QueueMate agent checking an assignment while waiting at a service centre" fill sizes="(max-width: 1024px) 58vw, 38vw" />
+            <Image className="object-cover object-[54%_center]" src="/images/queuemate-agent-service-centre.png" alt="A QueueMate agent checking his phone while waiting at a service centre" fill sizes="(max-width: 1024px) 58vw, 38vw" />
           </figure>
           <figure className="relative col-span-5 mb-8 h-[270px] overflow-hidden rounded-[20px] bg-[#1a1c27] shadow-card sm:mb-12 sm:h-[380px]" data-aos="fade-up" data-aos-delay="120">
             <Image className="object-cover object-[66%_center]" src="/images/queuemate-hero-gaborone.png" alt="A customer checking her phone near a queue" fill sizes="(max-width: 1024px) 42vw, 28vw" />
