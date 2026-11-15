@@ -107,7 +107,7 @@ export default function HomePage() {
         <div className="grid gap-8 lg:grid-cols-[1.15fr_.85fr] lg:items-end lg:gap-20">
           <div>
             <p className="eyebrow">Built for confidence</p>
-            <h2 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl lg:text-[56px]">Know what is happening at every step.</h2>
+            <h2 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-[42px]">Know what is happening at every step.</h2>
           </div>
           <p className="max-w-xl text-base leading-8 text-muted lg:pb-1">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p>
         </div>
