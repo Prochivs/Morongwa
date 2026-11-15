@@ -114,6 +114,66 @@ final result: passed
 
 ---
 
+# Built for confidence — option 2 design QA
+
+## Evidence
+
+- Source visual truth: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-c53810ff-f605-4dfb-9c45-e273ac0d36af.png` (`1821 × 864`).
+- Browser-rendered implementation: `/private/tmp/queuemate-confidence-section.png` (`1440 × 900`).
+- Side-by-side comparison input: `/private/tmp/queuemate-confidence-comparison.png` (`1800 × 900`).
+- Responsive implementation: `/private/tmp/queuemate-confidence-mobile500-full.png` (`500 × 4600`).
+- Desktop CSS viewport: `1440 × 3600`; responsive CSS viewport: `500 × 4600`; device scale factor `1`.
+- State: public homepage, signed out. The source is light theme; the browser's saved preference rendered the implementation in dark theme. Structural fidelity and token translation were compared with that theme difference explicitly treated as intentional.
+
+## Findings
+
+- No actionable P0, P1, or P2 differences remain.
+- Fonts and typography: the implementation retains QueueMate's Poppins family, medium-weight display hierarchy, compact headline tracking, oversized pale-blue numerals, and restrained supporting copy from the selected concept.
+- Spacing and layout rhythm: the two-column introduction, wide gap before the assurance band, three equal desktop columns, thin top rules, and flat highlighted centre item match the selected composition. At 500 px the band stacks cleanly without clipping or horizontal overflow.
+- Colors and visual tokens: the selected white/navy/blue composition maps directly to the existing QueueMate light palette. The verified dark state uses the established deep-navy surface, muted slate copy, blue rules, and blue-tinted centre highlight with sufficient contrast.
+- Image quality and asset fidelity: the concept contains no required photography or custom illustration inside this section. The existing masked section-shape asset remains a faint background accent; no placeholder, custom SVG, or CSS-drawn illustration was introduced.
+- Copy and content: the eyebrow, headline, supporting paragraph, three assurance titles, and their descriptions match the approved QueueMate content exactly.
+- Primary interactions: the section is informational and introduces no action control. Hover emphasis is implemented for all three assurance items, while the middle item remains visibly featured at rest. The homepage returned HTTP 200 in the browser-rendered state.
+- Browser console: no application errors were observed. The only console entry was the standard React DevTools development notice.
+
+## Full-view comparison evidence
+
+- `/private/tmp/queuemate-confidence-comparison.png` places the selected option and the browser-rendered implementation in the same comparison input.
+- The comparison confirms the same headline/summary split, horizontal three-part band, oversized numbering, blue top-rule emphasis, and highlighted middle item.
+- The implementation intentionally preserves the site's narrower `max-w-7xl` content boundary and dark-mode preference rather than copying the mock's white presentation canvas literally.
+
+## Focused region comparison evidence
+
+- `/private/tmp/queuemate-confidence-section.png` isolates the implemented section at readable size, including the transition from the preceding imagery section.
+- Headline wrapping, summary width, band alignment, number scale, title hierarchy, rules, and the highlighted middle state are all legible in the focused crop; no additional micro-crop was needed.
+
+## Comparison history
+
+1. Initial implementation: `/private/tmp/queuemate-confidence-section.png`.
+   - The first browser-rendered pass matched the chosen layout without actionable P0/P1/P2 drift.
+2. Responsive confirmation: `/private/tmp/queuemate-confidence-mobile500-full.png`.
+   - The horizontal band becomes three clearly separated stacked rows, retaining the centre highlight and complete copy.
+
+## Implementation checklist
+
+- [x] Two-column headline and summary introduction
+- [x] Flat three-column assurance band
+- [x] Oversized numbered hierarchy
+- [x] Featured centre assurance with blue top rule
+- [x] Hover emphasis for each assurance item
+- [x] Existing QueueMate light and dark themes preserved
+- [x] Responsive stacked mobile layout
+- [x] Production build and TypeScript checks
+- [x] Browser-rendered desktop and responsive evidence
+
+## Follow-up polish
+
+- P3: if desired, the centre item's resting highlight can be softened slightly on light mode after reviewing it in the final production context.
+
+final result: passed
+
+---
+
 # Agent progress tracker design QA
 
 - Source visual truth: user-provided inline reference image in the active conversation (1784 × 113 px).

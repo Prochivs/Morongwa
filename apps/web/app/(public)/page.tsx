@@ -101,23 +101,31 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="relative overflow-hidden bg-white py-20 sm:py-28">
+    <section className="relative overflow-hidden bg-white py-20 sm:py-24 lg:py-28">
       <SectionShape side="right" />
-      <div className="container-shell relative z-10 grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
-        <div className="lg:sticky lg:top-32 lg:self-start">
-          <p className="eyebrow">Built for confidence</p>
-          <h2 className="mt-5 max-w-xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl">Know what is happening at every step.</h2>
-          <p className="mt-6 max-w-lg text-base leading-8 text-muted">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p>
-          <div className="mt-9 h-px w-24 bg-brand" />
+      <div className="container-shell relative z-10">
+        <div className="grid gap-8 lg:grid-cols-[1.15fr_.85fr] lg:items-end lg:gap-20">
+          <div>
+            <p className="eyebrow">Built for confidence</p>
+            <h2 className="mt-5 max-w-3xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl lg:text-[56px]">Know what is happening at every step.</h2>
+          </div>
+          <p className="max-w-xl text-base leading-8 text-muted lg:pb-1">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p>
         </div>
-        <div className="space-y-4">
-          {assurances.map(([number, title, description]) => (
-            <article className="group relative overflow-hidden rounded-[18px] border border-navy/10 bg-white p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand/50 hover:shadow-card dark:border-white/10 dark:bg-white/5 dark:hover:border-brand/60 sm:p-7" key={title}>
-              <span className="absolute inset-y-0 left-0 w-1 origin-bottom scale-y-0 bg-brand transition-transform duration-300 ease-out group-hover:scale-y-100" />
-              <div className="grid gap-4 sm:grid-cols-[52px_.8fr_1.2fr] sm:items-start sm:gap-6">
-                <span className="text-xs font-medium tracking-[.14em] text-brand">{number}</span>
-                <h3 className="font-medium text-navy transition-transform duration-300 group-hover:translate-x-1">{title}</h3>
-                <p className="text-sm leading-7 text-muted transition-transform duration-300 group-hover:translate-x-1">{description}</p>
+
+        <div className="mt-14 grid gap-6 sm:mt-16 lg:mt-20 lg:grid-cols-3 lg:gap-8">
+          {assurances.map(([number, title, description], index) => (
+            <article
+              className={`group relative border-t-[3px] px-1 pb-7 pt-6 transition-all duration-300 ease-out sm:px-5 sm:pb-9 sm:pt-8 lg:min-h-[300px] lg:px-0 lg:pb-10 lg:pt-8 ${
+                index === 1
+                  ? "border-brand bg-blue-50/60 shadow-[0_24px_55px_rgba(0,157,231,.12)] dark:bg-brand/10"
+                  : "border-slate-200 hover:border-brand hover:bg-blue-50/50 dark:border-white/15 dark:hover:bg-brand/10"
+              }`}
+              key={title}
+            >
+              <div className="transition-transform duration-300 ease-out group-hover:translate-x-1 lg:px-5">
+                <span className={`block text-[64px] font-medium leading-none tracking-[-.06em] sm:text-[72px] ${index === 1 ? "text-brand/25 dark:text-brand/35" : "text-brand/15 dark:text-brand/25"}`}>{number}</span>
+                <h3 className="mt-4 text-xl font-medium leading-tight tracking-[-.025em] text-navy sm:text-[22px]">{title}</h3>
+                <p className="mt-4 max-w-sm text-sm leading-7 text-muted">{description}</p>
               </div>
             </article>
           ))}
