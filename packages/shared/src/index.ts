@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidPhoneNumber } from "libphonenumber-js/max";
 
 export const roles = ["CUSTOMER", "AGENT", "ADMIN"] as const;
 export type UserRole = (typeof roles)[number];
@@ -22,11 +23,11 @@ export const assignmentStatuses = [
 ] as const;
 export type AssignmentStatus = (typeof assignmentStatuses)[number];
 
-export const botswanaPhoneSchema = z
+export const internationalPhoneSchema = z
   .string()
   .trim()
-  .transform((value) => value.replace(/[\s-]/g, ""))
-  .pipe(z.string().regex(/^(?:\+267|267)?(?:7[1-8]|[2-6][0-9])[0-9]{6}$/, "Enter a valid Botswana mobile number"));
+  .transform((value) => value.replace(/[\s().-]/g, ""))
+  .refine((value) => /^\+[1-9]\d{7,14}$/.test(value) && isValidPhoneNumber(value), "Enter a valid international phone number");
 
 export const passwordSchema = z
   .string()
@@ -44,7 +45,7 @@ export const registerSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120),
     email: z.string().trim().email().transform((value) => value.toLowerCase()),
-    mobile: botswanaPhoneSchema,
+    mobile: internationalPhoneSchema,
     password: passwordSchema,
     passwordConfirmation: z.string(),
     acceptTerms: z.literal(true),
@@ -69,8 +70,8 @@ export const createRequestSchema = z.object({
   assistanceFor: z.enum(["SELF", "OTHER"]),
   instructions: z.string().trim().max(1500).optional(),
   contactName: z.string().trim().min(2).max(120),
-  contactMobile: botswanaPhoneSchema,
-  alternativeMobile: botswanaPhoneSchema.optional().or(z.literal("")),
+  contactMobile: internationalPhoneSchema,
+  alternativeMobile: internationalPhoneSchema.optional().or(z.literal("")),
   contactEmail: z.string().email(),
   onSiteContact: z.string().trim().max(200).optional(),
   acknowledgeAvailability: z.literal(true),
@@ -83,8 +84,8 @@ export const cancellationSchema = z.object({ reason: z.string().trim().min(10).m
 export const customerProfileSchema = z.object({
   fullName: z.string().trim().min(2, "Enter your full name").max(120),
   email: z.string().trim().email("Enter a valid email address").transform((value) => value.toLowerCase()),
-  mobile: botswanaPhoneSchema,
-  altMobile: botswanaPhoneSchema.optional().or(z.literal("")),
+  mobile: internationalPhoneSchema,
+  altMobile: internationalPhoneSchema.optional().or(z.literal("")),
   address: z.string().trim().max(300).optional().or(z.literal("")),
   city: z.string().trim().min(2, "Enter your city").max(100),
 });
@@ -130,7 +131,7 @@ export const institutionSchema = z.object({
   name: z.string().trim().min(2).max(160),
   address: z.string().trim().min(5).max(300),
   city: z.string().trim().min(2).max(100).default("Gaborone"),
-  contactPhone: z.string().trim().max(30).optional(),
+  contactPhone: internationalPhoneSchema.optional().or(z.literal("")),
   contactEmail: z.string().email().optional().or(z.literal("")),
   description: z.string().trim().max(1000).optional(),
   active: z.boolean().default(false),
@@ -147,8 +148,8 @@ export const agentSchema = z
   .object({
     fullName: z.string().trim().min(2).max(120),
     email: z.string().trim().email().transform((value) => value.toLowerCase()),
-    mobile: botswanaPhoneSchema,
-    emergencyContact: z.string().trim().max(160).optional(),
+    mobile: internationalPhoneSchema,
+    emergencyContact: internationalPhoneSchema.optional().or(z.literal("")),
     available: z.boolean().default(false),
     password: passwordSchema,
     passwordConfirmation: z.string(),

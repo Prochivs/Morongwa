@@ -11,7 +11,7 @@ describe("shared business contracts", () => {
     expect(canTransition("COMPLETED", "IN_PROGRESS")).toBe(false);
   });
 
-  it("requires strong matching passwords and Botswana mobile numbers", () => {
+  it("requires strong matching passwords and accepts international mobile numbers", () => {
     const registration = registerSchema.safeParse({
       fullName: "Test Customer",
       email: "customer@example.com",
@@ -23,6 +23,15 @@ describe("shared business contracts", () => {
     });
     expect(registration.success).toBe(true);
     if (registration.success) expect(registration.data.mobile).toBe("+26771123456");
+    expect(registerSchema.safeParse({
+      fullName: "International Customer",
+      email: "international@example.com",
+      mobile: "+27 82 123 4567",
+      password: "QueueMateDev!2026",
+      passwordConfirmation: "QueueMateDev!2026",
+      acceptTerms: true,
+      acceptPrivacy: true,
+    }).success).toBe(true);
   });
 
   it("rejects a request without the mandatory acknowledgements", () => {
