@@ -8,6 +8,7 @@ import { LoadingState } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PhoneField } from "@/components/phone-field";
 
 type Profile = {
   id: string;
@@ -79,11 +80,11 @@ export default function Page() {
             </div>
             <div>
               <label className="field-label" htmlFor="mobile">Mobile number</label>
-              <input className="field" id="mobile" placeholder="+267 71 123 456" required value={form.mobile} onChange={(event) => change("mobile", event.target.value)} />
+              <PhoneField id="mobile" required value={form.mobile} onValueChange={(value) => change("mobile", value)} />
             </div>
             <div>
               <label className="field-label" htmlFor="altMobile">Other mobile (optional)</label>
-              <input className="field" id="altMobile" placeholder="+267 72 123 456" value={form.altMobile} onChange={(event) => change("altMobile", event.target.value)} />
+              <PhoneField id="altMobile" value={form.altMobile} onValueChange={(value) => change("altMobile", value)} />
             </div>
             <div>
               <label className="field-label" htmlFor="city">City</label>

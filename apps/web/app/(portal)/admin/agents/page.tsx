@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState, LoadingState } from "@/components/data-state";
 import { PageHeader } from "@/components/page-header";
+import { PhoneField } from "@/components/phone-field";
 type Agent = {
   id: string;
   agentReference: string;
@@ -102,17 +103,8 @@ export default function Page() {
                 placeholder="Email"
                 required
               />
-              <input
-                className="field"
-                name="mobile"
-                placeholder="+267 71..."
-                required
-              />
-              <input
-                className="field"
-                name="emergencyContact"
-                placeholder="Emergency contact (optional)"
-              />
+              <PhoneField name="mobile" required />
+              <PhoneField name="emergencyContact" placeholder="Emergency contact number" />
               <div className="relative">
                 <input
                   className="field pr-11"
