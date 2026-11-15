@@ -10,9 +10,9 @@ const steps = [
 ] as const;
 
 const assurances = [
-  ["Verified queue agents", "Every agent is reviewed, scheduled and assigned by QueueMate.", true],
-  ["Only permitted queues", "Requests remain subject to each institution's current rules.", false],
-  ["Updates from start to finish", "Follow approval, assignment, arrival and completion from your phone.", false],
+  ["01", "Verified queue agents", "Every agent is reviewed, scheduled and assigned by QueueMate."],
+  ["02", "Only permitted queues", "Requests remain subject to each institution's current rules."],
+  ["03", "Updates from start to finish", "Follow approval, assignment, arrival and completion from your phone."],
 ] as const;
 
 function SectionShape({ side, dark = false }: { side: "left" | "right"; dark?: boolean }) {
@@ -27,7 +27,7 @@ function SectionShape({ side, dark = false }: { side: "left" | "right"; dark?: b
         className={`absolute inset-[6%] rounded-full blur-3xl ${
           dark
             ? "bg-gradient-to-br from-brand/35 via-cyan-400/25 to-violet-500/30"
-            : "bg-gradient-to-br from-blue-100 via-cyan-50 to-violet-100 opacity-90"
+            : "bg-gradient-to-br from-blue-100 via-cyan-50 to-violet-100 opacity-90 dark:from-brand/15 dark:via-cyan-400/10 dark:to-violet-500/15 dark:opacity-70"
         }`}
       />
       <div
@@ -53,7 +53,7 @@ export default function HomePage() {
   return <>
     <section className="relative min-h-[720px] overflow-hidden bg-blue-50 sm:min-h-[780px] lg:min-h-[760px]">
       <Image className="object-cover object-[68%_35%]" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" fill sizes="100vw" priority />
-      <div className="absolute inset-0 bg-white/70 sm:bg-gradient-to-r sm:from-white sm:via-white/70 sm:to-transparent" />
+      <div className="absolute inset-0 bg-white/70 dark:bg-[#08111f]/75 sm:bg-gradient-to-r sm:from-white sm:via-white/70 sm:to-transparent sm:dark:from-[#08111f] sm:dark:via-[#08111f]/75" />
       <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1488px] items-center px-5 py-14 sm:min-h-[780px] sm:px-8 lg:min-h-[760px] lg:px-16 lg:py-0">
         <div className="max-w-[600px] rounded-[24px] bg-white/80 p-6 pb-20 shadow-card backdrop-blur-sm sm:p-8 sm:pb-20 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0">
           <p className="eyebrow">Queue assistance · Gaborone</p>
@@ -78,7 +78,7 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="overflow-hidden bg-[#f4f8fb] py-20 sm:py-24">
+    <section className="overflow-hidden bg-[#f4f8fb] py-20 dark:bg-[#0b1422] sm:py-24">
       <div className="container-shell grid items-center gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-16">
         <div className="max-w-lg">
           <p className="eyebrow">QueueMate in motion</p>
@@ -103,9 +103,25 @@ export default function HomePage() {
 
     <section className="relative overflow-hidden bg-white py-20 sm:py-28">
       <SectionShape side="right" />
-      <div className="container-shell relative z-10 grid gap-12 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
-        <div><p className="eyebrow">Built for confidence</p><h2 className="mt-5 max-w-xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl">Know what is happening at every step.</h2><p className="mt-6 max-w-lg text-base leading-8 text-muted">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p></div>
-        <div className="border-t border-navy/15">{assurances.map(([title, description, highlighted]) => <div className="grid gap-3 border-b border-navy/15 py-7 sm:grid-cols-[.75fr_1.25fr]" key={title}><h3 className="font-medium text-navy">{title}</h3><p className={`text-sm leading-7 ${highlighted ? "text-brand" : "text-muted"}`}>{description}</p></div>)}</div>
+      <div className="container-shell relative z-10 grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:gap-20">
+        <div className="lg:sticky lg:top-32 lg:self-start">
+          <p className="eyebrow">Built for confidence</p>
+          <h2 className="mt-5 max-w-xl text-4xl font-medium leading-[1.08] tracking-[-.045em] sm:text-5xl">Know what is happening at every step.</h2>
+          <p className="mt-6 max-w-lg text-base leading-8 text-muted">QueueMate gives you a clear, managed path from request to completion—without guesswork or crowded waiting areas.</p>
+          <div className="mt-9 h-px w-24 bg-brand" />
+        </div>
+        <div className="space-y-4">
+          {assurances.map(([number, title, description]) => (
+            <article className="group relative overflow-hidden rounded-[18px] border border-navy/10 bg-white p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand/50 hover:shadow-card dark:border-white/10 dark:bg-white/5 dark:hover:border-brand/60 sm:p-7" key={title}>
+              <span className="absolute inset-y-0 left-0 w-1 origin-bottom scale-y-0 bg-brand transition-transform duration-300 ease-out group-hover:scale-y-100" />
+              <div className="grid gap-4 sm:grid-cols-[52px_.8fr_1.2fr] sm:items-start sm:gap-6">
+                <span className="text-xs font-medium tracking-[.14em] text-brand">{number}</span>
+                <h3 className="font-medium text-navy transition-transform duration-300 group-hover:translate-x-1">{title}</h3>
+                <p className="text-sm leading-7 text-muted transition-transform duration-300 group-hover:translate-x-1">{description}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
 
