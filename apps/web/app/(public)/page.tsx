@@ -57,7 +57,7 @@ export default function HomePage() {
       <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1488px] items-center px-5 py-14 sm:min-h-[780px] sm:px-8 lg:min-h-[760px] lg:px-16 lg:py-0">
         <div className="max-w-[600px] rounded-[24px] bg-white/80 p-6 pb-20 shadow-card backdrop-blur-sm sm:p-8 sm:pb-20 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0" data-aos="fade-up">
           <p className="eyebrow">Queue assistance · Gaborone</p>
-          <h1 className="font-hero mt-7 max-w-[570px] text-[42px] font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-6xl lg:text-[62px]">Your day should not stop for a queue.</h1>
+          <h1 className="mt-7 max-w-[570px] text-[42px] font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-6xl lg:text-[62px]">Your day should not stop for a queue.</h1>
           <p className="mt-5 max-w-xl text-sm leading-7 text-muted">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
           <div className="mt-9 flex flex-col gap-5 sm:flex-row sm:items-center">
             <Link className="inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-brand px-7 text-sm font-normal text-white shadow-sm hover:-translate-y-px hover:bg-[#1a1c27] hover:text-white hover:shadow-md" href="/register">Request assistance <ArrowRight size={18} /></Link>
