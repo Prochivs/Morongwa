@@ -55,7 +55,7 @@ export default function HomePage() {
       <Image className="object-cover object-[68%_35%]" src="/images/queuemate-gaborone-day.png" alt="A QueueMate customer continuing her day in Gaborone while tracking her request" fill sizes="100vw" priority />
       <div className="absolute inset-0 bg-white/70 dark:bg-[#08111f]/75 sm:bg-gradient-to-r sm:from-white sm:via-white/70 sm:to-transparent sm:dark:from-[#08111f] sm:dark:via-[#08111f]/75" />
       <div className="relative mx-auto flex min-h-[720px] w-full max-w-[1488px] items-center px-5 py-14 sm:min-h-[780px] sm:px-8 lg:min-h-[760px] lg:px-16 lg:py-0">
-        <div className="max-w-[600px] rounded-[24px] bg-white/80 p-6 pb-20 shadow-card backdrop-blur-sm sm:p-8 sm:pb-20 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-0" data-aos="fade-up">
+        <div className="max-w-[600px] p-6 pb-20 sm:p-8 sm:pb-20 lg:p-0" data-aos="fade-up">
           <p className="eyebrow">Queue assistance · Gaborone</p>
           <h1 className="mt-7 max-w-[570px] text-[42px] font-medium leading-[1.08] tracking-[-.045em] text-navy sm:text-6xl lg:text-[62px]">Your day should not stop for a queue.</h1>
           <p className="mt-5 max-w-xl text-sm leading-7 text-muted">QueueMate coordinates verified agents to hold your place in permitted queues in Gaborone—so you can keep living your day.</p>
