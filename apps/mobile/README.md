@@ -12,7 +12,7 @@ For a physical phone using a local API, use the computer's LAN address rather th
 
 ## Builds
 
-Run `npx eas init` once to replace the placeholder EAS project ID, then use:
+The app is linked to [`@pro_chivs/queuemate`](https://expo.dev/accounts/pro_chivs/projects/queuemate). Use:
 
 - `npx eas build --profile preview --platform android` for a test APK.
 - `npx eas build --profile production --platform android` for Play Store output.
