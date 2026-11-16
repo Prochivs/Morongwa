@@ -27,9 +27,6 @@
       ],
       "expo-document-picker"
     ],
-    "experiments": {
-      "typedRoutes": true
-    },
     "extra": {
       "router": {
         "asyncRoutes": {
