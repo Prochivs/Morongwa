@@ -1,5 +1,7 @@
 node_modules/
 .next/
+.expo/
+.eas/
 dist/
 coverage/
 playwright-report/

@@ -5,6 +5,7 @@ QueueMate is a production-minded queue-assistance operations platform for Botswa
 ## Stack
 
 - Next.js App Router, React, TypeScript, Tailwind CSS, TanStack Query, React Hook Form, Zod, Lucide, and Recharts
+- Expo SDK 58, React Native, Expo Router, Secure Store, and TanStack Query for the customer and agent mobile app
 - Express REST API, TypeScript, Zod, Prisma, and MongoDB
 - Private S3-compatible object storage (Silo/MinIO API), Nginx, and Docker Compose
 - Vitest/Supertest unit and API tests plus a Playwright API end-to-end workflow
@@ -24,6 +25,14 @@ npm run dev
 ```
 
 Set `DATABASE_URL` in `.env` to the MongoDB Atlas connection string for the `queuemate` database, and use `http://localhost:9000` for object storage. In Atlas, allow this machine's IP address and create a database user before starting the API. Visit `http://localhost:3000`; the API health endpoint is `http://localhost:4000/api/v1/health`.
+
+To run the mobile app in Expo Go against the deployed API:
+
+```bash
+npm run start:mobile
+```
+
+Mobile setup and EAS build instructions are in [`apps/mobile/README.md`](apps/mobile/README.md).
 
 To run the whole stack behind Nginx:
 

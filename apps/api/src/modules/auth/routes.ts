@@ -47,6 +47,12 @@ async function issueSession(response: Parameters<typeof ok>[0], request: Paramet
   return session.csrf;
 }
 
+async function issueMobileSession(request: Parameters<typeof audit>[0], userId: string) {
+  const session = sessionCredentials(request);
+  await prisma.session.create({ data: { ...session.record, userId } });
+  return { token: session.token, expiresAt: session.expiresAt };
+}
+
 router.post("/register", asyncHandler(async (request, response) => {
   const input = parseBody(registerSchema, request.body);
   const exists = await prisma.user.findFirst({ where: { OR: [{ email: input.email }, { mobile: input.mobile }] }, select: { id: true } });
@@ -75,6 +81,35 @@ router.post("/login", asyncHandler(async (request, response) => {
   await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
   await audit(request, "AUTH_LOGIN", "User", user.id);
   return ok(response, { user: publicUser(user), csrfToken });
+}));
+
+router.post("/mobile/register", asyncHandler(async (request, response) => {
+  const input = parseBody(registerSchema, request.body);
+  const exists = await prisma.user.findFirst({ where: { OR: [{ email: input.email }, { mobile: input.mobile }] }, select: { id: true } });
+  if (exists) throw new AppError(409, "ACCOUNT_EXISTS", "An account already uses that email address or mobile number");
+  const passwordHash = await bcrypt.hash(input.password, env.PASSWORD_HASH_ROUNDS);
+  const session = sessionCredentials(request);
+  const user = await prisma.$transaction(async (transaction) => {
+    const created = await transaction.user.create({
+      data: { email: input.email, mobile: input.mobile, fullName: input.fullName, passwordHash, customerProfile: { create: { termsAt: new Date(), privacyAt: new Date() } } },
+    });
+    await transaction.auditLog.create({ data: { actorId: created.id, action: "AUTH_REGISTER_MOBILE", entityType: "User", entityId: created.id, ipAddress: request.ip } });
+    await transaction.session.create({ data: { ...session.record, userId: created.id } });
+    return created;
+  });
+  return ok(response, { user: publicUser(user), token: session.token, expiresAt: session.expiresAt }, 201);
+}));
+
+router.post("/mobile/login", asyncHandler(async (request, response) => {
+  const input = parseBody(loginSchema, request.body);
+  const user = await prisma.user.findUnique({ where: { email: input.email } });
+  if (!user || user.status !== "ACTIVE" || !(await bcrypt.compare(input.password, user.passwordHash))) {
+    throw new AppError(401, "INVALID_CREDENTIALS", "Email or password is incorrect");
+  }
+  const session = await issueMobileSession(request, user.id);
+  await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+  await audit(request, "AUTH_LOGIN_MOBILE", "User", user.id);
+  return ok(response, { user: publicUser(user), ...session });
 }));
 
 router.post("/logout", authenticate, requireCsrf, asyncHandler(async (request, response) => {

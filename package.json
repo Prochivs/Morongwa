@@ -9,11 +9,13 @@
   ],
   "scripts": {
     "dev": "concurrently -n web,api -c blue,green \"npm run dev -w @queuemate/web\" \"npm run dev -w @queuemate/api\"",
+    "start:mobile": "npm run start:go -w @queuemate/mobile",
+    "start:mobile:dev": "npm run start -w @queuemate/mobile",
     "build": "npm run build -w @queuemate/shared && npm run build -w @queuemate/api && npm run build -w @queuemate/web",
     "test": "npm run test -w @queuemate/shared && npm run test -w @queuemate/api",
     "test:e2e": "playwright test",
     "verify": "npm run typecheck && npm test && npm run build",
-    "typecheck": "npm run typecheck -w @queuemate/shared && npm run typecheck -w @queuemate/api && npm run typecheck -w @queuemate/web",
+    "typecheck": "npm run typecheck -w @queuemate/shared && npm run typecheck -w @queuemate/api && npm run typecheck -w @queuemate/web && npm run typecheck -w @queuemate/mobile",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:bootstrap": "tsx prisma/bootstrap.ts",
@@ -31,6 +33,8 @@
     "concurrently": "9.1.0",
     "prettier": "3.4.2",
     "prisma": "5.22.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "tsx": "4.19.2",
     "typescript": "5.7.2"
   },

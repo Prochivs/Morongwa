@@ -8,6 +8,7 @@ declare global {
         role: UserRole;
         sessionId: string;
         csrfHash: string;
+        transport: "COOKIE" | "BEARER";
       };
     }
   }

@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "QueueMate",
+    "slug": "queuemate",
+    "scheme": "queuemate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "bw.co.queuemate.app"
+    },
+    "android": {
+      "package": "bw.co.queuemate.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#00163a"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "Allow QueueMate to securely access your account."
+        }
+      ],
+      "expo-document-picker"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_AFTER_EAS_INIT"
+      }
+    }
+  }
+}

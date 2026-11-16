@@ -36,6 +36,16 @@ describe("QueueMate API", () => {
       role: "ADMIN",
     });
     expect(extraField.status).toBe(422);
+
+    const mobileXss = await request(createApp()).post("/api/v1/auth/mobile/register").send(base);
+    expect(mobileXss.status).toBe(422);
+    expect(mobileXss.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("rejects malformed mobile bearer tokens before database access", async () => {
+    const response = await request(createApp()).get("/api/v1/auth/me").set("Authorization", "Bearer not-a-valid-session-token");
+    expect(response.status).toBe(401);
+    expect(response.body.error.code).toBe("UNAUTHENTICATED");
   });
 
   it("rejects files whose content does not match an allowed type", () => {

@@ -11,7 +11,11 @@ export const createToken = () => crypto.randomBytes(32).toString("base64url");
 
 export async function authenticate(request: Request, _response: Response, next: NextFunction) {
   try {
-    const token = request.cookies?.[SESSION_COOKIE] as string | undefined;
+    const authorization = request.get("authorization");
+    const bearerMatch = authorization?.match(/^Bearer ([A-Za-z0-9_-]{43})$/u);
+    const bearerToken = bearerMatch?.[1];
+    const cookieToken = request.cookies?.[SESSION_COOKIE] as string | undefined;
+    const token = bearerToken ?? cookieToken;
     if (!token) throw new AppError(401, "UNAUTHENTICATED", "Please sign in to continue");
     const session = await prisma.session.findUnique({
       where: { tokenHash: hashToken(token) },
@@ -20,7 +24,7 @@ export async function authenticate(request: Request, _response: Response, next: 
     if (!session || session.expiresAt <= new Date() || session.user.status !== "ACTIVE") {
       throw new AppError(401, "SESSION_EXPIRED", "Your session has expired");
     }
-    request.auth = { userId: session.user.id, role: session.user.role, sessionId: session.id, csrfHash: session.csrfHash };
+    request.auth = { userId: session.user.id, role: session.user.role, sessionId: session.id, csrfHash: session.csrfHash, transport: bearerToken ? "BEARER" : "COOKIE" };
     next();
   } catch (error) {
     next(error);
@@ -35,6 +39,7 @@ export function authorise(...roles: UserRole[]) {
 }
 
 export function requireCsrf(request: Request, _response: Response, next: NextFunction) {
+  if (request.auth?.transport === "BEARER") return next();
   const header = request.get("x-csrf-token");
   const cookie = request.cookies?.[CSRF_COOKIE] as string | undefined;
   if (!header || !cookie || header !== cookie || !request.auth || hashToken(header) !== request.auth.csrfHash) {
