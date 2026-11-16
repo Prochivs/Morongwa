@@ -72,4 +72,42 @@ describe("shared business contracts", () => {
     expect(reviewSchema.safeParse({ rating: 0 }).success).toBe(false);
     expect(reviewSchema.safeParse({ rating: 6 }).success).toBe(false);
   });
+
+  it("rejects executable markup in every human-entered text field", () => {
+    expect(registerSchema.safeParse({
+      fullName: '<img src=x onerror="alert(1)">',
+      email: "attacker@example.com",
+      mobile: "+26771123456",
+      password: "QueueMateDev!2026",
+      passwordConfirmation: "QueueMateDev!2026",
+      acceptTerms: true,
+      acceptPrivacy: true,
+    }).success).toBe(false);
+    expect(reviewSchema.safeParse({ rating: 5, comment: "<script>alert(1)</script>" }).success).toBe(false);
+    expect(customerProfileSchema.safeParse({
+      fullName: "Neo Molefe",
+      email: "neo@example.com",
+      mobile: "+26771123456",
+      city: "Gaborone\u0000",
+    }).success).toBe(false);
+  });
+
+  it("normalises safe Unicode text and rejects mass-assignment fields", () => {
+    const base = {
+      fullName: "Ｎｅｏ　Ｍｏｌｅｆｅ",
+      email: " NEO@EXAMPLE.COM ",
+      mobile: "+26771123456",
+      password: "QueueMateDev!2026",
+      passwordConfirmation: "QueueMateDev!2026",
+      acceptTerms: true,
+      acceptPrivacy: true,
+    };
+    const result = registerSchema.safeParse(base);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.fullName).toBe("Neo Molefe");
+      expect(result.data.email).toBe("neo@example.com");
+    }
+    expect(registerSchema.safeParse({ ...base, role: "ADMIN" }).success).toBe(false);
+  });
 });

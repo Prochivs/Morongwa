@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { Router } from "express";
 import bcrypt from "bcryptjs";
-import { loginSchema, passwordSchema, registerSchema } from "@queuemate/shared";
+import { emailSchema, loginSchema, passwordSchema, registerSchema } from "@queuemate/shared";
 import { env } from "../../config/env.js";
 import { prisma } from "../../config/prisma.js";
 import { authenticate, createToken, CSRF_COOKIE, hashToken, requireCsrf, SESSION_COOKIE } from "../../middleware/auth.js";
@@ -90,7 +90,7 @@ router.get("/me", authenticate, asyncHandler(async (request, response) => {
 }));
 
 router.post("/forgot-password", asyncHandler(async (request, response) => {
-  const { email } = parseBody(z.object({ email: z.string().email().transform((value) => value.toLowerCase()) }), request.body);
+  const { email } = parseBody(z.object({ email: emailSchema }).strict(), request.body);
   const user = await prisma.user.findUnique({ where: { email } });
   if (user) {
     const token = crypto.randomBytes(32).toString("base64url");
@@ -104,7 +104,7 @@ router.post("/forgot-password", asyncHandler(async (request, response) => {
 }));
 
 router.post("/reset-password", asyncHandler(async (request, response) => {
-  const input = parseBody(z.object({ token: z.string().min(20), password: passwordSchema, passwordConfirmation: z.string() }).refine((value) => value.password === value.passwordConfirmation, { path: ["passwordConfirmation"], message: "Passwords do not match" }), request.body);
+  const input = parseBody(z.object({ token: z.string().min(20).max(256), password: passwordSchema, passwordConfirmation: z.string() }).strict().refine((value) => value.password === value.passwordConfirmation, { path: ["passwordConfirmation"], message: "Passwords do not match" }), request.body);
   const reset = await prisma.passwordReset.findUnique({ where: { tokenHash: hashToken(input.token) } });
   if (!reset || reset.usedAt || reset.expiresAt <= new Date()) throw new AppError(400, "RESET_INVALID", "This password reset link is invalid or expired");
   const passwordHash = await bcrypt.hash(input.password, env.PASSWORD_HASH_ROUNDS);

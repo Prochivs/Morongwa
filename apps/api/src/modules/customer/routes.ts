@@ -8,6 +8,8 @@ import { authenticate, authorise, requireCsrf } from "../../middleware/auth.js";
 import { audit } from "../../services/audit.js";
 import { notify, notifyAdmins } from "../../services/notifications.js";
 import { AppError, asyncHandler, ok, pagination, parseBody } from "../../utils/http.js";
+import { parseQuery } from "../../utils/http.js";
+import { z } from "zod";
 
 const router = Router();
 router.use(["/customers", "/requests", "/notifications"], authenticate, authorise("CUSTOMER"));
@@ -97,7 +99,8 @@ router.post("/requests", requireCsrf, asyncHandler(async (request, response) => 
 }));
 
 router.get("/requests/my-requests", asyncHandler(async (request, response) => {
-  const { page, pageSize, skip, take } = pagination(request.query);
+  const query = parseQuery(z.object({ page: z.coerce.number().int().min(1).max(100000).optional(), pageSize: z.coerce.number().int().min(1).max(100).optional() }).strict(), request.query);
+  const { page, pageSize, skip, take } = pagination(query);
   const where: Prisma.ServiceRequestWhereInput = { customerId: request.auth!.userId, OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] };
   const [items, total] = await prisma.$transaction([
     prisma.serviceRequest.findMany({ where, include: { institution: { select: { name: true, city: true } }, assignments: { where: { status: { notIn: ["CANCELLED", "FAILED"] } }, take: 1, include: { agent: { include: { user: { select: { fullName: true, mobile: true } } } } } } }, orderBy: { createdAt: "desc" }, skip, take }),

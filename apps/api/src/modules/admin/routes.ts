@@ -3,18 +3,29 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
 import { addDays, endOfDay, startOfDay, startOfMonth } from "date-fns";
-import { agentSchema, assignmentSchema, institutionSchema, objectIdSchema, paymentDecisionSchema, requestDecisionSchema } from "@queuemate/shared";
+import { agentSchema, assignmentSchema, institutionSchema, objectIdSchema, paymentDecisionSchema, paymentStatuses, plainTextSchema, requestDecisionSchema, requestStatuses } from "@queuemate/shared";
 import { prisma } from "../../config/prisma.js";
 import { env } from "../../config/env.js";
 import { authenticate, authorise, requireCsrf } from "../../middleware/auth.js";
 import { audit } from "../../services/audit.js";
 import { notify } from "../../services/notifications.js";
 import { assertAgentCanBeAssigned } from "../../services/scheduling.js";
-import { AppError, asyncHandler, ok, pagination, parseBody } from "../../utils/http.js";
+import { AppError, asyncHandler, ok, pagination, parseBody, parseQuery } from "../../utils/http.js";
 import { z } from "zod";
 
 const router = Router();
 router.use("/admin", authenticate, authorise("ADMIN"));
+
+const paginationFields = {
+  page: z.coerce.number().int().min(1).max(100000).optional(),
+  pageSize: z.coerce.number().int().min(1).max(100).optional(),
+};
+
+function csvCell(value: unknown) {
+  let text = String(value ?? "");
+  if (/^[\s]*[=+\-@]/u.test(text)) text = `'${text}`;
+  return `"${text.replaceAll('"', '""')}"`;
+}
 
 router.get("/admin/dashboard", asyncHandler(async (_request, response) => {
   const today = startOfDay(new Date());
@@ -48,17 +59,18 @@ router.get("/admin/dashboard", asyncHandler(async (_request, response) => {
 }));
 
 router.get("/admin/requests", asyncHandler(async (request, response) => {
-  const { page, pageSize, skip, take } = pagination(request.query);
-  const search = typeof request.query.search === "string" ? request.query.search.trim() : undefined;
+  const query = parseQuery(z.object({ ...paginationFields, search: plainTextSchema({ max: 120, label: "Search" }).optional(), status: z.enum(requestStatuses).optional(), paymentStatus: z.enum(paymentStatuses).optional(), institutionId: objectIdSchema.optional(), date: z.string().date().optional() }).strict(), request.query);
+  const { page, pageSize, skip, take } = pagination(query);
+  const search = query.search;
   const where: Prisma.ServiceRequestWhereInput = {
     AND: [
       { OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] },
       ...(search ? [{ OR: [{ reference: { contains: search, mode: "insensitive" as const } }, { customer: { fullName: { contains: search, mode: "insensitive" as const } } }, { customer: { email: { contains: search, mode: "insensitive" as const } } }] }] : []),
     ],
-    ...(request.query.status ? { requestStatus: String(request.query.status) as never } : {}),
-    ...(request.query.paymentStatus ? { paymentStatus: String(request.query.paymentStatus) as never } : {}),
-    ...(request.query.institutionId ? { institutionId: String(request.query.institutionId) } : {}),
-    ...(request.query.date ? { requestedDate: new Date(String(request.query.date)) } : {}),
+    ...(query.status ? { requestStatus: query.status } : {}),
+    ...(query.paymentStatus ? { paymentStatus: query.paymentStatus } : {}),
+    ...(query.institutionId ? { institutionId: query.institutionId } : {}),
+    ...(query.date ? { requestedDate: new Date(query.date) } : {}),
   };
   const [items, total] = await prisma.$transaction([
     prisma.serviceRequest.findMany({ where, include: { customer: { select: { id: true, fullName: true, mobile: true, email: true } }, institution: { select: { id: true, name: true, city: true } }, assignments: { orderBy: { createdAt: "desc" }, take: 1, include: { agent: { include: { user: { select: { fullName: true } } } } } } }, orderBy: { createdAt: "desc" }, skip, take }),
@@ -98,7 +110,7 @@ router.patch("/admin/requests/:id/approve", requireCsrf, asyncHandler(async (req
 }));
 
 router.patch("/admin/requests/:id/reject", requireCsrf, asyncHandler(async (request, response) => {
-  const { reason } = parseBody(requestDecisionSchema.extend({ reason: z.string().min(5) }), request.body);
+  const { reason } = parseBody(requestDecisionSchema.extend({ reason: plainTextSchema({ min: 5, max: 1000, label: "Reason" }) }), request.body);
   const item = await prisma.serviceRequest.findUnique({ where: { id: request.params.id } });
   if (!item) throw new AppError(404, "REQUEST_NOT_FOUND", "Request not found");
   if (["COMPLETED", "CANCELLED", "REJECTED"].includes(item.requestStatus)) throw new AppError(409, "INVALID_REQUEST_STATE", "This request is already finalised");
@@ -109,7 +121,7 @@ router.patch("/admin/requests/:id/reject", requireCsrf, asyncHandler(async (requ
 }));
 
 router.patch("/admin/requests/:id/cancel", requireCsrf, asyncHandler(async (request, response) => {
-  const { reason } = parseBody(requestDecisionSchema.extend({ reason: z.string().min(5) }), request.body);
+  const { reason } = parseBody(requestDecisionSchema.extend({ reason: plainTextSchema({ min: 5, max: 1000, label: "Reason" }) }), request.body);
   const item = await prisma.serviceRequest.findUnique({ where: { id: request.params.id } });
   if (!item) throw new AppError(404, "REQUEST_NOT_FOUND", "Request not found");
   if (item.requestStatus === "COMPLETED") throw new AppError(409, "INVALID_REQUEST_STATE", "A completed request cannot be cancelled");
@@ -123,15 +135,16 @@ router.patch("/admin/requests/:id/cancel", requireCsrf, asyncHandler(async (requ
 }));
 
 router.post("/admin/requests/:id/notes", requireCsrf, asyncHandler(async (request, response) => {
-  const { content } = parseBody(z.object({ content: z.string().trim().min(2).max(2000) }), request.body);
+  const { content } = parseBody(z.object({ content: plainTextSchema({ min: 2, max: 2000, label: "Note" }) }).strict(), request.body);
   const note = await prisma.requestNote.create({ data: { requestId: request.params.id, authorId: request.auth!.userId, content }, include: { author: { select: { fullName: true } } } });
   await audit(request, "INTERNAL_NOTE_ADDED", "ServiceRequest", request.params.id);
   return ok(response, note, 201);
 }));
 
 router.get("/admin/payments", asyncHandler(async (request, response) => {
-  const { page, pageSize, skip, take } = pagination(request.query);
-  const where: Prisma.PaymentWhereInput = request.query.status ? { status: String(request.query.status) as never } : {};
+  const query = parseQuery(z.object({ ...paginationFields, status: z.enum(paymentStatuses).optional() }).strict(), request.query);
+  const { page, pageSize, skip, take } = pagination(query);
+  const where: Prisma.PaymentWhereInput = query.status ? { status: query.status } : {};
   const [items, total] = await prisma.$transaction([
     prisma.payment.findMany({ where, include: { request: { include: { customer: { select: { fullName: true, email: true } }, institution: { select: { name: true } } } }, proofs: true, verifiedBy: { select: { fullName: true } } }, orderBy: { createdAt: "desc" }, skip, take }),
     prisma.payment.count({ where }),
@@ -190,7 +203,7 @@ router.post("/admin/agents", requireCsrf, asyncHandler(async (request, response)
 }));
 
 router.patch("/admin/agents/:id", requireCsrf, asyncHandler(async (request, response) => {
-  const input = parseBody(z.object({ available: z.boolean().optional(), status: z.enum(["INVITED", "ACTIVE", "SUSPENDED", "DISABLED"]).optional(), onboardingComplete: z.boolean().optional(), hourlyRate: z.coerce.number().min(0).optional() }), request.body);
+  const input = parseBody(z.object({ available: z.boolean().optional(), status: z.enum(["INVITED", "ACTIVE", "SUSPENDED", "DISABLED"]).optional(), onboardingComplete: z.boolean().optional(), hourlyRate: z.coerce.number().min(0).optional() }).strict(), request.body);
   const current = await prisma.agentProfile.findUnique({ where: { id: request.params.id }, include: { user: true } });
   if (!current) throw new AppError(404, "AGENT_NOT_FOUND", "Agent not found");
   const updated = await prisma.agentProfile.update({ where: { id: current.id }, data: { available: input.available, onboardingComplete: input.onboardingComplete, hourlyRate: input.hourlyRate, user: input.status ? { update: { status: input.status } } : undefined }, include: { user: { select: { fullName: true, email: true, status: true } } } });
@@ -218,9 +231,10 @@ router.post("/admin/assignments", requireCsrf, asyncHandler(async (request, resp
 }));
 
 router.get("/admin/schedule", asyncHandler(async (request, response) => {
-  const date = request.query.date ? new Date(String(request.query.date)) : new Date();
+  const query = parseQuery(z.object({ date: z.string().date().optional(), agentId: objectIdSchema.optional() }).strict(), request.query);
+  const date = query.date ? new Date(query.date) : new Date();
   const from = startOfDay(date); const to = endOfDay(date);
-  const agents = await prisma.agentProfile.findMany({ where: request.query.agentId ? { id: String(request.query.agentId) } : {}, include: { user: { select: { fullName: true, mobile: true, status: true } }, assignments: { where: { scheduledStartAt: { gte: from, lte: to } }, include: { request: { include: { institution: { select: { name: true, address: true } } } } }, orderBy: { scheduledStartAt: "asc" } }, availability: { where: { startsAt: { lte: to }, endsAt: { gte: from } } } }, orderBy: { agentReference: "asc" } });
+  const agents = await prisma.agentProfile.findMany({ where: query.agentId ? { id: query.agentId } : {}, include: { user: { select: { fullName: true, mobile: true, status: true } }, assignments: { where: { scheduledStartAt: { gte: from, lte: to } }, include: { request: { include: { institution: { select: { name: true, address: true } } } } }, orderBy: { scheduledStartAt: "asc" } }, availability: { where: { startsAt: { lte: to }, endsAt: { gte: from } } } }, orderBy: { agentReference: "asc" } });
   return ok(response, { date: from, agents });
 }));
 
@@ -247,7 +261,7 @@ router.patch("/admin/institutions/:id", requireCsrf, asyncHandler(async (request
 router.get("/admin/pricing", asyncHandler(async (_request, response) => ok(response, await prisma.pricingRule.findMany({ include: { serviceType: true }, orderBy: { effectiveFrom: "desc" } }))));
 
 router.post("/admin/pricing", requireCsrf, asyncHandler(async (request, response) => {
-  const input = parseBody(z.object({ name: z.string().min(2), serviceTypeId: objectIdSchema, type: z.enum(["FIXED", "CUSTOM_QUOTE"]), amount: z.coerce.number().positive().optional(), currency: z.string().default("BWP"), active: z.boolean().default(true), effectiveFrom: z.string().datetime(), effectiveTo: z.string().datetime().optional() }), request.body);
+  const input = parseBody(z.object({ name: plainTextSchema({ min: 2, max: 120, label: "Pricing name" }), serviceTypeId: objectIdSchema, type: z.enum(["FIXED", "CUSTOM_QUOTE"]), amount: z.coerce.number().positive().max(1000000).optional(), currency: z.string().regex(/^[A-Z]{3}$/u).default("BWP"), active: z.boolean().default(true), effectiveFrom: z.string().datetime(), effectiveTo: z.string().datetime().optional() }).strict(), request.body);
   if (input.type === "FIXED" && input.amount === undefined) throw new AppError(422, "AMOUNT_REQUIRED", "Fixed pricing requires an amount");
   const item = await prisma.pricingRule.create({ data: { ...input, amount: input.amount, effectiveFrom: new Date(input.effectiveFrom), effectiveTo: input.effectiveTo ? new Date(input.effectiveTo) : null } });
   await audit(request, "PRICING_CREATED", "PricingRule", item.id);
@@ -257,23 +271,25 @@ router.post("/admin/pricing", requireCsrf, asyncHandler(async (request, response
 router.get("/admin/settings", asyncHandler(async (_request, response) => ok(response, await prisma.systemSetting.findMany({ orderBy: { key: "asc" } }))));
 
 router.patch("/admin/settings", requireCsrf, asyncHandler(async (request, response) => {
-  const input = parseBody(z.object({ key: z.enum(["bank.account", "cancellation.policy", "business.contact", "scheduling.travelBufferMinutes"]), value: z.unknown(), description: z.string().max(500).optional() }), request.body);
+  const safeSettingValue: z.ZodType<unknown> = z.lazy(() => z.union([plainTextSchema({ max: 2000, label: "Setting value" }), z.number().finite(), z.boolean(), z.null(), z.array(safeSettingValue).max(50), z.record(z.string().regex(/^[A-Za-z][A-Za-z0-9_.-]{0,99}$/u), safeSettingValue).refine((value) => Object.keys(value).length <= 50, "Setting value has too many fields")]));
+  const input = parseBody(z.object({ key: z.enum(["bank.account", "cancellation.policy", "business.contact", "scheduling.travelBufferMinutes"]), value: safeSettingValue, description: plainTextSchema({ max: 500, label: "Description" }).optional() }).strict(), request.body);
   const setting = await prisma.systemSetting.upsert({ where: { key: input.key }, create: { ...input, value: input.value as never, sensitive: input.key === "bank.account", updatedById: request.auth!.userId }, update: { value: input.value as never, description: input.description, updatedById: request.auth!.userId } });
   await audit(request, "SETTING_UPDATED", "SystemSetting", setting.id, undefined, { key: setting.key });
   return ok(response, setting);
 }));
 
 router.get("/admin/reports", asyncHandler(async (request, response) => {
-  const from = request.query.from ? new Date(String(request.query.from)) : addDays(new Date(), -30);
-  const to = request.query.to ? endOfDay(new Date(String(request.query.to))) : endOfDay(new Date());
+  const query = parseQuery(z.object({ from: z.string().date().optional(), to: z.string().date().optional(), format: z.enum(["json", "csv"]).optional() }).strict(), request.query);
+  const from = query.from ? new Date(query.from) : addDays(new Date(), -30);
+  const to = query.to ? endOfDay(new Date(query.to)) : endOfDay(new Date());
   const [payments, requests, agentStats, newCustomers] = await prisma.$transaction([
     prisma.payment.groupBy({ by: ["status"], where: { createdAt: { gte: from, lte: to } }, orderBy: { status: "asc" }, _sum: { amountExpected: true }, _count: { _all: true } }),
     prisma.serviceRequest.groupBy({ by: ["requestStatus"], where: { createdAt: { gte: from, lte: to } }, orderBy: { requestStatus: "asc" }, _count: { _all: true } }),
     prisma.agentAssignment.groupBy({ by: ["agentId", "status"], where: { createdAt: { gte: from, lte: to } }, orderBy: [{ agentId: "asc" }, { status: "asc" }], _count: { _all: true } }),
     prisma.user.count({ where: { role: "CUSTOMER", createdAt: { gte: from, lte: to } } }),
   ]);
-  if (request.query.format === "csv") {
-    const rows = ["category,status,count,amount", ...payments.map((item) => `payment,${item.status},${(item._count as { _all: number })._all},${item._sum?.amountExpected ?? 0}`), ...requests.map((item) => `request,${item.requestStatus},${(item._count as { _all: number })._all},`)];
+  if (query.format === "csv") {
+    const rows = [["category", "status", "count", "amount"], ...payments.map((item) => ["payment", item.status, (item._count as { _all: number })._all, item._sum?.amountExpected ?? 0]), ...requests.map((item) => ["request", item.requestStatus, (item._count as { _all: number })._all, ""])].map((row) => row.map(csvCell).join(","));
     response.setHeader("Content-Type", "text/csv"); response.setHeader("Content-Disposition", "attachment; filename=queuemate-report.csv");
     return response.send(rows.join("\n"));
   }

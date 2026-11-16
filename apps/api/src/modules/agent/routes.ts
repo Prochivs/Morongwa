@@ -1,13 +1,14 @@
 import { Router } from "express";
 import multer from "multer";
-import { assignmentTransitionSchema, availabilitySchema, canTransition } from "@queuemate/shared";
+import { assignmentStatuses, assignmentTransitionSchema, availabilitySchema, canTransition, plainTextSchema } from "@queuemate/shared";
 import type { AssignmentStatus, RequestStatus } from "@prisma/client";
 import { prisma } from "../../config/prisma.js";
 import { authenticate, authorise, requireCsrf } from "../../middleware/auth.js";
 import { audit } from "../../services/audit.js";
 import { notify, notifyAdmins } from "../../services/notifications.js";
 import { putPrivateFile } from "../../services/storage.js";
-import { AppError, asyncHandler, ok, parseBody } from "../../utils/http.js";
+import { AppError, asyncHandler, ok, parseBody, parseQuery } from "../../utils/http.js";
+import { validatePrivateUpload } from "../../utils/uploads.js";
 import { z } from "zod";
 
 const router = Router();
@@ -37,7 +38,8 @@ router.get("/agent/dashboard", asyncHandler(async (request, response) => {
 
 router.get("/agent/assignments", asyncHandler(async (request, response) => {
   const agent = await getAgent(request.auth!.userId);
-  const items = await prisma.agentAssignment.findMany({ where: { agentId: agent.id, ...(request.query.status ? { status: String(request.query.status) as AssignmentStatus } : {}) }, include: { request: { include: { institution: { select: { name: true, address: true, city: true, restrictions: true, actualCustomerRequired: true } }, customer: { select: { fullName: true, mobile: true } } } } }, orderBy: { scheduledStartAt: "asc" } });
+  const query = parseQuery(z.object({ status: z.enum(assignmentStatuses).optional() }).strict(), request.query);
+  const items = await prisma.agentAssignment.findMany({ where: { agentId: agent.id, ...(query.status ? { status: query.status as AssignmentStatus } : {}) }, include: { request: { include: { institution: { select: { name: true, address: true, city: true, restrictions: true, actualCustomerRequired: true } }, customer: { select: { fullName: true, mobile: true } } } } }, orderBy: { scheduledStartAt: "asc" } });
   return ok(response, items);
 }));
 
@@ -51,8 +53,8 @@ router.get("/agent/assignments/:id", asyncHandler(async (request, response) => {
 router.post("/agent/assignments/:id/help", requireCsrf, asyncHandler(async (request, response) => {
   const input = parseBody(z.object({
     reason: z.enum(["CUSTOMER_UNAVAILABLE", "INSTITUTION_ISSUE", "TRAVEL_DELAY", "SAFETY_CONCERN", "OTHER"]),
-    note: z.string().trim().min(5).max(1000),
-  }), request.body);
+    note: plainTextSchema({ min: 5, max: 1000, label: "Help note" }),
+  }).strict(), request.body);
   const agent = await getAgent(request.auth!.userId);
   const assignment = await prisma.agentAssignment.findFirst({
     where: { id: request.params.id, agentId: agent.id },
@@ -133,10 +135,11 @@ router.post("/agent/assignments/:id/evidence", requireCsrf, upload.single("evide
   const agent = await getAgent(request.auth!.userId);
   const assignment = await prisma.agentAssignment.findFirst({ where: { id: request.params.id, agentId: agent.id } });
   if (!assignment) throw new AppError(404, "ASSIGNMENT_NOT_FOUND", "Assignment not found");
-  const metadata = parseBody(z.object({ type: z.enum(["COMPLETION_DOCUMENT", "QUEUE_REFERENCE", "OTHER"]), permittedReference: z.string().max(100).optional(), outcome: z.string().min(5).max(1000), privacyConfirmed: z.union([z.literal("true"), z.literal(true)]) }), request.body);
+  const metadata = parseBody(z.object({ type: z.enum(["COMPLETION_DOCUMENT", "QUEUE_REFERENCE", "OTHER"]), permittedReference: plainTextSchema({ max: 100, label: "Reference" }).optional(), outcome: plainTextSchema({ min: 5, max: 1000, label: "Outcome" }), privacyConfirmed: z.union([z.literal("true"), z.literal(true)]) }).strict(), request.body);
+  const safeFile = request.file ? validatePrivateUpload(request.file) : undefined;
   let stored: Awaited<ReturnType<typeof putPrivateFile>> | undefined;
   if (request.file) stored = await putPrivateFile(`tasks/${assignment.requestId}`, request.file);
-  const evidence = await prisma.taskEvidence.create({ data: { requestId: assignment.requestId, assignmentId: assignment.id, type: metadata.type, permittedReference: metadata.permittedReference, outcome: metadata.outcome, storageKey: stored?.key, mimeType: request.file?.mimetype, sizeBytes: request.file?.size } });
+  const evidence = await prisma.taskEvidence.create({ data: { requestId: assignment.requestId, assignmentId: assignment.id, type: metadata.type, permittedReference: metadata.permittedReference, outcome: metadata.outcome, storageKey: stored?.key, mimeType: safeFile?.mimeType, sizeBytes: request.file?.size } });
   await audit(request, "TASK_EVIDENCE_ADDED", "TaskEvidence", evidence.id);
   return ok(response, evidence, 201);
 }));

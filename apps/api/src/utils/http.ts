@@ -21,11 +21,17 @@ export function parseBody<Schema extends z.ZodType>(schema: Schema, body: unknow
   return result.data;
 }
 
+export function parseQuery<Schema extends z.ZodType>(schema: Schema, query: unknown): z.infer<Schema> {
+  const result = schema.safeParse(query);
+  if (!result.success) throw new AppError(400, "INVALID_QUERY", "The request filters are invalid", result.error.flatten());
+  return result.data;
+}
+
 export function ok<T>(response: Response, data: T, status = 200, meta?: Record<string, unknown>) {
   return response.status(status).json({ success: true, data, ...(meta ? { meta } : {}) });
 }
 
-export function pagination(query: Request["query"]) {
+export function pagination(query: Record<string, unknown>) {
   const page = Math.max(1, Number(query.page) || 1);
   const pageSize = Math.min(100, Math.max(1, Number(query.pageSize) || 20));
   return { page, pageSize, skip: (page - 1) * pageSize, take: pageSize };

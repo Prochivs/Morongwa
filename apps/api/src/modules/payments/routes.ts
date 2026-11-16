@@ -7,6 +7,7 @@ import { audit } from "../../services/audit.js";
 import { notify, notifyAdmins } from "../../services/notifications.js";
 import { getPrivateFile, putPrivateFile } from "../../services/storage.js";
 import { AppError, asyncHandler, ok, parseBody } from "../../utils/http.js";
+import { validatePrivateUpload } from "../../utils/uploads.js";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1 } });
@@ -21,6 +22,7 @@ router.get("/payments/bank-details", asyncHandler(async (_request, response) => 
 router.post("/payments/:requestId/proof", requireCsrf, upload.single("proof"), asyncHandler(async (request, response) => {
   if (request.auth!.role !== "CUSTOMER") throw new AppError(403, "FORBIDDEN", "Only customers can upload payment proof");
   if (!request.file) throw new AppError(422, "FILE_REQUIRED", "Choose a payment proof file");
+  const safeFile = validatePrivateUpload(request.file);
   const metadata = parseBody(paymentProofMetadataSchema, request.body);
   const serviceRequest = await prisma.serviceRequest.findFirst({ where: { id: request.params.requestId, customerId: request.auth!.userId }, include: { payments: { orderBy: { createdAt: "desc" }, take: 1 } } });
   if (!serviceRequest || !serviceRequest.payments[0]) throw new AppError(404, "PAYMENT_NOT_FOUND", "Payment record not found");
@@ -28,7 +30,7 @@ router.post("/payments/:requestId/proof", requireCsrf, upload.single("proof"), a
   const stored = await putPrivateFile(`payments/${serviceRequest.reference}`, request.file);
   const payment = serviceRequest.payments[0];
   const updated = await prisma.$transaction(async (transaction) => {
-    const changed = await transaction.payment.update({ where: { id: payment.id }, data: { amountSubmitted: metadata.amountSubmitted, paymentReference: metadata.paymentReference, status: "PROOF_UPLOADED", proofs: { create: { storageKey: stored.key, originalName: request.file!.originalname, mimeType: request.file!.mimetype, sizeBytes: request.file!.size, sha256: stored.sha256 } } }, include: { proofs: true } });
+    const changed = await transaction.payment.update({ where: { id: payment.id }, data: { amountSubmitted: metadata.amountSubmitted, paymentReference: metadata.paymentReference, status: "PROOF_UPLOADED", proofs: { create: { storageKey: stored.key, originalName: safeFile.originalName, mimeType: safeFile.mimeType, sizeBytes: request.file!.size, sha256: stored.sha256 } } }, include: { proofs: true } });
     await transaction.serviceRequest.update({ where: { id: serviceRequest.id }, data: { paymentStatus: "PROOF_UPLOADED", requestStatus: "PAYMENT_REVIEW" } });
     await transaction.auditLog.create({ data: { actorId: request.auth!.userId, action: "PAYMENT_PROOF_UPLOADED", entityType: "Payment", entityId: payment.id, after: { amountSubmitted: metadata.amountSubmitted, paymentReference: metadata.paymentReference } } });
     await notify({ userId: request.auth!.userId, requestId: serviceRequest.id, event: "PROOF_UPLOADED", title: "Payment proof received", message: `Proof for ${serviceRequest.reference} is awaiting manual verification.` }, transaction);
@@ -50,7 +52,7 @@ router.get("/payments/proofs/:proofId/file", asyncHandler(async (request, respon
   if (!proof || (request.auth!.role === "CUSTOMER" && proof.payment.request.customerId !== request.auth!.userId) || request.auth!.role === "AGENT") throw new AppError(404, "PROOF_NOT_FOUND", "Payment proof not found");
   const bytes = await getPrivateFile(proof.storageKey);
   response.setHeader("Content-Type", proof.mimeType);
-  response.setHeader("Content-Disposition", `inline; filename="${proof.originalName.replace(/[\"\\]/g, "")}"`);
+  response.setHeader("Content-Disposition", `attachment; filename="${proof.originalName.replace(/[\"\\\r\n]/g, "")}"`);
   response.setHeader("Cache-Control", "private, no-store");
   return response.send(bytes);
 }));

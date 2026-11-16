@@ -5,6 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = { title: { default: "QueueMate — We Queue. You Save Time.", template: "%s | QueueMate" }, description: "Professional queue assistance in Gaborone, Botswana, subject to institutional rules and availability." };
 
+// This is a fixed application script. Never interpolate user-controlled data here.
 const themeScript = `
   (function () {
     try {
