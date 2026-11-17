@@ -66,6 +66,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Planner-action-alignment pass: inset Save to Planner and Save Changes to align their left and right edges with the form fields above.
 - Planner-input-density pass: reduced the Planner form input and notes heights with a screen-specific compact field treatment, and shortened the primary action label to Save.
 - Mobile-field-focus pass: made every outlined field shell tap-to-focus so taps on field padding or icons reliably activate its text input, including all Planner fields.
+- Planner-date-picker pass: made the complete Planned date field interactive, opening the native Android calendar or an iOS calendar sheet and writing the chosen day back in `YYYY-MM-DD` format.
 
 ## Follow-up polish
 

@@ -14,6 +14,7 @@
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
     "@queuemate/shared": "1.0.0",
+    "@react-native-community/datetimepicker": "9.2.1",
     "@tanstack/react-query": "5.62.8",
     "expo": "~58.0.26",
     "expo-constants": "~58.0.16",

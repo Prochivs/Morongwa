@@ -169,7 +169,7 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
   return <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>{children}</View>;
 }
 
-export function Field({ label, error, multiline, compact = false, icon, trailing, ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; icon?: IconName; trailing?: ReactNode }) {
+export function Field({ label, error, multiline, compact = false, icon, trailing, onPress, ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
@@ -178,15 +178,16 @@ export function Field({ label, error, multiline, compact = false, icon, trailing
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
       <Pressable
         accessibilityRole="none"
-        onPress={() => inputRef.current?.focus()}
+        onPress={() => onPress ? onPress() : inputRef.current?.focus()}
         style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }]}
       >
         {icon ? <Ionicons color={focused ? palette.brand : colors.muted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
         <TextInput
           ref={inputRef}
           {...props}
-          editable={props.editable !== false}
+          editable={!onPress && props.editable !== false}
           multiline={multiline}
+          pointerEvents={onPress ? "none" : "auto"}
           onBlur={(event) => { setFocused(false); props.onBlur?.(event); }}
           onFocus={(event) => { setFocused(true); props.onFocus?.(event); }}
           placeholderTextColor={colors.muted}

@@ -1,8 +1,9 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import DateTimePicker, { DateTimePickerAndroid, type DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { plannerItemSchema } from "@queuemate/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 import { AppHeader, Button, Card, ErrorMessage, Field, LoadingScreen, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
@@ -19,6 +20,19 @@ function valueOf(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function dateFromInput(value: string) {
+  const [year = new Date().getFullYear(), month = 1, day = 1] = value.split("-").map(Number);
+  const parsed = new Date(year, month - 1, day);
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+}
+
+function dateForInput(value: Date) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default function PlanScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const id = valueOf(params.id);
@@ -27,6 +41,8 @@ export default function PlanScreen() {
   const { token } = useSession();
   const { colors, dark } = useTheme();
   const [form, setForm] = useState({ title: "", plannedDate: tomorrow(), plannedTime: "09:00", notes: "" });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [pickerDate, setPickerDate] = useState(dateFromInput(tomorrow()));
   const [error, setError] = useState("");
   const query = useQuery({ queryKey: ["mobile", "planner", id], queryFn: () => apiFetch<PlannerItem>(`/planner-items/${id}`, { token }), enabled: Boolean(id) });
 
@@ -55,6 +71,17 @@ export default function PlanScreen() {
     return parsed.data;
   };
   const submit = () => { const input = validate(); if (input) save.mutate({ ...input, notes: input.notes ?? "" }); };
+  const openDatePicker = () => {
+    const current = dateFromInput(form.plannedDate);
+    setPickerDate(current);
+    if (Platform.OS === "android") {
+      DateTimePickerAndroid.open({ value: current, mode: "date", minimumDate: new Date(), onChange: (event: DateTimePickerEvent, selectedDate?: Date) => {
+        if (event.type === "set" && selectedDate) change("plannedDate", dateForInput(selectedDate));
+      } });
+      return;
+    }
+    setShowDatePicker(true);
+  };
   const send = () => {
     const input = validate();
     if (!input || !id) return;
@@ -73,7 +100,7 @@ export default function PlanScreen() {
         <ErrorMessage message={error} />
         <Card style={styles.formCard}>
           <Field compact icon="create-outline" label="What do you need to do?" value={form.title} onChangeText={(value) => change("title", value)} placeholder="e.g. Visit the service centre" />
-          <Field compact icon="calendar-outline" label="Planned date" value={form.plannedDate} onChangeText={(value) => change("plannedDate", value)} placeholder="YYYY-MM-DD" />
+          <Field compact icon="calendar-outline" label="Planned date" value={form.plannedDate} onPress={openDatePicker} placeholder="Select a date" />
           <Field compact icon="time-outline" label="Planned time" value={form.plannedTime} onChangeText={(value) => change("plannedTime", value)} placeholder="09:00" />
           <Field compact icon="document-text-outline" label="Notes (optional)" multiline value={form.notes} onChangeText={(value) => change("notes", value)} placeholder="Add anything you want to remember" />
         </Card>
@@ -83,6 +110,18 @@ export default function PlanScreen() {
           <Pressable accessibilityRole="button" disabled={remove.isPending} onPress={confirmDelete} style={styles.deleteButton}><Ionicons color={colors.danger} name="trash-outline" size={18} /><Text style={[styles.deleteText, { color: colors.danger }]}>{remove.isPending ? "Deleting…" : "Delete plan"}</Text></Pressable>
         </> : null}
       </View>
+      <Modal animationType="fade" onRequestClose={() => setShowDatePicker(false)} transparent visible={showDatePicker}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.dateSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.dateSheetHeader, { borderBottomColor: colors.border }]}>
+              <Pressable accessibilityRole="button" onPress={() => setShowDatePicker(false)} style={styles.dateSheetAction}><Text style={[styles.dateSheetActionText, { color: colors.muted }]}>Cancel</Text></Pressable>
+              <Text style={[styles.dateSheetTitle, { color: colors.text }]}>Select date</Text>
+              <Pressable accessibilityRole="button" onPress={() => { change("plannedDate", dateForInput(pickerDate)); setShowDatePicker(false); }} style={styles.dateSheetAction}><Text style={[styles.dateSheetActionText, { color: palette.brand }]}>Done</Text></Pressable>
+            </View>
+            <DateTimePicker accentColor={palette.brand} display="inline" minimumDate={new Date()} mode="date" onChange={(_event, selectedDate) => { if (selectedDate) setPickerDate(selectedDate); }} themeVariant={dark ? "dark" : "light"} value={pickerDate} />
+          </View>
+        </View>
+      </Modal>
     </Screen>
   );
 }
@@ -99,4 +138,10 @@ const styles = StyleSheet.create({
   actionGap: { marginTop: 9 },
   deleteButton: { minHeight: 46, marginTop: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
   deleteText: { fontSize: 13, fontWeight: "500" },
+  modalBackdrop: { flex: 1, backgroundColor: "rgba(4,14,31,.48)", paddingHorizontal: 18, alignItems: "center", justifyContent: "center" },
+  dateSheet: { width: "100%", maxWidth: 390, borderWidth: 1, borderRadius: 18, overflow: "hidden", paddingBottom: 8 },
+  dateSheetHeader: { minHeight: 54, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 8 },
+  dateSheetAction: { minWidth: 64, minHeight: 44, alignItems: "center", justifyContent: "center" },
+  dateSheetActionText: { fontSize: 14, fontWeight: "500" },
+  dateSheetTitle: { fontSize: 16, fontWeight: "600" },
 });
