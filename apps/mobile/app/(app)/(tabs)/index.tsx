@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { AppHeader, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
@@ -23,27 +23,17 @@ function CustomerHome() {
   const query = useQuery({ queryKey: ["mobile", "requests"], queryFn: () => apiFetch<RequestListItem[]>("/requests/my-requests?pageSize=5", { token }) });
   const next = query.data?.find((item) => !["COMPLETED", "REJECTED", "CANCELLED"].includes(item.requestStatus));
   const firstName = user?.fullName.split(" ")[0] ?? "there";
-  const initials = user?.fullName.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "QM";
-  const paymentComplete = next?.paymentStatus === "VERIFIED";
-  const approvalComplete = Boolean(next && ["APPROVED", "AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS", "COMPLETED"].includes(next.requestStatus));
-  const agentComplete = Boolean(next && ["AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS", "COMPLETED"].includes(next.requestStatus));
-  const progressSurface = dark ? colors.surface : "#e8e9e6";
-  const progressBorder = dark ? colors.border : "#d6d8d5";
-  const progress = [
-    { icon: "card-outline" as const, title: "Payment", detail: paymentComplete ? "Verified" : formatStatus(next?.paymentStatus ?? "Not started"), complete: paymentComplete },
-    { icon: "shield-checkmark-outline" as const, title: "Request review", detail: approvalComplete ? "Approved" : formatStatus(next?.requestStatus ?? "Not started"), complete: approvalComplete },
-    { icon: "people-outline" as const, title: "Queue agent", detail: agentComplete ? "Assigned" : "Awaiting assignment", complete: agentComplete },
-  ];
+  const controlBorder = dark ? colors.border : "#d6d8d5";
 
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ ...homeStyles.screen, backgroundColor: dark ? colors.background : palette.white }}>
       <View style={homeStyles.customerHeader}>
-        <View style={[homeStyles.avatar, { backgroundColor: dark ? "#22324a" : "#dfe6df" }]}><Text style={[homeStyles.avatarText, { color: colors.text }]}>{initials}</Text></View>
+        <View style={[homeStyles.avatar, { backgroundColor: dark ? "#22324a" : "#e7f6fd", borderColor: controlBorder }]}><Ionicons color={palette.brand} name="person" size={23} /></View>
         <View style={homeStyles.headerCopy}>
           <Text style={[homeStyles.hello, { color: colors.text }]}>Hey {firstName}!</Text>
           <Text style={[homeStyles.helloSubtitle, { color: colors.muted }]}>Your QueueMate day at a glance</Text>
         </View>
-        <Pressable accessibilityLabel="Notifications" style={[homeStyles.notification, { backgroundColor: dark ? colors.surface : "#efefed", borderColor: progressBorder }]}>
+        <Pressable accessibilityLabel="Notifications" style={[homeStyles.notification, { backgroundColor: dark ? colors.surface : "#efefed", borderColor: controlBorder }]}>
           <Ionicons color={colors.text} name="notifications" size={21} />
         </Pressable>
       </View>
@@ -55,45 +45,15 @@ function CustomerHome() {
           onPress={() => next ? router.push({ pathname: "/(app)/request/[id]", params: { id: next.id } }) : router.push("/(app)/new-request")}
           style={({ pressed }) => [homeStyles.featureCard, { opacity: pressed ? 0.9 : 1 }]}
         >
-          <ImageBackground
-            imageStyle={homeStyles.featureBackgroundImage}
-            resizeMode="cover"
-            source={require("../../../../web/public/images/queuemate-agent-service-centre.png")}
-            style={homeStyles.featureBackground}
-          >
-            <View style={homeStyles.featureOverlay} />
-            <View style={homeStyles.featureCopy}>
-              <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
-              <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
-              <Text numberOfLines={1} style={homeStyles.featureMeta}>{next?.reference ?? "Create your first request"}</Text>
-            </View>
-          </ImageBackground>
+          <Image source={require("../../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={homeStyles.featureBackgroundImage} />
+          <View style={homeStyles.featureOverlay} />
+          <View style={homeStyles.featureCopy}>
+            <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
+            <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
+            <Text numberOfLines={1} style={homeStyles.featureMeta}>{next?.reference ?? "Create your first request"}</Text>
+          </View>
         </Pressable>
       </Reveal>
-
-      <View style={homeStyles.sectionHeading}>
-        <Text style={[homeStyles.sectionTitle, { color: colors.text }]}>Today’s progress</Text>
-        <Pressable accessibilityLabel="Create a request" onPress={() => router.push("/(app)/new-request")} style={homeStyles.addButton}><Ionicons color={palette.white} name="add" size={20} /></Pressable>
-      </View>
-
-      {query.isLoading ? <CustomerHomeSkeleton /> : progress.map((item, index) => (
-        <Reveal key={item.title} delay={90 + index * 55}>
-          <View style={homeStyles.progressRow}>
-            <View style={[homeStyles.progressMain, { backgroundColor: progressSurface, borderColor: progressBorder, opacity: next ? 1 : 0.6 }]}>
-              <View style={[homeStyles.progressIcon, { backgroundColor: index === 0 ? "#fff1cf" : index === 1 ? "#dff4ff" : "#e8f6ed" }]}>
-                <Ionicons color={index === 0 ? "#cc7a00" : index === 1 ? palette.brand : palette.success} name={item.icon} size={24} />
-              </View>
-              <View style={{ flex: 1 }}><Text style={[homeStyles.progressTitle, { color: colors.text }]}>{item.title}</Text><Text numberOfLines={1} style={[homeStyles.progressDetail, { color: colors.muted }]}>{item.detail}</Text></View>
-            </View>
-            <View style={[homeStyles.checkTile, { backgroundColor: progressSurface, borderColor: progressBorder }]}>
-              <View style={[homeStyles.checkCircle, { backgroundColor: item.complete ? palette.ink : "transparent", borderColor: item.complete ? palette.ink : colors.muted }]}>
-                <Ionicons color={item.complete ? palette.white : colors.muted} name="checkmark" size={16} />
-              </View>
-            </View>
-          </View>
-        </Reveal>
-      ))}
-
     </Screen>
   );
 }
@@ -101,40 +61,19 @@ function CustomerHome() {
 const homeStyles = StyleSheet.create({
   screen: { flexGrow: 1, paddingHorizontal: 27, paddingTop: 8, paddingBottom: 98 },
   customerHeader: { minHeight: 60, flexDirection: "row", alignItems: "center" },
-  avatar: { width: 44, height: 44, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  avatarText: { fontSize: 15, fontWeight: "600", letterSpacing: -.35 },
+  avatar: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   headerCopy: { flex: 1, paddingHorizontal: 11 },
   hello: { fontSize: 20, lineHeight: 23, fontWeight: "600", letterSpacing: -.5 },
   helloSubtitle: { fontSize: 11, lineHeight: 15, marginTop: 1 },
-  notification: { width: 44, height: 44, borderRadius: 18, borderWidth: 1, alignItems: "center", justifyContent: "center" },
-  featureCard: { height: 142, marginTop: 20, marginBottom: 26, borderRadius: 22, backgroundColor: "#151515", overflow: "hidden", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
-  featureBackground: { flex: 1, justifyContent: "center" },
-  featureBackgroundImage: { borderRadius: 22 },
-  featureOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3, 12, 25, .62)" },
-  featureCopy: { maxWidth: "76%", paddingLeft: 24, paddingRight: 12 },
+  notification: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  featureCard: { height: 230, marginTop: 20, marginBottom: 26, borderRadius: 16, backgroundColor: "#151515", overflow: "hidden", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
+  featureBackgroundImage: { position: "absolute", top: -5, left: 0, width: "100%", height: 415 },
+  featureOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3, 12, 25, .56)" },
+  featureCopy: { position: "absolute", left: 22, bottom: 22, width: "62%" },
   featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5 },
   featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6 },
   featureMeta: { color: "#9ba3ad", fontSize: 11, marginTop: 4 },
-  sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
-  sectionTitle: { fontSize: 19, lineHeight: 23, fontWeight: "600", letterSpacing: -.45 },
-  addButton: { width: 30, height: 30, borderRadius: 11, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center" },
-  progressRow: { flexDirection: "row", gap: 8, marginBottom: 8 },
-  progressMain: { minHeight: 64, flex: 1, paddingHorizontal: 11, borderWidth: 1, borderRadius: 19, flexDirection: "row", alignItems: "center", gap: 11 },
-  progressIcon: { width: 40, height: 40, borderRadius: 13, alignItems: "center", justifyContent: "center" },
-  progressTitle: { fontSize: 15, lineHeight: 18, fontWeight: "600" },
-  progressDetail: { fontSize: 11, lineHeight: 14, marginTop: 2, textTransform: "capitalize" },
-  checkTile: { width: 64, minHeight: 64, borderWidth: 1, borderRadius: 19, alignItems: "center", justifyContent: "center" },
-  checkCircle: { width: 25, height: 25, borderRadius: 9, borderWidth: 1.5, alignItems: "center", justifyContent: "center" },
 });
-
-function CustomerHomeSkeleton() {
-  const { colors } = useTheme();
-  return <View>{[0, 1, 2].map((index) => <View key={index} style={homeStyles.progressRow}><View style={[homeStyles.progressMain, { backgroundColor: colors.surface, borderColor: colors.border }]}><View style={[homeStyles.progressIcon, { backgroundColor: colors.surfaceMuted }]} /><View style={{ flex: 1, gap: 8 }}><View style={{ width: "52%", height: 12, borderRadius: 6, backgroundColor: colors.surfaceMuted }} /><View style={{ width: "72%", height: 9, borderRadius: 5, backgroundColor: colors.surfaceMuted }} /></View></View><View style={[homeStyles.checkTile, { backgroundColor: colors.surface, borderColor: colors.border }]} /></View>)}</View>;
-}
-
-function formatStatus(value: string) {
-  return value.toLowerCase().replaceAll("_", " ");
-}
 
 function AgentHome() {
   const router = useRouter();
