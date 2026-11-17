@@ -3,11 +3,11 @@ import { Pressable, Text, View } from "react-native";
 import { Badge, Card } from "@/components/ui";
 import { palette, useTheme } from "@/theme";
 
-export function WorkCard({ title, reference, meta, statuses, onPress }: { title: string; reference: string; meta: string; statuses: string[]; onPress: () => void }) {
+export function WorkCard({ title, reference, meta, statuses, muted = false, onPress }: { title: string; reference: string; meta: string; statuses: string[]; muted?: boolean; onPress: () => void }) {
   const { colors } = useTheme();
   return (
     <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.88 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] })}>
-      <Card style={{ overflow: "hidden" }}>
+      <Card style={[{ overflow: "hidden" }, muted ? { backgroundColor: colors.surfaceMuted, borderWidth: 0 } : {}]}>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <Text style={{ color: colors.muted, fontSize: 11, letterSpacing: .4 }}>{reference}</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-end", gap: 5 }}>{statuses.slice(-1).map((status) => <Badge key={status} status={status} />)}</View>

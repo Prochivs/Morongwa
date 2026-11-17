@@ -39,7 +39,7 @@ export default function WorkScreen() {
           return <WorkCard key={item.id} title={item.request.institution.name} reference={item.request.reference} meta={`${item.request.institution.address}, ${item.request.institution.city} · ${new Date(item.scheduledStartAt).toLocaleString("en-BW")}`} statuses={[item.status]} onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: item.id } })} />;
         }
         const item = raw;
-        return <WorkCard key={item.id} title={item.institution.name} reference={item.reference} meta={`${item.institution.city} · ${new Date(item.scheduledStartAt).toLocaleString("en-BW")}`} statuses={[item.paymentStatus, item.requestStatus]} onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: item.id } })} />;
+        return <WorkCard key={item.id} title={item.institution.name} reference={item.reference} meta={`${item.institution.city} · ${new Date(item.scheduledStartAt).toLocaleString("en-BW")}`} muted statuses={[item.paymentStatus, item.requestStatus]} onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: item.id } })} />;
       })}
       </View>
     </Screen>
