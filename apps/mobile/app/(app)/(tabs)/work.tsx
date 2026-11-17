@@ -32,7 +32,10 @@ export default function WorkScreen() {
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
       <AppHeader title={agent ? "My assignments" : "My requests"} />
       <View style={styles.content}>
-      <View style={[styles.tabs, { backgroundColor: colors.surface, borderColor: colors.border }]}>{[["ALL", "All"], ["ACTIVE", "Active"], ["DONE", "Completed"]].map(([value, label]) => <Pressable key={value} onPress={() => setFilter(value as "ALL" | "ACTIVE" | "DONE")} style={[styles.tab, filter === value && styles.tabActive]}><Text style={[styles.tabText, { color: filter === value ? palette.white : colors.muted }]}>{label}</Text></Pressable>)}</View>
+      <View style={styles.tabs}>{[["ALL", "All"], ["ACTIVE", "Active"], ["DONE", "Completed"]].map(([value, label]) => {
+        const active = filter === value;
+        return <Pressable key={value} onPress={() => setFilter(value as "ALL" | "ACTIVE" | "DONE")} style={({ pressed }) => [styles.tab, { backgroundColor: active ? palette.brand : colors.surfaceMuted, opacity: pressed ? 0.82 : 1 }, active && styles.tabActive]}><Text style={[styles.tabText, { color: active ? palette.white : colors.muted }]}>{label}</Text></Pressable>;
+      })}</View>
       {query.isLoading ? <ListSkeleton rows={4} /> : !filtered.length ? <Card><EmptyState title={agent ? "No assignments here" : "No requests here"} message={agent ? "Assignments made by QueueMate administrators will appear here." : "Your queue assistance requests will appear here."} /></Card> : filtered.map((raw) => {
         if ("request" in raw) {
           const item = raw;
@@ -50,9 +53,9 @@ export default function WorkScreen() {
 
 const styles = StyleSheet.create({
   content: { paddingHorizontal: 20, paddingTop: 20 },
-  tabs: { flexDirection: "row", borderWidth: 1, borderRadius: 10, padding: 4, marginBottom: 20 },
-  tab: { flex: 1, minHeight: 38, borderRadius: 7, alignItems: "center", justifyContent: "center" },
-  tabActive: { backgroundColor: palette.brand },
-  tabText: { fontSize: 12, fontWeight: "600" },
+  tabs: { flexDirection: "row", gap: 8, marginBottom: 20 },
+  tab: { flex: 1, minHeight: 40, borderRadius: 12, alignItems: "center", justifyContent: "center" },
+  tabActive: { shadowColor: palette.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8, elevation: 3 },
+  tabText: { fontSize: 12, fontWeight: "500" },
   fab: { position: "absolute", right: 28, bottom: 102, width: 60, height: 52, borderRadius: 14, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center", zIndex: 10, shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 10 },
 });
