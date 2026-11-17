@@ -109,7 +109,7 @@ const homeStyles = StyleSheet.create({
   featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5, textShadowColor: "rgba(0,0,0,.9)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
   featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6, textShadowColor: "rgba(0,0,0,.94)", textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 6 },
   featureMeta: { color: "#edf3f8", fontSize: 11, marginTop: 4, textShadowColor: "rgba(0,0,0,.94)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 5 },
-  todayHeader: { marginTop: 2, marginBottom: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  todayHeader: { marginTop: 2, marginBottom: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   todayTitle: { fontSize: 19, lineHeight: 23, fontWeight: "600", letterSpacing: -.45 },
   todayLink: { color: palette.brand, fontSize: 12, fontWeight: "600" },
   todayRequest: { minHeight: 66, borderWidth: 1, borderRadius: 14, paddingHorizontal: 8, paddingVertical: 6, marginBottom: 8, flexDirection: "row", alignItems: "center", gap: 10 },

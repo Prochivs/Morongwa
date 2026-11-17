@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-tighter-request-rows.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-title-spacing.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
