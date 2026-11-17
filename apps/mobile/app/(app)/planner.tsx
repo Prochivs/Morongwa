@@ -28,7 +28,7 @@ export default function PlannerScreen() {
             <Text style={[styles.title, { color: colors.text }]}>Your plans</Text>
             <Text style={[styles.subtitle, { color: colors.muted }]}>Save a queue task now. Send it only when you are ready.</Text>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="Add a plan" onPress={() => router.push("/(app)/plan")} style={styles.addButton}><Ionicons color="#fff" name="add" size={22} /></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Add a plan" onPress={() => router.push("/(app)/plan")} style={[styles.addButton, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={palette.brand} name="add" size={22} /></Pressable>
         </View>
 
         <View style={[styles.privateNote, { backgroundColor: dark ? colors.surfaceMuted : "#f0f9fe" }]}>
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   introCopy: { flex: 1 },
   title: { fontSize: 22, lineHeight: 27, fontWeight: "600", letterSpacing: -.45 },
   subtitle: { fontSize: 12, lineHeight: 17, marginTop: 4 },
-  addButton: { width: 42, height: 42, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: palette.brand },
+  addButton: { width: 42, height: 42, borderRadius: 21, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   privateNote: { borderRadius: 12, padding: 12, marginBottom: 18, flexDirection: "row", alignItems: "flex-start", gap: 9 },
   privateText: { flex: 1, fontSize: 11, lineHeight: 16 },
   item: { minHeight: 74, borderWidth: 1, borderRadius: 12, padding: 9, marginBottom: 9, flexDirection: "row", alignItems: "center", gap: 11 },

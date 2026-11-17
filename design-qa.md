@@ -3,7 +3,7 @@
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
 - Implementation screenshot: `/private/tmp/queuemate-customer-quick-actions.png`
 - Planner draft screenshot: `/private/tmp/queuemate-planner-todo-form.png`
-- Planner list screenshot: `/private/tmp/queuemate-planner-borderless-empty.png`
+- Planner list screenshot: `/private/tmp/queuemate-planner-circular-add.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -59,6 +59,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Planner workflow pass: replaced the submitted-request schedule with private planner to-dos. Customers can create, edit, and delete reminders, then explicitly prepare the normal four-step request form later. Only final request submission sends data into QueueMate operations; a successfully submitted request removes its originating planner item.
 - Planner-header pass: removed the list screen's subtitle and dark masthead, replacing them with a compact themed surface and subtle bottom divider.
 - Planner-empty-state pass: removed the surrounding card border so the no-plans message sits directly on the page canvas.
+- Planner-add-control pass: removed the solid blue fill from the top add control and made it a fully circular, lightly outlined button with a blue plus.
 
 ## Follow-up polish
 
