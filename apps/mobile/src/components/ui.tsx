@@ -76,7 +76,7 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
   );
 }
 
-export function AuthShell({ children, title, subtitle, compact = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
+export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
   const { colors } = useTheme();
   return (
     <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: colors.background }]}>
@@ -96,7 +96,7 @@ export function AuthShell({ children, title, subtitle, compact = false, roleText
               </View> : null}
             </Reveal>
           </View>
-          <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, { backgroundColor: colors.background }]}>
+          <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: colors.background }]}>
             <Reveal delay={170}>{children}</Reveal>
           </View>
         </ScrollView>
@@ -260,6 +260,7 @@ export const styles = StyleSheet.create({
   authRoleText: { fontSize: 12, lineHeight: 17 },
   authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
   authBodyWithoutBrand: { paddingTop: 18 },
+  authBodyCentered: { justifyContent: "center" },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
   appHeader: { minHeight: 64, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth },
