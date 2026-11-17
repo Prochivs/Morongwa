@@ -107,7 +107,7 @@ function CustomerHome() {
               onPress={() => router.push(route)}
               style={({ pressed }) => [homeStyles.quickAction, { backgroundColor: colors.surface, borderColor: colors.border, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
             >
-              <View style={[homeStyles.quickIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name={icon} size={20} /></View>
+              <View style={[homeStyles.quickIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name={icon} size={23} /></View>
               <Text numberOfLines={1} style={[homeStyles.quickLabel, { color: colors.text }]}>{label}</Text>
             </Pressable>
           </Reveal>
@@ -150,9 +150,9 @@ const homeStyles = StyleSheet.create({
   quickTitle: { fontSize: 17, lineHeight: 21, fontWeight: "600", letterSpacing: -.35 },
   quickGrid: { flexDirection: "row", gap: 9 },
   quickReveal: { flex: 1 },
-  quickAction: { minHeight: 82, borderWidth: 1, borderRadius: 14, paddingHorizontal: 10, paddingVertical: 10, justifyContent: "space-between" },
-  quickIcon: { width: 34, height: 34, borderRadius: 11, alignItems: "center", justifyContent: "center" },
-  quickLabel: { fontSize: 10.5, lineHeight: 14, fontWeight: "600", marginTop: 8 },
+  quickAction: { minHeight: 88, borderWidth: 1, borderRadius: 14, paddingHorizontal: 10, paddingVertical: 10, alignItems: "center", justifyContent: "space-between" },
+  quickIcon: { width: 40, height: 40, borderRadius: 13, alignItems: "center", justifyContent: "center" },
+  quickLabel: { fontSize: 10.5, lineHeight: 14, fontWeight: "600", marginTop: 8, textAlign: "center" },
 });
 
 function TodayRequestsSkeleton() {
