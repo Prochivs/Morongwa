@@ -3,6 +3,7 @@
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
 - Implementation screenshot: `/private/tmp/queuemate-customer-quick-actions.png`
 - Planner draft screenshot: `/private/tmp/queuemate-planner-todo-form.png`
+- Planner list screenshot: `/private/tmp/queuemate-planner-light-header.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -56,6 +57,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Request-row simplification pass: removed status pills from the home-screen list items and reduced the rows from 88 to 66 points, while preserving full status information on request details and the complete Requests screen.
 - Quick-actions pass: added three compact actions below today's requests, connected them to functional Planner, Help, and Notifications screens, and verified each route in the iOS Simulator.
 - Planner workflow pass: replaced the submitted-request schedule with private planner to-dos. Customers can create, edit, and delete reminders, then explicitly prepare the normal four-step request form later. Only final request submission sends data into QueueMate operations; a successfully submitted request removes its originating planner item.
+- Planner-header pass: removed the list screen's subtitle and dark masthead, replacing them with a compact themed surface and subtle bottom divider.
 
 ## Follow-up polish
 
