@@ -72,15 +72,15 @@ function CustomerProfile() {
       <View style={styles.content}>
       <ProfileIdentity name={form.fullName || "QueueMate customer"} subtitle={form.email || "Keep your details current"} />
       {query.isLoading ? <ListSkeleton rows={3} /> : <>
-      <Card>
+      <Card style={{ borderWidth: 0 }}>
         <ErrorMessage message={update.isError ? message : undefined} />
         {!update.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
-        <Field icon="person-outline" label="Full name" value={form.fullName} onChangeText={(value) => change("fullName", value)} placeholder="e.g. Neo Molefe" />
-        <Field autoCapitalize="none" icon="mail-outline" keyboardType="email-address" label="Email address" value={form.email} onChangeText={(value) => change("email", value)} placeholder="name@example.com" />
-        <Field icon="call-outline" keyboardType="phone-pad" label="Mobile number" value={form.mobile} onChangeText={(value) => change("mobile", value)} placeholder="+267 71 123 456" />
-        <Field icon="phone-portrait-outline" keyboardType="phone-pad" label="Other mobile (optional)" value={form.altMobile} onChangeText={(value) => change("altMobile", value)} placeholder="+267 72 123 456" />
-        <Field icon="business-outline" label="City" value={form.city} onChangeText={(value) => change("city", value)} placeholder="Gaborone" />
-        <Field icon="location-outline" label="Address (optional)" value={form.address} onChangeText={(value) => change("address", value)} placeholder="Street, ward, or neighbourhood" />
+        <Field icon="person-outline" label="Full name" underlineOnly value={form.fullName} onChangeText={(value) => change("fullName", value)} placeholder="e.g. Neo Molefe" />
+        <Field autoCapitalize="none" icon="mail-outline" keyboardType="email-address" label="Email address" underlineOnly value={form.email} onChangeText={(value) => change("email", value)} placeholder="name@example.com" />
+        <Field icon="call-outline" keyboardType="phone-pad" label="Mobile number" underlineOnly value={form.mobile} onChangeText={(value) => change("mobile", value)} placeholder="+267 71 123 456" />
+        <Field icon="phone-portrait-outline" keyboardType="phone-pad" label="Other mobile (optional)" underlineOnly value={form.altMobile} onChangeText={(value) => change("altMobile", value)} placeholder="+267 72 123 456" />
+        <Field icon="business-outline" label="City" underlineOnly value={form.city} onChangeText={(value) => change("city", value)} placeholder="Gaborone" />
+        <Field icon="location-outline" label="Address (optional)" underlineOnly value={form.address} onChangeText={(value) => change("address", value)} placeholder="Street, ward, or neighbourhood" />
         <Button arrow loading={update.isPending} onPress={submit}>Save changes</Button>
       </Card>
       <SignOutRow loading={signingOut} onPress={() => { setSigningOut(true); void signOut(); }} />
