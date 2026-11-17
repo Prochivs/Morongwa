@@ -47,6 +47,7 @@ function CustomerHome() {
           style={({ pressed }) => [homeStyles.featureCard, { transform: [{ scale: pressed ? 0.99 : 1 }] }]}
         >
           <Image source={require("../../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={homeStyles.featureBackgroundImage} />
+          <View style={homeStyles.featureOverlay} />
           <View style={homeStyles.featureCopy}>
             <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
             <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
@@ -104,6 +105,7 @@ const homeStyles = StyleSheet.create({
   notification: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   featureCard: { height: 180, marginTop: 20, marginBottom: 26, borderRadius: 16, backgroundColor: "#151515", overflow: "hidden", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
   featureBackgroundImage: { position: "absolute", top: -36, left: 0, width: "100%", height: 415 },
+  featureOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3, 12, 25, .56)" },
   featureCopy: { position: "absolute", left: 22, bottom: 22, width: "62%" },
   featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5, textShadowColor: "rgba(0,0,0,.9)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
   featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6, textShadowColor: "rgba(0,0,0,.94)", textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 6 },
