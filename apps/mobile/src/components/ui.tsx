@@ -76,7 +76,7 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
   );
 }
 
-export function AuthShell({ children, title, subtitle, compact = false, roleText = "For customers and queue agents" }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; roleText?: string }>) {
+export function AuthShell({ children, title, subtitle, compact = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
   const { colors } = useTheme();
   return (
     <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: colors.background }]}>
@@ -86,14 +86,14 @@ export function AuthShell({ children, title, subtitle, compact = false, roleText
           <View style={[styles.authHero, compact && styles.authHeroCompact, { backgroundColor: colors.surface }]}>
             <View style={styles.authPatternOne} />
             <View style={styles.authPatternTwo} />
-            <Reveal delay={40}><Brand /></Reveal>
+            {showBrand ? <Reveal delay={40}><Brand /></Reveal> : null}
             <Reveal delay={110}>
-              <Text style={[styles.authTitle, { color: colors.text }]}>{title}</Text>
+              <Text style={[styles.authTitle, !showBrand && styles.authTitleWithoutBrand, { color: colors.text }]}>{title}</Text>
               <Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text>
-              <View style={styles.authRoleCue}>
+              {showRoleCue ? <View style={styles.authRoleCue}>
                 <Ionicons color={palette.brand} name="shield-checkmark-outline" size={17} />
                 <Text style={[styles.authRoleText, { color: colors.muted }]}>{roleText}</Text>
-              </View>
+              </View> : null}
             </Reveal>
           </View>
           <View style={[styles.authBody, { backgroundColor: colors.background }]}>
@@ -253,6 +253,7 @@ export const styles = StyleSheet.create({
   authPatternOne: { position: "absolute", width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: "rgba(0,157,231,.12)", right: -95, top: -95 },
   authPatternTwo: { position: "absolute", width: 160, height: 160, borderRadius: 80, borderWidth: 1, borderColor: "rgba(0,157,231,.09)", right: -34, top: -38 },
   authTitle: { fontSize: 32, lineHeight: 38, fontWeight: "600", letterSpacing: -0.8, marginTop: 48, alignSelf: "flex-start" },
+  authTitleWithoutBrand: { marginTop: 22 },
   authSubtitle: { fontSize: 15, lineHeight: 22, marginTop: 8, alignSelf: "flex-start" },
   authRoleCue: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 18, alignSelf: "flex-start" },
   authRoleText: { fontSize: 12, lineHeight: 17 },
