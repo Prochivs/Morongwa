@@ -83,7 +83,7 @@ export function AuthShell({ children, title, subtitle, compact = false, roleText
       <StatusBar style={colors.background === "#f3f8fc" ? "dark" : "light"} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.authSafe}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.authScroll}>
-          <View style={[styles.authHero, compact && styles.authHeroCompact, { backgroundColor: colors.surface }]}>
+          <View style={[styles.authHero, compact && styles.authHeroCompact, !showBrand && styles.authHeroWithoutBrand, { backgroundColor: colors.surface }]}>
             <View style={styles.authPatternOne} />
             <View style={styles.authPatternTwo} />
             {showBrand ? <Reveal delay={40}><Brand /></Reveal> : null}
@@ -96,7 +96,7 @@ export function AuthShell({ children, title, subtitle, compact = false, roleText
               </View> : null}
             </Reveal>
           </View>
-          <View style={[styles.authBody, { backgroundColor: colors.background }]}>
+          <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, { backgroundColor: colors.background }]}>
             <Reveal delay={170}>{children}</Reveal>
           </View>
         </ScrollView>
@@ -250,14 +250,16 @@ export const styles = StyleSheet.create({
   authScroll: { flexGrow: 1 },
   authHero: { minHeight: 310, paddingHorizontal: 24, paddingTop: 38, paddingBottom: 32, overflow: "hidden", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "#dce4ec" },
   authHeroCompact: { minHeight: 285 },
+  authHeroWithoutBrand: { minHeight: 0, paddingTop: 26, paddingBottom: 18 },
   authPatternOne: { position: "absolute", width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: "rgba(0,157,231,.12)", right: -95, top: -95 },
   authPatternTwo: { position: "absolute", width: 160, height: 160, borderRadius: 80, borderWidth: 1, borderColor: "rgba(0,157,231,.09)", right: -34, top: -38 },
   authTitle: { fontSize: 32, lineHeight: 38, fontWeight: "600", letterSpacing: -0.8, marginTop: 48, alignSelf: "flex-start" },
-  authTitleWithoutBrand: { marginTop: 22 },
+  authTitleWithoutBrand: { marginTop: 0 },
   authSubtitle: { fontSize: 15, lineHeight: 22, marginTop: 8, alignSelf: "flex-start" },
   authRoleCue: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 18, alignSelf: "flex-start" },
   authRoleText: { fontSize: 12, lineHeight: 17 },
   authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
+  authBodyWithoutBrand: { paddingTop: 18 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
   appHeader: { minHeight: 64, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth },
