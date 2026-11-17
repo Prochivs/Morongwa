@@ -11,7 +11,7 @@
 
 ## Full-view comparison evidence
 
-The implementation preserves the source hierarchy and measured rhythm: 44-point header controls, a 112-point dark feature card, a 116-point square overlapping image, a 40-point action pill, 64-point progress rows and check tiles, and a 64-point floating navigation bar. Pet-specific content is intentionally mapped to QueueMate request data. The source's lower wellness cards were intentionally omitted at the user's request.
+The implementation preserves the source hierarchy and measured rhythm: 44-point header controls, a 112-point dark feature card, a 116-point square overlapping image, a 40-point action pill, 64-point progress rows and check tiles, and a 64-point floating navigation bar with approximately 28-point side margins and an 18-point bottom margin. Pet-specific content is intentionally mapped to QueueMate request data. The source's lower wellness cards were intentionally omitted at the user's request.
 
 ## Focused comparison evidence
 
