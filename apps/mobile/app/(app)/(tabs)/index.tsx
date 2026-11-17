@@ -27,6 +27,8 @@ function CustomerHome() {
   const paymentComplete = next?.paymentStatus === "VERIFIED";
   const approvalComplete = Boolean(next && ["APPROVED", "AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS", "COMPLETED"].includes(next.requestStatus));
   const agentComplete = Boolean(next && ["AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS", "COMPLETED"].includes(next.requestStatus));
+  const progressSurface = dark ? colors.surface : "#e8e9e6";
+  const progressBorder = dark ? colors.border : "#d6d8d5";
   const progress = [
     { icon: "card-outline" as const, title: "Payment", detail: paymentComplete ? "Verified" : formatStatus(next?.paymentStatus ?? "Not started"), complete: paymentComplete },
     { icon: "shield-checkmark-outline" as const, title: "Request review", detail: approvalComplete ? "Approved" : formatStatus(next?.requestStatus ?? "Not started"), complete: approvalComplete },
@@ -34,14 +36,14 @@ function CustomerHome() {
   ];
 
   return (
-    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={homeStyles.screen}>
+    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ ...homeStyles.screen, backgroundColor: dark ? colors.background : "#f8faf4" }}>
       <View style={homeStyles.customerHeader}>
         <View style={[homeStyles.avatar, { backgroundColor: dark ? "#22324a" : "#dfe6df" }]}><Text style={[homeStyles.avatarText, { color: colors.text }]}>{initials}</Text></View>
         <View style={homeStyles.headerCopy}>
           <Text style={[homeStyles.hello, { color: colors.text }]}>Hey {firstName}!</Text>
           <Text style={[homeStyles.helloSubtitle, { color: colors.muted }]}>Your QueueMate day at a glance</Text>
         </View>
-        <Pressable accessibilityLabel="Notifications" style={[homeStyles.notification, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Pressable accessibilityLabel="Notifications" style={[homeStyles.notification, { backgroundColor: dark ? colors.surface : "#efefed", borderColor: progressBorder }]}>
           <Ionicons color={colors.text} name="notifications" size={21} />
         </Pressable>
       </View>
@@ -74,13 +76,13 @@ function CustomerHome() {
       {query.isLoading ? <CustomerHomeSkeleton /> : progress.map((item, index) => (
         <Reveal key={item.title} delay={90 + index * 55}>
           <View style={homeStyles.progressRow}>
-            <View style={[homeStyles.progressMain, { backgroundColor: colors.surface, borderColor: colors.border, opacity: next ? 1 : 0.6 }]}>
+            <View style={[homeStyles.progressMain, { backgroundColor: progressSurface, borderColor: progressBorder, opacity: next ? 1 : 0.6 }]}>
               <View style={[homeStyles.progressIcon, { backgroundColor: index === 0 ? "#fff1cf" : index === 1 ? "#dff4ff" : "#e8f6ed" }]}>
                 <Ionicons color={index === 0 ? "#cc7a00" : index === 1 ? palette.brand : palette.success} name={item.icon} size={24} />
               </View>
               <View style={{ flex: 1 }}><Text style={[homeStyles.progressTitle, { color: colors.text }]}>{item.title}</Text><Text numberOfLines={1} style={[homeStyles.progressDetail, { color: colors.muted }]}>{item.detail}</Text></View>
             </View>
-            <View style={[homeStyles.checkTile, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[homeStyles.checkTile, { backgroundColor: progressSurface, borderColor: progressBorder }]}>
               <View style={[homeStyles.checkCircle, { backgroundColor: item.complete ? palette.ink : "transparent", borderColor: item.complete ? palette.ink : colors.muted }]}>
                 <Ionicons color={item.complete ? palette.white : colors.muted} name="checkmark" size={16} />
               </View>
@@ -94,33 +96,33 @@ function CustomerHome() {
 }
 
 const homeStyles = StyleSheet.create({
-  screen: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 126 },
-  customerHeader: { minHeight: 70, flexDirection: "row", alignItems: "center" },
-  avatar: { width: 52, height: 52, borderRadius: 18, alignItems: "center", justifyContent: "center" },
-  avatarText: { fontSize: 17, fontWeight: "600", letterSpacing: -.4 },
-  headerCopy: { flex: 1, paddingHorizontal: 12 },
-  hello: { fontSize: 22, lineHeight: 25, fontWeight: "600", letterSpacing: -.6 },
-  helloSubtitle: { fontSize: 12, lineHeight: 17, marginTop: 2 },
-  notification: { width: 48, height: 48, borderRadius: 18, borderWidth: 1, alignItems: "center", justifyContent: "center" },
-  featureCard: { height: 194, marginTop: 24, marginBottom: 28, marginLeft: 8, borderRadius: 28, backgroundColor: "#151515", overflow: "visible", shadowColor: palette.navy, shadowOffset: { width: 0, height: 9 }, shadowOpacity: .18, shadowRadius: 18, elevation: 6 },
-  featureImageFrame: { position: "absolute", left: -8, top: -14, width: 122, height: 150, padding: 6, borderRadius: 28, backgroundColor: palette.white, shadowColor: "#000", shadowOffset: { width: 0, height: 5 }, shadowOpacity: .18, shadowRadius: 12, elevation: 7 },
-  featureImage: { width: "100%", height: "100%", borderRadius: 22 },
-  featureCopy: { marginLeft: 126, paddingTop: 25, paddingRight: 18 },
-  featureEyebrow: { color: palette.brandLight, fontSize: 9, letterSpacing: 1.7, marginBottom: 7 },
-  featureTitle: { color: palette.white, fontSize: 24, lineHeight: 27, fontWeight: "600", letterSpacing: -.7 },
-  featureMeta: { color: "#9ba3ad", fontSize: 12, marginTop: 5 },
-  featureAction: { position: "absolute", right: 12, bottom: -17, minWidth: 148, height: 48, paddingHorizontal: 18, borderRadius: 20, backgroundColor: "#f8fafc", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderWidth: 1, borderColor: "#e2e8f0" },
-  featureActionText: { color: palette.ink, fontSize: 14, fontWeight: "600" },
-  sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
-  sectionTitle: { fontSize: 21, lineHeight: 26, fontWeight: "600", letterSpacing: -.5 },
-  addButton: { width: 34, height: 34, borderRadius: 13, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center" },
-  progressRow: { flexDirection: "row", gap: 9, marginBottom: 10 },
-  progressMain: { minHeight: 76, flex: 1, paddingHorizontal: 13, borderWidth: 1, borderRadius: 21, flexDirection: "row", alignItems: "center", gap: 12 },
-  progressIcon: { width: 47, height: 47, borderRadius: 15, alignItems: "center", justifyContent: "center" },
-  progressTitle: { fontSize: 16, lineHeight: 19, fontWeight: "600" },
-  progressDetail: { fontSize: 12, lineHeight: 16, marginTop: 3, textTransform: "capitalize" },
-  checkTile: { width: 68, minHeight: 76, borderWidth: 1, borderRadius: 21, alignItems: "center", justifyContent: "center" },
-  checkCircle: { width: 28, height: 28, borderRadius: 10, borderWidth: 1.5, alignItems: "center", justifyContent: "center" },
+  screen: { flexGrow: 1, paddingHorizontal: 27, paddingTop: 8, paddingBottom: 98 },
+  customerHeader: { minHeight: 60, flexDirection: "row", alignItems: "center" },
+  avatar: { width: 44, height: 44, borderRadius: 16, alignItems: "center", justifyContent: "center" },
+  avatarText: { fontSize: 15, fontWeight: "600", letterSpacing: -.35 },
+  headerCopy: { flex: 1, paddingHorizontal: 11 },
+  hello: { fontSize: 20, lineHeight: 23, fontWeight: "600", letterSpacing: -.5 },
+  helloSubtitle: { fontSize: 11, lineHeight: 15, marginTop: 1 },
+  notification: { width: 44, height: 44, borderRadius: 18, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  featureCard: { height: 112, marginTop: 20, marginBottom: 38, borderRadius: 22, backgroundColor: "#151515", overflow: "visible", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
+  featureImageFrame: { position: "absolute", left: 11, top: -12, width: 116, height: 116, padding: 5, borderRadius: 24, backgroundColor: palette.white, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: .17, shadowRadius: 10, elevation: 6 },
+  featureImage: { width: "100%", height: "100%", borderRadius: 19 },
+  featureCopy: { marginLeft: 149, paddingTop: 13, paddingRight: 12 },
+  featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5 },
+  featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6 },
+  featureMeta: { color: "#9ba3ad", fontSize: 11, marginTop: 4 },
+  featureAction: { position: "absolute", right: 10, bottom: -18, minWidth: 154, height: 40, paddingHorizontal: 16, borderRadius: 19, backgroundColor: "#f8fafc", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderWidth: 1, borderColor: "#e2e8f0" },
+  featureActionText: { color: palette.ink, fontSize: 13, fontWeight: "600" },
+  sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
+  sectionTitle: { fontSize: 19, lineHeight: 23, fontWeight: "600", letterSpacing: -.45 },
+  addButton: { width: 30, height: 30, borderRadius: 11, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center" },
+  progressRow: { flexDirection: "row", gap: 8, marginBottom: 8 },
+  progressMain: { minHeight: 64, flex: 1, paddingHorizontal: 11, borderWidth: 1, borderRadius: 19, flexDirection: "row", alignItems: "center", gap: 11 },
+  progressIcon: { width: 40, height: 40, borderRadius: 13, alignItems: "center", justifyContent: "center" },
+  progressTitle: { fontSize: 15, lineHeight: 18, fontWeight: "600" },
+  progressDetail: { fontSize: 11, lineHeight: 14, marginTop: 2, textTransform: "capitalize" },
+  checkTile: { width: 64, minHeight: 64, borderWidth: 1, borderRadius: 19, alignItems: "center", justifyContent: "center" },
+  checkCircle: { width: 25, height: 25, borderRadius: 9, borderWidth: 1.5, alignItems: "center", justifyContent: "center" },
 });
 
 function CustomerHomeSkeleton() {
