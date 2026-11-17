@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { AppHeader, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
+import { AppHeader, Badge, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
@@ -22,6 +22,7 @@ function CustomerHome() {
   const { colors, dark } = useTheme();
   const query = useQuery({ queryKey: ["mobile", "requests"], queryFn: () => apiFetch<RequestListItem[]>("/requests/my-requests?pageSize=5", { token }) });
   const next = query.data?.find((item) => !["COMPLETED", "REJECTED", "CANCELLED"].includes(item.requestStatus));
+  const todayRequests = (query.data ?? []).filter((item) => isToday(item.scheduledStartAt) || isToday(item.requestedDate) || isToday(item.createdAt)).slice(0, 3);
   const firstName = user?.fullName.split(" ")[0] ?? "there";
   const controlBorder = dark ? colors.border : "#d6d8d5";
 
@@ -54,6 +55,40 @@ function CustomerHome() {
           </View>
         </Pressable>
       </Reveal>
+
+      <View style={homeStyles.todayHeader}>
+        <Text style={[homeStyles.todayTitle, { color: colors.text }]}>Today’s requests</Text>
+        <Pressable accessibilityRole="button" onPress={() => router.push("/(app)/(tabs)/work")} hitSlop={8}>
+          <Text style={homeStyles.todayLink}>View all</Text>
+        </Pressable>
+      </View>
+
+      {query.isLoading ? <TodayRequestsSkeleton /> : todayRequests.length ? todayRequests.map((item, index) => (
+        <Reveal key={item.id} delay={90 + index * 55}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Open request ${item.reference}`}
+            onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: item.id } })}
+            style={({ pressed }) => [homeStyles.todayRequest, { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.82 : 1 }]}
+          >
+            <View style={[homeStyles.todayTime, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}>
+              <Ionicons color={palette.brand} name="time-outline" size={17} />
+              <Text style={[homeStyles.todayTimeText, { color: colors.text }]}>{requestTime(item)}</Text>
+            </View>
+            <View style={homeStyles.todayCopy}>
+              <Text numberOfLines={1} style={[homeStyles.todayInstitution, { color: colors.text }]}>{item.institution.name}</Text>
+              <Text numberOfLines={1} style={[homeStyles.todayReference, { color: colors.muted }]}>{item.reference} · {item.institution.city}</Text>
+              <View style={homeStyles.todayBadge}><Badge status={item.requestStatus} /></View>
+            </View>
+            <Ionicons color={colors.muted} name="chevron-forward" size={18} />
+          </Pressable>
+        </Reveal>
+      )) : (
+        <View style={[homeStyles.todayEmpty, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[homeStyles.todayEmptyIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name="calendar-outline" size={20} /></View>
+          <View style={{ flex: 1 }}><Text style={[homeStyles.todayInstitution, { color: colors.text }]}>Nothing scheduled today</Text><Text style={[homeStyles.todayReference, { color: colors.muted }]}>New and upcoming requests are available under Requests.</Text></View>
+        </View>
+      )}
     </Screen>
   );
 }
@@ -73,7 +108,36 @@ const homeStyles = StyleSheet.create({
   featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5 },
   featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6 },
   featureMeta: { color: "#9ba3ad", fontSize: 11, marginTop: 4 },
+  todayHeader: { marginTop: 2, marginBottom: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  todayTitle: { fontSize: 19, lineHeight: 23, fontWeight: "600", letterSpacing: -.45 },
+  todayLink: { color: palette.brand, fontSize: 12, fontWeight: "600" },
+  todayRequest: { minHeight: 88, borderWidth: 1, borderRadius: 14, padding: 9, marginBottom: 8, flexDirection: "row", alignItems: "center", gap: 10 },
+  todayTime: { width: 54, minHeight: 58, borderRadius: 12, alignItems: "center", justifyContent: "center", gap: 3 },
+  todayTimeText: { fontSize: 10, fontWeight: "600" },
+  todayCopy: { flex: 1, minWidth: 0 },
+  todayInstitution: { fontSize: 14, lineHeight: 18, fontWeight: "600" },
+  todayReference: { fontSize: 10, lineHeight: 14, marginTop: 2 },
+  todayBadge: { alignSelf: "flex-start", marginTop: 5 },
+  todayEmpty: { minHeight: 68, borderWidth: 1, borderRadius: 14, padding: 11, flexDirection: "row", alignItems: "center", gap: 11 },
+  todayEmptyIcon: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center" },
 });
+
+function TodayRequestsSkeleton() {
+  const { colors } = useTheme();
+  return <View style={[homeStyles.todayRequest, { backgroundColor: colors.surface, borderColor: colors.border }]}><View style={[homeStyles.todayTime, { backgroundColor: colors.surfaceMuted }]} /><View style={{ flex: 1, gap: 8 }}><View style={{ width: "62%", height: 11, borderRadius: 6, backgroundColor: colors.surfaceMuted }} /><View style={{ width: "78%", height: 8, borderRadius: 4, backgroundColor: colors.surfaceMuted }} /></View></View>;
+}
+
+function isToday(value: string) {
+  const date = new Date(value);
+  const today = new Date();
+  return !Number.isNaN(date.getTime()) && date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate();
+}
+
+function requestTime(item: RequestListItem) {
+  const date = new Date(item.scheduledStartAt);
+  if (!Number.isNaN(date.getTime())) return isToday(item.scheduledStartAt) ? date.toLocaleTimeString("en-BW", { hour: "2-digit", minute: "2-digit" }) : date.toLocaleDateString("en-BW", { day: "2-digit", month: "short" });
+  return item.preferredArrivalTime.slice(0, 5);
+}
 
 function AgentHome() {
   const router = useRouter();
