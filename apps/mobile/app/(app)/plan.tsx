@@ -77,7 +77,7 @@ export default function PlanScreen() {
           <Field icon="time-outline" label="Planned time" value={form.plannedTime} onChangeText={(value) => change("plannedTime", value)} placeholder="09:00" />
           <Field icon="document-text-outline" label="Notes (optional)" multiline value={form.notes} onChangeText={(value) => change("notes", value)} placeholder="Add anything you want to remember" />
         </Card>
-        <Button loading={save.isPending} onPress={submit}>{id ? "Save changes" : "Save to planner"}</Button>
+        <View style={styles.formAction}><Button loading={save.isPending} onPress={submit}>{id ? "Save changes" : "Save to planner"}</Button></View>
         {id ? <>
           <View style={styles.actionGap}><Button arrow icon="paper-plane-outline" variant="brand" onPress={send}>Prepare request</Button></View>
           <Pressable accessibilityRole="button" disabled={remove.isPending} onPress={confirmDelete} style={styles.deleteButton}><Ionicons color={colors.danger} name="trash-outline" size={18} /><Text style={[styles.deleteText, { color: colors.danger }]}>{remove.isPending ? "Deleting…" : "Delete plan"}</Text></Pressable>
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
   screen: { paddingHorizontal: 0, paddingBottom: 42 },
   content: { paddingHorizontal: 20, paddingTop: 20 },
   formCard: { borderWidth: 0, borderRadius: 0, shadowOpacity: 0, elevation: 0 },
+  formAction: { marginHorizontal: 17 },
   notice: { borderRadius: 12, padding: 14, marginBottom: 18, flexDirection: "row", alignItems: "flex-start", gap: 11 },
   noticeCopy: { flex: 1 },
   noticeTitle: { fontSize: 14, lineHeight: 18, fontWeight: "600" },
