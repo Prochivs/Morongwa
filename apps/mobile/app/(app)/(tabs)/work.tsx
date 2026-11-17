@@ -1,8 +1,9 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { AppHeader, Button, Card, EmptyState, ListSkeleton, Screen } from "@/components/ui";
+import { AppHeader, Card, EmptyState, ListSkeleton, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
@@ -27,10 +28,10 @@ export default function WorkScreen() {
     return filter === "DONE" ? done : !done;
   }), [filter, items]);
   return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
       <AppHeader title={agent ? "My assignments" : "My requests"} />
       <View style={styles.content}>
-      {!agent ? <Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button> : null}
       <View style={[styles.tabs, { backgroundColor: colors.surface, borderColor: colors.border }]}>{[["ALL", "All"], ["ACTIVE", "Active"], ["DONE", "Completed"]].map(([value, label]) => <Pressable key={value} onPress={() => setFilter(value as "ALL" | "ACTIVE" | "DONE")} style={[styles.tab, filter === value && styles.tabActive]}><Text style={[styles.tabText, { color: filter === value ? palette.white : colors.muted }]}>{label}</Text></Pressable>)}</View>
       {query.isLoading ? <ListSkeleton rows={4} /> : !filtered.length ? <Card><EmptyState title={agent ? "No assignments here" : "No requests here"} message={agent ? "Assignments made by QueueMate administrators will appear here." : "Your queue assistance requests will appear here."} /></Card> : filtered.map((raw) => {
         if ("request" in raw) {
@@ -42,13 +43,16 @@ export default function WorkScreen() {
       })}
       </View>
     </Screen>
+    {!agent ? <Pressable accessibilityLabel="Create a new request" accessibilityRole="button" onPress={() => router.push("/(app)/new-request")} style={({ pressed }) => [styles.fab, { opacity: pressed ? 0.86 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] }]}><Ionicons color={palette.white} name="add" size={30} /></Pressable> : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   content: { paddingHorizontal: 20, paddingTop: 20 },
-  tabs: { flexDirection: "row", borderWidth: 1, borderRadius: 10, padding: 4, marginTop: 18, marginBottom: 20 },
+  tabs: { flexDirection: "row", borderWidth: 1, borderRadius: 10, padding: 4, marginBottom: 20 },
   tab: { flex: 1, minHeight: 38, borderRadius: 7, alignItems: "center", justifyContent: "center" },
   tabActive: { backgroundColor: palette.brand },
   tabText: { fontSize: 12, fontWeight: "600" },
+  fab: { position: "absolute", right: 28, bottom: 102, width: 58, height: 58, borderRadius: 29, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center", zIndex: 10, shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 10 },
 });
