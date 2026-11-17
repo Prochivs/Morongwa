@@ -89,11 +89,6 @@ function CustomerHome() {
         </Reveal>
       ))}
 
-      <Text style={[homeStyles.sectionTitle, homeStyles.overviewTitle, { color: colors.text }]}>Queue overview</Text>
-      <View style={homeStyles.statGrid}>
-        <Reveal delay={280} style={{ flex: 1 }}><View style={[homeStyles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={palette.brand} name="wallet-outline" size={27} /><Text numberOfLines={1} style={[homeStyles.statValue, { color: colors.text }]}>{next ? `${next.currency} ${Number(next.quotedAmount).toFixed(0)}` : "—"}</Text><Text style={[homeStyles.statLabel, { color: colors.muted }]}>Request fee</Text></View></Reveal>
-        <Reveal delay={330} style={{ flex: 1 }}><View style={[homeStyles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={palette.brand} name="calendar-outline" size={27} /><Text numberOfLines={1} style={[homeStyles.statValue, { color: colors.text }]}>{next ? new Date(next.scheduledStartAt).toLocaleDateString("en-BW", { day: "2-digit", month: "short" }).toUpperCase() : "—"}</Text><Text style={[homeStyles.statLabel, { color: colors.muted }]}>Scheduled</Text></View></Reveal>
-      </View>
     </Screen>
   );
 }
@@ -126,11 +121,6 @@ const homeStyles = StyleSheet.create({
   progressDetail: { fontSize: 12, lineHeight: 16, marginTop: 3, textTransform: "capitalize" },
   checkTile: { width: 68, minHeight: 76, borderWidth: 1, borderRadius: 21, alignItems: "center", justifyContent: "center" },
   checkCircle: { width: 28, height: 28, borderRadius: 10, borderWidth: 1.5, alignItems: "center", justifyContent: "center" },
-  overviewTitle: { marginTop: 17, marginBottom: 12 },
-  statGrid: { flexDirection: "row", gap: 10 },
-  statCard: { minHeight: 142, flex: 1, padding: 17, borderWidth: 1, borderRadius: 24, justifyContent: "space-between" },
-  statValue: { fontSize: 23, lineHeight: 27, fontWeight: "600", letterSpacing: -.7, marginTop: 14 },
-  statLabel: { fontSize: 12, lineHeight: 16, marginTop: 2 },
 });
 
 function CustomerHomeSkeleton() {

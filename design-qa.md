@@ -11,7 +11,7 @@
 
 ## Full-view comparison evidence
 
-The implementation preserves the source hierarchy and rhythm: compact greeting row, circular notification control, large dark identity-style card with an overlapping image, a light pill action, a three-row daily checklist with separate completion tiles, two summary cards, and a floating rounded navigation bar with a dark active item. Pet-specific content is intentionally mapped to QueueMate request data.
+The implementation preserves the source hierarchy and rhythm: compact greeting row, circular notification control, large dark identity-style card with an overlapping image, a light pill action, a three-row daily checklist with separate completion tiles, and a floating rounded navigation bar with a dark active item. Pet-specific content is intentionally mapped to QueueMate request data. The source's lower wellness cards were intentionally omitted at the user's request.
 
 ## Focused comparison evidence
 
@@ -24,7 +24,7 @@ The implementation preserves the source hierarchy and rhythm: compact greeting r
 ## Required fidelity surfaces
 
 - Fonts and typography: system mobile typography matches the soft, readable character of the source. Heading and body weights remain restrained; no clipping or broken wrapping is visible.
-- Spacing and layout rhythm: page margins, card overlap, section gaps, row heights, radii, and floating navigation are consistent. The page scrolls so summary content remains reachable above the persistent tab bar.
+- Spacing and layout rhythm: page margins, card overlap, section gaps, row heights, radii, and floating navigation are consistent. The progress list ends with enough breathing room above the persistent tab bar.
 - Colors and visual tokens: off-white/light-blue QueueMate background, black feature card, white surfaces, blue brand accents, and muted copy preserve the source balance while applying QueueMate tokens.
 - Image quality and asset fidelity: the existing high-resolution QueueMate service-centre photo is sharp, correctly cropped, and contained by a real image frame. No placeholder art, CSS art, or custom SVG substitutes are used.
 - Copy and content: all source-specific pet language has been replaced with coherent QueueMate content backed by the authenticated customer and active request.
@@ -47,7 +47,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 
 ## Implementation checklist
 
-- [x] Reference hierarchy translated to live QueueMate request data.
+- [x] Reference hierarchy translated to live QueueMate request data without the removed overview section.
 - [x] Customer-only floating navigation added.
 - [x] Agent portal navigation preserved.
 - [x] Light and dark modes checked.
