@@ -56,6 +56,7 @@ export default function PlanScreen() {
   const [pickerDate, setPickerDate] = useState(dateFromInput(tomorrow()));
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [pickerTime, setPickerTime] = useState(timeFromInput("09:00"));
+  const [showPlanMenu, setShowPlanMenu] = useState(false);
   const [error, setError] = useState("");
   const query = useQuery({ queryKey: ["mobile", "planner", id], queryFn: () => apiFetch<PlannerItem>(`/planner-items/${id}`, { token }), enabled: Boolean(id) });
 
@@ -115,7 +116,11 @@ export default function PlanScreen() {
 
   return (
     <Screen contentStyle={styles.screen}>
-      <AppHeader title={id ? "Plan details" : "Add to planner"} onBack={() => router.back()} />
+      <AppHeader
+        title={id ? "Plan details" : "Add to planner"}
+        onBack={() => router.back()}
+        right={id ? <Pressable accessibilityLabel="Plan actions" accessibilityRole="button" hitSlop={8} onPress={() => setShowPlanMenu(true)} style={styles.menuButton}><Ionicons color={colors.text} name="ellipsis-vertical" size={23} /></Pressable> : undefined}
+      />
       <View style={styles.content}>
         <View style={[styles.notice, { backgroundColor: dark ? colors.surfaceMuted : "#f0f9fe" }]}>
           <Ionicons color={palette.brand} name="lock-closed-outline" size={20} />
@@ -129,11 +134,15 @@ export default function PlanScreen() {
           <Field compact icon="document-text-outline" label="Notes (optional)" multiline value={form.notes} onChangeText={(value) => change("notes", value)} placeholder="Add anything you want to remember" />
         </Card>
         <View style={styles.formAction}><Button loading={save.isPending} onPress={submit}>Save</Button></View>
-        {id ? <>
-          <View style={styles.actionGap}><Button arrow icon="paper-plane-outline" variant="brand" onPress={send}>Prepare request</Button></View>
-          <Pressable accessibilityRole="button" disabled={remove.isPending} onPress={confirmDelete} style={styles.deleteButton}><Ionicons color={colors.danger} name="trash-outline" size={18} /><Text style={[styles.deleteText, { color: colors.danger }]}>{remove.isPending ? "Deleting…" : "Delete plan"}</Text></Pressable>
-        </> : null}
       </View>
+      <Modal animationType="fade" onRequestClose={() => setShowPlanMenu(false)} transparent visible={showPlanMenu}>
+        <Pressable accessibilityRole="none" onPress={() => setShowPlanMenu(false)} style={styles.menuBackdrop}>
+          <Pressable accessibilityRole="none" onPress={(event) => event.stopPropagation()} style={[styles.planMenu, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Pressable accessibilityRole="button" onPress={() => { setShowPlanMenu(false); send(); }} style={[styles.menuItem, { borderBottomColor: colors.border }]}><Ionicons color={colors.text} name="paper-plane-outline" size={19} /><Text style={[styles.menuItemText, { color: colors.text }]}>Request</Text></Pressable>
+            <Pressable accessibilityRole="button" disabled={remove.isPending} onPress={() => { setShowPlanMenu(false); confirmDelete(); }} style={styles.menuItem}><Ionicons color={colors.danger} name="trash-outline" size={19} /><Text style={[styles.menuItemText, { color: colors.danger }]}>{remove.isPending ? "Deleting…" : "Delete"}</Text></Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
       <Modal animationType="fade" onRequestClose={() => setShowDatePicker(false)} transparent visible={showDatePicker}>
         <View style={styles.modalBackdrop}>
           <View style={[styles.dateSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -167,13 +176,15 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 20, paddingTop: 20 },
   formCard: { borderWidth: 0, borderRadius: 0, shadowOpacity: 0, elevation: 0 },
   formAction: { marginHorizontal: 17 },
+  menuButton: { width: 42, height: 42, alignItems: "center", justifyContent: "center" },
+  menuBackdrop: { flex: 1, backgroundColor: "rgba(4,14,31,.18)" },
+  planMenu: { position: "absolute", right: 16, top: 94, width: 174, borderWidth: 1, borderRadius: 12, overflow: "hidden", shadowColor: palette.navy, shadowOffset: { width: 0, height: 8 }, shadowOpacity: .18, shadowRadius: 18, elevation: 8 },
+  menuItem: { minHeight: 52, paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: "row", alignItems: "center", gap: 11 },
+  menuItemText: { fontSize: 14, fontWeight: "500" },
   notice: { borderRadius: 12, padding: 14, marginBottom: 18, flexDirection: "row", alignItems: "flex-start", gap: 11 },
   noticeCopy: { flex: 1 },
   noticeTitle: { fontSize: 14, lineHeight: 18, fontWeight: "600" },
   noticeText: { fontSize: 11, lineHeight: 16, marginTop: 3 },
-  actionGap: { marginTop: 9 },
-  deleteButton: { minHeight: 46, marginTop: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
-  deleteText: { fontSize: 13, fontWeight: "500" },
   modalBackdrop: { flex: 1, backgroundColor: "rgba(4,14,31,.48)", paddingHorizontal: 18, alignItems: "center", justifyContent: "center" },
   dateSheet: { width: "100%", maxWidth: 390, borderWidth: 1, borderRadius: 18, overflow: "hidden", paddingBottom: 8 },
   timeSheet: { width: "100%", maxWidth: 390, borderWidth: 1, borderRadius: 18, overflow: "hidden", paddingBottom: 14 },

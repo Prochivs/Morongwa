@@ -68,6 +68,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Mobile-field-focus pass: made every outlined field shell tap-to-focus so taps on field padding or icons reliably activate its text input, including all Planner fields.
 - Planner-date-picker pass: made the complete Planned date field interactive, opening the native Android calendar or an iOS calendar sheet and writing the chosen day back in `YYYY-MM-DD` format.
 - Planner-time-picker pass: made the complete Planned time field interactive, opening the native Android time dialog or an iOS time sheet and writing the chosen value back in 24-hour `HH:mm` format.
+- Planner-actions-menu pass: moved existing-plan actions from the bottom of Plan Details into a compact top-right overflow menu with Request and Delete items, leaving Save as the primary form action.
 
 ## Follow-up polish
 
