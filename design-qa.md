@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-simplified-home-v3.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-compact-request-card-v2.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -11,7 +11,7 @@
 
 ## Full-view comparison evidence
 
-The implementation preserves the source hierarchy while incorporating the user's latest refinements: fully circular 44-point header controls, a prominent 230-point photographic request card, and a 64-point floating navigation bar aligned to the 27-point content gutters with an 18-point bottom margin. The light-mode canvas is pure white. Pet-specific content is intentionally mapped to QueueMate request data. The progress list, lower wellness cards, and floating feature action were intentionally omitted at the user's request.
+The implementation preserves the source hierarchy while incorporating the user's latest refinements: fully circular 44-point header controls, a compact 180-point photographic request card, and a 64-point floating navigation bar aligned to the 27-point content gutters with an 18-point bottom margin. The light-mode canvas is pure white. Pet-specific content is intentionally mapped to QueueMate request data. The progress list, lower wellness cards, and floating feature action were intentionally omitted at the user's request.
 
 ## Focused comparison evidence
 
@@ -23,7 +23,7 @@ The implementation preserves the source hierarchy while incorporating the user's
 ## Required fidelity surfaces
 
 - Fonts and typography: system mobile typography matches the soft, readable character of the source. Heading and body weights remain restrained; no clipping or broken wrapping is visible.
-- Spacing and layout rhythm: 27-point content gutters, the intentional 230-point feature card, restrained 16-point card radius, and 64-point floating navigation preserve a balanced mobile rhythm with ample space above the persistent tab bar.
+- Spacing and layout rhythm: 27-point content gutters, the compact 180-point feature card, restrained 16-point card radius, and 64-point floating navigation preserve a balanced mobile rhythm with ample space above the persistent tab bar.
 - Colors and visual tokens: a pure white light-mode canvas, darkened photographic feature card, pale-grey task surfaces, blue QueueMate accents, and muted copy preserve strong contrast while applying QueueMate tokens.
 - Image quality and asset fidelity: the existing high-resolution QueueMate service-centre photo is sharp, positioned with its native aspect ratio so the face and phone remain visible, and protected by a translucent readability overlay. No placeholder art, CSS art, or custom SVG substitutes are used.
 - Copy and content: all source-specific pet language has been replaced with coherent QueueMate content backed by the authenticated customer and active request.
@@ -46,6 +46,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Home-surface pass: changed light-mode app backgrounds to pure white, increased the active-request card from 112 to 142 points, enlarged its image to 128 points, and removed the visible action pill. Post-fix capture confirms the card remains balanced and fully tappable.
 - Feature-image pass: replaced the separate framed photo with the same high-resolution image as a full-card background and added a dark overlay. Post-fix capture confirms the title, reference, phone, and QueueMate uniform remain legible.
 - Simplification pass: removed the complete progress section, replaced initials with a circular person avatar, made the notification fully circular, reduced the card radius from 22 to 16 points, and increased the card to 230 points. The first crop did not resolve the image width correctly; the corrected full-width native-ratio crop now shows both the agent's face and phone in the post-fix capture.
+- Card-height pass: reduced the request card from 230 to 180 points and shifted the image upward by 36 points to retain the face-and-phone focal crop in the shorter layout.
 
 ## Follow-up polish
 
