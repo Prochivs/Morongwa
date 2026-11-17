@@ -16,11 +16,21 @@ type Bank = {
   paymentInstructions: string;
 };
 
+type PaymentOptions = {
+  currency: string;
+  allowedAmounts: number[];
+};
+
 export function PaymentUpload({ requestId, reference, disabled }: { requestId: string; reference: string; disabled: boolean }) {
   const client = useQueryClient();
   const bank = useQuery({
     queryKey: ["bank"],
     queryFn: () => apiFetch<Bank>("/payments/bank-details"),
+    enabled: !disabled,
+  });
+  const payment = useQuery({
+    queryKey: ["payment-options", requestId],
+    queryFn: () => apiFetch<PaymentOptions>(`/payments/${requestId}`),
     enabled: !disabled,
   });
   const [error, setError] = useState("");
@@ -66,7 +76,10 @@ export function PaymentUpload({ requestId, reference, disabled }: { requestId: s
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="field-label">Amount transferred</label>
-              <input className="field" name="amountSubmitted" type="number" min="1" step="0.01" placeholder="0.00" required />
+              <select className="field" disabled={payment.isLoading || !payment.data?.allowedAmounts.length} name="amountSubmitted" required defaultValue="">
+                <option disabled value="">{payment.isLoading ? "Loading amount…" : "Select amount"}</option>
+                {payment.data?.allowedAmounts.map((amount) => <option key={amount} value={amount}>{payment.data.currency} {Number(amount).toFixed(2)}</option>)}
+              </select>
             </div>
             <div>
               <label className="field-label">Bank payment reference</label>
@@ -78,8 +91,8 @@ export function PaymentUpload({ requestId, reference, disabled }: { requestId: s
             <input className="block w-full rounded-lg border border-slate-300 bg-white p-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-blue-50 file:px-3 file:py-2 file:font-normal file:text-brand" name="proof" type="file" accept="application/pdf,image/png,image/jpeg" required />
             <p className="mt-1 text-[11px] font-normal text-muted">Private PDF, PNG, or JPEG. Maximum 5 MB.</p>
           </div>
-          {error && <p className="rounded-lg bg-red-50 p-3 text-[13px] text-red-700">{error}</p>}
-          <Button className="text-xs font-normal" type="submit" loading={upload.isPending}>
+          {(error || payment.error) && <p className="rounded-lg bg-red-50 p-3 text-[13px] text-red-700">{error || (payment.error instanceof Error ? payment.error.message : "Unable to load the payment amount")}</p>}
+          <Button className="text-xs font-normal" disabled={!payment.data?.allowedAmounts.length} type="submit" loading={upload.isPending}>
             <Upload size={17} />
             Upload proof
           </Button>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { agentSchema, canTransition, createRequestSchema, customerProfileSchema, plannerItemSchema, registerSchema, reviewSchema } from "./index";
+import { agentSchema, canTransition, createRequestSchema, customerProfileSchema, paymentProofMetadataSchema, plannerItemSchema, registerSchema, reviewSchema } from "./index";
 
 describe("shared business contracts", () => {
   it("accepts only valid assignment transitions", () => {
@@ -77,6 +77,11 @@ describe("shared business contracts", () => {
     expect(reviewSchema.safeParse({ rating: 5, comment: "Helpful and professional." }).success).toBe(true);
     expect(reviewSchema.safeParse({ rating: 0 }).success).toBe(false);
     expect(reviewSchema.safeParse({ rating: 6 }).success).toBe(false);
+  });
+
+  it("accepts numeric payment amounts and rejects letters", () => {
+    expect(paymentProofMetadataSchema.safeParse({ amountSubmitted: "50.00", paymentReference: "QM-2026-000001" }).success).toBe(true);
+    expect(paymentProofMetadataSchema.safeParse({ amountSubmitted: "fifty", paymentReference: "QM-2026-000001" }).success).toBe(false);
   });
 
   it("rejects executable markup in every human-entered text field", () => {

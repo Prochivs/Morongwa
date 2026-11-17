@@ -27,8 +27,11 @@ router.post("/payments/:requestId/proof", requireCsrf, upload.single("proof"), a
   const serviceRequest = await prisma.serviceRequest.findFirst({ where: { id: request.params.requestId, customerId: request.auth!.userId }, include: { payments: { orderBy: { createdAt: "desc" }, take: 1 } } });
   if (!serviceRequest || !serviceRequest.payments[0]) throw new AppError(404, "PAYMENT_NOT_FOUND", "Payment record not found");
   if (["VERIFIED", "REFUNDED"].includes(serviceRequest.paymentStatus)) throw new AppError(409, "PAYMENT_FINAL", "This payment has already been finalised");
-  const stored = await putPrivateFile(`payments/${serviceRequest.reference}`, request.file);
   const payment = serviceRequest.payments[0];
+  if (Math.round(metadata.amountSubmitted * 100) !== Math.round(payment.amountExpected * 100)) {
+    throw new AppError(422, "PAYMENT_AMOUNT_MISMATCH", "Select and submit the exact amount configured for this request");
+  }
+  const stored = await putPrivateFile(`payments/${serviceRequest.reference}`, request.file);
   const updated = await prisma.$transaction(async (transaction) => {
     const changed = await transaction.payment.update({ where: { id: payment.id }, data: { amountSubmitted: metadata.amountSubmitted, paymentReference: metadata.paymentReference, status: "PROOF_UPLOADED", proofs: { create: { storageKey: stored.key, originalName: safeFile.originalName, mimeType: safeFile.mimeType, sizeBytes: request.file!.size, sha256: stored.sha256 } } }, include: { proofs: true } });
     await transaction.serviceRequest.update({ where: { id: serviceRequest.id }, data: { paymentStatus: "PROOF_UPLOADED", requestStatus: "PAYMENT_REVIEW" } });
@@ -42,9 +45,10 @@ router.post("/payments/:requestId/proof", requireCsrf, upload.single("proof"), a
 
 router.get("/payments/:requestId", asyncHandler(async (request, response) => {
   const where = request.auth!.role === "CUSTOMER" ? { id: request.params.requestId, customerId: request.auth!.userId } : { id: request.params.requestId };
-  const item = await prisma.serviceRequest.findFirst({ where, select: { id: true, reference: true, quotedAmount: true, currency: true, paymentStatus: true, payments: { select: { id: true, amountExpected: true, amountSubmitted: true, paymentReference: true, status: true, verificationNotes: true, verifiedAt: true, proofs: { select: { id: true, originalName: true, mimeType: true, uploadedAt: true } } } } } });
+  const item = await prisma.serviceRequest.findFirst({ where, select: { id: true, reference: true, quotedAmount: true, currency: true, paymentStatus: true, payments: { orderBy: { createdAt: "desc" }, select: { id: true, amountExpected: true, amountSubmitted: true, paymentReference: true, status: true, verificationNotes: true, verifiedAt: true, proofs: { select: { id: true, originalName: true, mimeType: true, uploadedAt: true } } } } } });
   if (!item || request.auth!.role === "AGENT") throw new AppError(404, "PAYMENT_NOT_FOUND", "Payment record not found");
-  return ok(response, item);
+  const currentAmount = item.payments[0]?.amountExpected ?? item.quotedAmount;
+  return ok(response, { ...item, allowedAmounts: [currentAmount] });
 }));
 
 router.get("/payments/proofs/:proofId/file", asyncHandler(async (request, response) => {

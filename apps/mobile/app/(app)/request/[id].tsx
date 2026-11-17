@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as DocumentPicker from "expo-document-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Linking, Pressable, Text, View } from "react-native";
+import { Linking, Modal, Pressable, Text, View } from "react-native";
 import { AppHeader, Button, Card, EmptyState, ErrorMessage, Field, LoadingScreen, PageHeader, Screen, Badge, StageTracker } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
@@ -21,6 +21,7 @@ type AgentDetail = {
   id: string; status: string; scheduledStartAt: string;
   request: { reference: string; instructions?: string; contactName: string; contactMobile: string; institution: { name: string; address: string; city: string; restrictions?: string }; serviceType: { name: string }; taskUpdates: { status: string; publicNote?: string; createdAt: string }[] };
 };
+type PaymentOptions = { currency: string; allowedAmounts: number[] };
 
 export default function DetailScreen() {
   const { user } = useSession();
@@ -34,6 +35,7 @@ function CustomerDetailScreen() {
   const { colors } = useTheme();
   const client = useQueryClient();
   const [amount, setAmount] = useState("");
+  const [showAmounts, setShowAmounts] = useState(false);
   const [paymentReference, setPaymentReference] = useState("");
   const [proof, setProof] = useState<DocumentPicker.DocumentPickerAsset>();
   const [rating, setRating] = useState(5);
@@ -41,11 +43,14 @@ function CustomerDetailScreen() {
   const [message, setMessage] = useState("");
   const query = useQuery({ queryKey: ["mobile", "request", id], queryFn: () => apiFetch<CustomerDetail>(`/requests/${id}`, { token }), enabled: Boolean(id) });
   const bank = useQuery({ queryKey: ["mobile", "bank"], queryFn: () => apiFetch<Record<string, string>>("/payments/bank-details", { token }), enabled: Boolean(query.data && ["UNPAID", "REJECTED"].includes(query.data.paymentStatus)) });
+  const payment = useQuery({ queryKey: ["mobile", "payment-options", id], queryFn: () => apiFetch<PaymentOptions>(`/payments/${id}`, { token }), enabled: Boolean(id && query.data && ["UNPAID", "REJECTED"].includes(query.data.paymentStatus)) });
   const upload = useMutation({
     mutationFn: async () => {
       if (!proof) throw new Error("Choose your payment proof file.");
+      const selectedAmount = amount || payment.data?.allowedAmounts[0]?.toString();
+      if (!selectedAmount) throw new Error("Choose the payment amount.");
       const body = new FormData();
-      body.append("amountSubmitted", amount);
+      body.append("amountSubmitted", selectedAmount);
       body.append("paymentReference", paymentReference);
       body.append("proof", { uri: proof.uri, name: proof.name, type: proof.mimeType ?? "application/octet-stream" } as unknown as Blob);
       return apiFetch(`/payments/${id}/proof`, { method: "POST", body, token, timeoutMs: 45_000 });
@@ -61,13 +66,14 @@ function CustomerDetailScreen() {
   if (query.isLoading || !query.data) return <LoadingScreen />;
   const item = query.data;
   const needsPayment = ["UNPAID", "REJECTED"].includes(item.paymentStatus);
+  const selectedAmount = amount || payment.data?.allowedAmounts[0]?.toString() || "";
   const completed = item.requestStatus === "COMPLETED" ? 5 : ["AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"].includes(item.requestStatus) ? 4 : item.requestStatus === "APPROVED" ? 3 : item.paymentStatus === "VERIFIED" ? 2 : 1;
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
       <AppHeader onBack={() => router.back()} title="Request details" />
       <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
       <Card><View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}><View style={{ flex: 1 }}><Text style={{ color: colors.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>Service centre</Text><Text style={{ color: colors.text, fontSize: 20, lineHeight: 25, fontWeight: "600", marginTop: 6 }}>{item.institution.name}</Text><Text style={{ color: colors.muted, marginTop: 5 }}>{item.serviceType.name}</Text></View><Text style={{ color: colors.text, fontSize: 20, fontWeight: "600" }}>{item.currency} {Number(item.quotedAmount).toFixed(2)}</Text></View><View style={{ flexDirection: "row", gap: 7, marginTop: 17 }}><Badge status={item.paymentStatus} /><Badge status={item.requestStatus} /></View></Card>
-      <ErrorMessage message={upload.isError || review.isError ? message : undefined} />
+      <ErrorMessage message={payment.isError ? (payment.error instanceof Error ? payment.error.message : "Unable to load the payment amount") : upload.isError || review.isError ? message : undefined} />
       {!upload.isError && !review.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
       <StageTracker stages={["Sent", "Paid", "Approved", "Assigned", "Done"]} activeIndex={Math.max(0, completed - 1)} />
       <View style={{ backgroundColor: colors.surfaceMuted, borderRadius: 18, padding: 18, flexDirection: "row", alignItems: "center", gap: 15, marginBottom: 22 }}><View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}><Ionicons color={palette.brand} name={item.assignments[0] ? "call-outline" : "notifications-outline"} size={26} /></View><View style={{ flex: 1 }}><Text style={{ color: colors.text, fontSize: 18, fontWeight: "600" }}>What happens next</Text><Text style={{ color: colors.muted, lineHeight: 20, marginTop: 4 }}>{item.assignments[0] ? "Your agent will call before leaving for the service centre." : needsPayment ? "Complete your bank transfer and upload proof for review." : "We’ll notify you as soon as your request moves forward."}</Text></View></View>
@@ -81,15 +87,28 @@ function CustomerDetailScreen() {
         <Text style={{ color: colors.text, fontSize: 18, fontWeight: "500" }}>Bank transfer</Text>
         <Text style={{ color: colors.muted, lineHeight: 20, marginTop: 7, marginBottom: 14 }}>Transfer the exact fee using {item.reference} as the reference, then upload proof.</Text>
         {bank.data ? Object.entries(bank.data).map(([key, value]) => <View key={key} style={{ marginBottom: 9 }}><Text style={{ color: colors.muted, fontSize: 11 }}>{key.replace(/([A-Z])/g, " $1")}</Text><Text selectable style={{ color: colors.text }}>{value}</Text></View>) : null}
-        <Field icon="cash-outline" keyboardType="decimal-pad" label="Amount submitted" value={amount} onChangeText={setAmount} placeholder={Number(item.quotedAmount).toFixed(2)} />
+        <Field icon="cash-outline" label="Amount transferred" value={selectedAmount ? `${payment.data?.currency ?? item.currency} ${Number(selectedAmount).toFixed(2)}` : ""} onPress={() => setShowAmounts(true)} placeholder={payment.isLoading ? "Loading amount…" : "Select amount"} trailing={<Ionicons color={colors.muted} name="chevron-down" size={19} />} />
         <Field icon="receipt-outline" label="Payment reference" value={paymentReference} onChangeText={setPaymentReference} placeholder={item.reference} />
         <Button icon="cloud-upload-outline" variant="quiet" onPress={() => void DocumentPicker.getDocumentAsync({ type: ["application/pdf", "image/png", "image/jpeg"], copyToCacheDirectory: true }).then((result) => { if (!result.canceled) setProof(result.assets[0]); })}>{proof ? proof.name : "Choose payment proof"}</Button>
-        <View style={{ height: 8 }} /><Button arrow loading={upload.isPending} onPress={() => upload.mutate()} variant="brand">Upload proof</Button>
+        <View style={{ height: 8 }} /><Button arrow disabled={!payment.data?.allowedAmounts.length} loading={upload.isPending} onPress={() => upload.mutate()} variant="brand">Upload proof</Button>
       </Card> : null}
       {item.requestStatus === "COMPLETED" && !item.review ? <Card><Text style={{ color: colors.text, fontSize: 18, fontWeight: "500", marginBottom: 12 }}>How did we do?</Text><View style={{ flexDirection: "row", gap: 7, marginBottom: 16 }}>{[1,2,3,4,5].map((value) => <Pressable key={value} onPress={() => setRating(value)}><Ionicons color={value <= rating ? "#f5a524" : colors.muted} name={value <= rating ? "star" : "star-outline"} size={30} /></Pressable>)}</View><Field icon="chatbubble-ellipses-outline" label="Review (optional)" multiline value={comment} onChangeText={setComment} placeholder="Tell us about your experience" /><Button arrow loading={review.isPending} onPress={() => review.mutate()} variant="brand">Submit review</Button></Card> : null}
       <PageHeader title="Status history" />
       {!item.taskUpdates.length ? <Card><EmptyState title="No updates yet" message="Status changes will appear here." /></Card> : [...item.taskUpdates].reverse().map((update) => <Card key={`${update.status}-${update.createdAt}`}><Badge status={update.status} />{update.publicNote ? <Text style={{ color: colors.text, marginTop: 10, lineHeight: 20 }}>{update.publicNote}</Text> : null}<Text style={{ color: colors.muted, fontSize: 11, marginTop: 8 }}>{new Date(update.createdAt).toLocaleString("en-BW")}</Text></Card>)}
       </View>
+      <Modal animationType="fade" onRequestClose={() => setShowAmounts(false)} transparent visible={showAmounts}>
+        <Pressable onPress={() => setShowAmounts(false)} style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(1,18,43,.48)" }}>
+          <Pressable onPress={() => undefined} style={{ backgroundColor: colors.surface, borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 34 }}>
+            <Text style={{ color: colors.text, fontSize: 19, fontWeight: "600", marginBottom: 14 }}>Select amount</Text>
+            {payment.data?.allowedAmounts.map((option) => {
+              const optionValue = option.toString();
+              const active = optionValue === selectedAmount;
+              return <Pressable accessibilityRole="button" key={optionValue} onPress={() => { setAmount(optionValue); setShowAmounts(false); }} style={{ minHeight: 56, borderRadius: 12, borderWidth: 1, borderColor: active ? palette.brand : colors.border, backgroundColor: active ? "rgba(0,157,231,.08)" : colors.input, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}><Text style={{ color: colors.text, fontSize: 16 }}>{payment.data?.currency ?? item.currency} {Number(option).toFixed(2)}</Text>{active ? <Ionicons color={palette.brand} name="checkmark-circle" size={22} /> : null}</Pressable>;
+            })}
+            {!payment.isLoading && !payment.data?.allowedAmounts.length ? <Text style={{ color: colors.danger }}>No payment amount is available for this request.</Text> : null}
+          </Pressable>
+        </Pressable>
+      </Modal>
     </Screen>
   );
 }
