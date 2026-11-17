@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as DocumentPicker from "expo-document-picker";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Linking, Modal, Pressable, Text, View } from "react-native";
 import { AppHeader, Button, Card, EmptyState, ErrorMessage, Field, LoadingScreen, PageHeader, Screen, Badge, StageTracker } from "@/components/ui";
@@ -72,7 +73,28 @@ function CustomerDetailScreen() {
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
       <AppHeader onBack={() => router.back()} title="Request details" />
       <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
-      <Card><View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}><View style={{ flex: 1 }}><Text style={{ color: colors.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>Service centre</Text><Text style={{ color: colors.text, fontSize: 20, lineHeight: 25, fontWeight: "600", marginTop: 6 }}>{item.institution.name}</Text><Text style={{ color: colors.muted, marginTop: 5 }}>{item.serviceType.name}</Text></View><Text style={{ color: colors.text, fontSize: 20, fontWeight: "600" }}>{item.currency} {Number(item.quotedAmount).toFixed(2)}</Text></View><View style={{ flexDirection: "row", gap: 7, marginTop: 17 }}><Badge status={item.paymentStatus} /><Badge status={item.requestStatus} /></View></Card>
+      <Card style={{ borderWidth: 0, padding: 0, overflow: "hidden" }}>
+        <LinearGradient colors={["#07182f", "#0b3658", "#009de7"]} end={{ x: 1, y: 1 }} start={{ x: 0, y: 0 }} style={{ minHeight: 190, padding: 20, justifyContent: "space-between" }}>
+          <View style={{ position: "absolute", width: 180, height: 180, borderRadius: 90, backgroundColor: "rgba(255,255,255,.07)", right: -58, top: -90 }} />
+          <View style={{ position: "absolute", width: 115, height: 115, borderRadius: 58, borderWidth: 1, borderColor: "rgba(255,255,255,.13)", right: 38, bottom: -63 }} />
+          <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: "rgba(255,255,255,.68)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.7 }}>QueueMate request</Text>
+              <Text style={{ color: palette.white, fontSize: 20, lineHeight: 25, fontWeight: "600", marginTop: 9 }}>{item.institution.name}</Text>
+              <Text style={{ color: "rgba(255,255,255,.72)", marginTop: 5 }}>{item.serviceType.name}</Text>
+            </View>
+            <View style={{ alignItems: "flex-end" }}>
+              <Text style={{ color: "rgba(255,255,255,.64)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2 }}>Amount</Text>
+              <Text style={{ color: palette.white, fontSize: 20, fontWeight: "600", marginTop: 5 }}>{item.currency} {Number(item.quotedAmount).toFixed(2)}</Text>
+            </View>
+          </View>
+          <View>
+            <Text style={{ color: "rgba(255,255,255,.58)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1.2 }}>Reference</Text>
+            <Text style={{ color: palette.white, fontSize: 14, letterSpacing: 1.1, marginTop: 4 }}>{item.reference}</Text>
+            <View style={{ flexDirection: "row", gap: 7, marginTop: 14 }}><Badge status={item.paymentStatus} /><Badge status={item.requestStatus} /></View>
+          </View>
+        </LinearGradient>
+      </Card>
       <ErrorMessage message={payment.isError ? (payment.error instanceof Error ? payment.error.message : "Unable to load the payment amount") : upload.isError || review.isError ? message : undefined} />
       {!upload.isError && !review.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
       <StageTracker stages={["Sent", "Paid", "Approved", "Assigned", "Done"]} activeIndex={Math.max(0, completed - 1)} />
