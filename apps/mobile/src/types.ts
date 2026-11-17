@@ -50,3 +50,13 @@ export type NotificationItem = {
   readAt?: string;
   createdAt: string;
 };
+
+export type PlannerItem = {
+  id: string;
+  title: string;
+  plannedDate: string;
+  plannedTime: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+};

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { agentSchema, canTransition, createRequestSchema, customerProfileSchema, registerSchema, reviewSchema } from "./index";
+import { agentSchema, canTransition, createRequestSchema, customerProfileSchema, plannerItemSchema, registerSchema, reviewSchema } from "./index";
 
 describe("shared business contracts", () => {
   it("accepts only valid assignment transitions", () => {
@@ -36,6 +36,12 @@ describe("shared business contracts", () => {
 
   it("rejects a request without the mandatory acknowledgements", () => {
     expect(createRequestSchema.safeParse({}).success).toBe(false);
+  });
+
+  it("validates and sanitises private planner items", () => {
+    expect(plannerItemSchema.safeParse({ title: "Visit the service centre", plannedDate: "2026-12-01", plannedTime: "09:30", notes: "Take the reference letter" }).success).toBe(true);
+    expect(plannerItemSchema.safeParse({ title: "<script>alert(1)</script>", plannedDate: "2026-12-01", plannedTime: "09:30", notes: "" }).success).toBe(false);
+    expect(plannerItemSchema.safeParse({ title: "Visit the service centre", plannedDate: "not-a-date", plannedTime: "30:90", notes: "" }).success).toBe(false);
   });
 
   it("requires matching strong passwords for administrator-created agents", () => {

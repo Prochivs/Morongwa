@@ -2,57 +2,60 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { AppHeader, Button, EmptyState, ListSkeleton, Reveal, Screen } from "@/components/ui";
+import { AppHeader, EmptyState, ListSkeleton, Reveal, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
 import { palette, useTheme } from "@/theme";
-import type { RequestListItem } from "@/types";
-
-const terminalStatuses = new Set(["COMPLETED", "REJECTED", "CANCELLED"]);
+import type { PlannerItem } from "@/types";
 
 export default function PlannerScreen() {
   const router = useRouter();
   const { token } = useSession();
   const { colors, dark } = useTheme();
-  const query = useQuery({ queryKey: ["mobile", "planner"], queryFn: () => apiFetch<RequestListItem[]>("/requests/my-requests?pageSize=100", { token }) });
-  const requests = (query.data ?? [])
-    .filter((item) => !terminalStatuses.has(item.requestStatus))
-    .sort((a, b) => requestDate(a).getTime() - requestDate(b).getTime());
+  const query = useQuery({ queryKey: ["mobile", "planner"], queryFn: () => apiFetch<PlannerItem[]>("/planner-items", { token }) });
+  const items = query.data ?? [];
 
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={styles.screen}>
-      <AppHeader title="Planner" subtitle="Your upcoming queue schedule" onBack={() => router.back()} />
+      <AppHeader title="Planner" subtitle="Private reminders—not sent requests" onBack={() => router.back()} />
       <View style={styles.content}>
         <View style={styles.introRow}>
-          <View>
-            <Text style={[styles.title, { color: colors.text }]}>Upcoming requests</Text>
-            <Text style={[styles.subtitle, { color: colors.muted }]}>Everything you need to plan around.</Text>
+          <View style={styles.introCopy}>
+            <Text style={[styles.title, { color: colors.text }]}>Your plans</Text>
+            <Text style={[styles.subtitle, { color: colors.muted }]}>Save a queue task now. Send it only when you are ready.</Text>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="Create a new request" onPress={() => router.push("/(app)/new-request")} style={[styles.addButton, { backgroundColor: palette.brand }]}><Ionicons color="#fff" name="add" size={22} /></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Add a plan" onPress={() => router.push("/(app)/plan")} style={styles.addButton}><Ionicons color="#fff" name="add" size={22} /></Pressable>
         </View>
 
-        {query.isLoading ? <ListSkeleton rows={3} /> : requests.length ? requests.map((item, index) => (
+        <View style={[styles.privateNote, { backgroundColor: dark ? colors.surfaceMuted : "#f0f9fe" }]}>
+          <Ionicons color={palette.brand} name="lock-closed-outline" size={18} />
+          <Text style={[styles.privateText, { color: colors.muted }]}>Planner items stay as private to-dos. QueueMate receives nothing until you submit the request form.</Text>
+        </View>
+
+        {query.isLoading ? <ListSkeleton rows={3} /> : items.length ? items.map((item, index) => (
           <Reveal key={item.id} delay={60 + index * 45}>
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: item.id } })}
-              style={({ pressed }) => [styles.request, { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? .82 : 1 }]}
+              accessibilityLabel={`Open plan ${item.title}`}
+              onPress={() => router.push({ pathname: "/(app)/plan", params: { id: item.id } })}
+              style={({ pressed }) => [styles.item, { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? .82 : 1 }]}
             >
               <View style={[styles.date, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}>
-                <Text style={styles.month}>{requestDate(item).toLocaleDateString("en-BW", { month: "short" }).toUpperCase()}</Text>
-                <Text style={[styles.day, { color: colors.text }]}>{requestDate(item).getDate()}</Text>
+                <Text style={styles.month}>{planDate(item).toLocaleDateString("en-BW", { month: "short" }).toUpperCase()}</Text>
+                <Text style={[styles.day, { color: colors.text }]}>{planDate(item).getDate()}</Text>
               </View>
-              <View style={styles.requestCopy}>
-                <Text numberOfLines={1} style={[styles.requestTitle, { color: colors.text }]}>{item.institution.name}</Text>
-                <Text numberOfLines={1} style={[styles.requestMeta, { color: colors.muted }]}>{item.reference} · {requestTime(item)}</Text>
+              <View style={styles.itemCopy}>
+                <Text numberOfLines={1} style={[styles.itemTitle, { color: colors.text }]}>{item.title}</Text>
+                <Text numberOfLines={1} style={[styles.itemMeta, { color: colors.muted }]}>{item.plannedTime} · Not sent</Text>
               </View>
               <Ionicons color={colors.muted} name="chevron-forward" size={19} />
             </Pressable>
           </Reveal>
         )) : (
           <View style={[styles.empty, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <EmptyState title="Nothing planned yet" message="Your approved and upcoming requests will appear here." />
-            <Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button>
+            <View style={[styles.emptyIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name="calendar-outline" size={23} /></View>
+            <EmptyState title="No plans yet" message="Add a reminder for something you may want QueueMate to handle later." />
+            <Pressable accessibilityRole="button" onPress={() => router.push("/(app)/plan")} style={styles.emptyButton}><Ionicons color="#fff" name="add" size={19} /><Text style={styles.emptyButtonText}>Add a plan</Text></Pressable>
           </View>
         )}
       </View>
@@ -60,29 +63,29 @@ export default function PlannerScreen() {
   );
 }
 
-function requestDate(item: RequestListItem) {
-  const scheduled = new Date(item.scheduledStartAt);
-  if (!Number.isNaN(scheduled.getTime())) return scheduled;
-  return new Date(`${item.requestedDate}T${item.preferredArrivalTime || "00:00"}`);
-}
-
-function requestTime(item: RequestListItem) {
-  return requestDate(item).toLocaleTimeString("en-BW", { hour: "2-digit", minute: "2-digit" });
+function planDate(item: PlannerItem) {
+  return new Date(item.plannedDate);
 }
 
 const styles = StyleSheet.create({
   screen: { paddingHorizontal: 0, paddingBottom: 42 },
   content: { paddingHorizontal: 20, paddingTop: 22 },
-  introRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 },
+  introRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 14 },
+  introCopy: { flex: 1 },
   title: { fontSize: 22, lineHeight: 27, fontWeight: "600", letterSpacing: -.45 },
   subtitle: { fontSize: 12, lineHeight: 17, marginTop: 4 },
-  addButton: { width: 42, height: 42, borderRadius: 14, alignItems: "center", justifyContent: "center" },
-  request: { minHeight: 74, borderWidth: 1, borderRadius: 12, padding: 9, marginBottom: 9, flexDirection: "row", alignItems: "center", gap: 11 },
+  addButton: { width: 42, height: 42, borderRadius: 14, alignItems: "center", justifyContent: "center", backgroundColor: palette.brand },
+  privateNote: { borderRadius: 12, padding: 12, marginBottom: 18, flexDirection: "row", alignItems: "flex-start", gap: 9 },
+  privateText: { flex: 1, fontSize: 11, lineHeight: 16 },
+  item: { minHeight: 74, borderWidth: 1, borderRadius: 12, padding: 9, marginBottom: 9, flexDirection: "row", alignItems: "center", gap: 11 },
   date: { width: 54, height: 54, borderRadius: 11, alignItems: "center", justifyContent: "center" },
   month: { color: palette.brand, fontSize: 9, lineHeight: 12, fontWeight: "600", letterSpacing: .8 },
   day: { fontSize: 18, lineHeight: 22, fontWeight: "600" },
-  requestCopy: { flex: 1, minWidth: 0 },
-  requestTitle: { fontSize: 15, lineHeight: 19, fontWeight: "600" },
-  requestMeta: { fontSize: 11, lineHeight: 15, marginTop: 4 },
-  empty: { borderWidth: 1, borderRadius: 14, padding: 20 },
+  itemCopy: { flex: 1, minWidth: 0 },
+  itemTitle: { fontSize: 15, lineHeight: 19, fontWeight: "600" },
+  itemMeta: { fontSize: 11, lineHeight: 15, marginTop: 4 },
+  empty: { minHeight: 250, borderWidth: 1, borderRadius: 14, padding: 24, alignItems: "center", justifyContent: "center" },
+  emptyIcon: { width: 48, height: 48, borderRadius: 15, alignItems: "center", justifyContent: "center", marginBottom: 4 },
+  emptyButton: { minHeight: 46, borderRadius: 10, paddingHorizontal: 20, marginTop: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: palette.brand },
+  emptyButtonText: { color: "#fff", fontSize: 13, fontWeight: "500" },
 });

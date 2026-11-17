@@ -101,6 +101,13 @@ export const createRequestSchema = z.object({
   acknowledgeNoImpersonation: z.literal(true),
 }).strict();
 
+export const plannerItemSchema = z.object({
+  title: plainTextSchema({ min: 2, max: 120, label: "Title" }),
+  plannedDate: z.string().date(),
+  plannedTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Enter a valid time"),
+  notes: plainTextSchema({ max: 1000, label: "Notes" }).optional().or(z.literal("")),
+}).strict();
+
 export const cancellationSchema = z.object({ reason: plainTextSchema({ min: 10, max: 500, label: "Cancellation reason" }) }).strict();
 
 export const customerProfileSchema = z.object({
@@ -193,6 +200,7 @@ export const availabilitySchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateRequestInput = z.infer<typeof createRequestSchema>;
+export type PlannerItemInput = z.infer<typeof plannerItemSchema>;
 export type CustomerProfileInput = z.infer<typeof customerProfileSchema>;
 export type ReviewInput = z.infer<typeof reviewSchema>;
 

@@ -114,6 +114,7 @@ model User {
   sessions         Session[]
   passwordResets   PasswordReset[]
   requests         ServiceRequest[] @relation("CustomerRequests")
+  plannerItems     PlannerItem[]
   notifications    Notification[]
   auditLogs        AuditLog[]       @relation("AuditActor")
   verifiedPayments Payment[]        @relation("PaymentVerifier")
@@ -296,6 +297,21 @@ model ServiceRequest {
   @@index([customerId, createdAt])
   @@index([requestStatus, paymentStatus])
   @@index([institutionId, scheduledStartAt])
+}
+
+model PlannerItem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  customerId  String   @db.ObjectId
+  title       String
+  plannedDate DateTime
+  plannedTime String
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, plannedDate])
 }
 
 model Payment {

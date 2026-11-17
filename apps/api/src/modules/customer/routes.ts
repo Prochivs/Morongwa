@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Prisma } from "@prisma/client";
 import { fromZonedTime } from "date-fns-tz";
-import { cancellationSchema, createRequestSchema, customerProfileSchema, reviewSchema } from "@queuemate/shared";
+import { cancellationSchema, createRequestSchema, customerProfileSchema, plannerItemSchema, reviewSchema } from "@queuemate/shared";
 import { env } from "../../config/env.js";
 import { prisma } from "../../config/prisma.js";
 import { authenticate, authorise, requireCsrf } from "../../middleware/auth.js";
@@ -12,7 +12,7 @@ import { parseQuery } from "../../utils/http.js";
 import { z } from "zod";
 
 const router = Router();
-router.use(["/customers", "/requests", "/notifications"], authenticate, authorise("CUSTOMER"));
+router.use(["/customers", "/requests", "/notifications", "/planner-items"], authenticate, authorise("CUSTOMER"));
 
 router.get("/customers/profile", asyncHandler(async (request, response) => {
   const profile = await prisma.user.findUniqueOrThrow({
@@ -41,6 +41,64 @@ router.patch("/customers/profile", requireCsrf, asyncHandler(async (request, res
   });
   await audit(request, "CUSTOMER_PROFILE_UPDATED", "User", request.auth!.userId);
   return ok(response, profile);
+}));
+
+router.get("/planner-items", asyncHandler(async (request, response) => {
+  const items = await prisma.plannerItem.findMany({
+    where: { customerId: request.auth!.userId },
+    orderBy: [{ plannedDate: "asc" }, { plannedTime: "asc" }],
+  });
+  return ok(response, items);
+}));
+
+router.get("/planner-items/:id", asyncHandler(async (request, response) => {
+  const item = await prisma.plannerItem.findFirst({ where: { id: request.params.id, customerId: request.auth!.userId } });
+  if (!item) throw new AppError(404, "PLANNER_ITEM_NOT_FOUND", "Planned item not found");
+  return ok(response, item);
+}));
+
+router.post("/planner-items", requireCsrf, asyncHandler(async (request, response) => {
+  const input = parseBody(plannerItemSchema, request.body);
+  const plannedAt = fromZonedTime(`${input.plannedDate}T${input.plannedTime}:00`, env.BUSINESS_TIMEZONE);
+  if (plannedAt <= new Date()) throw new AppError(422, "DATE_IN_PAST", "Choose a future date and time");
+  const item = await prisma.plannerItem.create({
+    data: {
+      customerId: request.auth!.userId,
+      title: input.title,
+      plannedDate: new Date(`${input.plannedDate}T00:00:00.000Z`),
+      plannedTime: input.plannedTime,
+      notes: input.notes || null,
+    },
+  });
+  await audit(request, "PLANNER_ITEM_CREATED", "PlannerItem", item.id);
+  return ok(response, item, 201);
+}));
+
+router.patch("/planner-items/:id", requireCsrf, asyncHandler(async (request, response) => {
+  const input = parseBody(plannerItemSchema, request.body);
+  const plannedAt = fromZonedTime(`${input.plannedDate}T${input.plannedTime}:00`, env.BUSINESS_TIMEZONE);
+  if (plannedAt <= new Date()) throw new AppError(422, "DATE_IN_PAST", "Choose a future date and time");
+  const existing = await prisma.plannerItem.findFirst({ where: { id: request.params.id, customerId: request.auth!.userId }, select: { id: true } });
+  if (!existing) throw new AppError(404, "PLANNER_ITEM_NOT_FOUND", "Planned item not found");
+  const item = await prisma.plannerItem.update({
+    where: { id: existing.id },
+    data: {
+      title: input.title,
+      plannedDate: new Date(`${input.plannedDate}T00:00:00.000Z`),
+      plannedTime: input.plannedTime,
+      notes: input.notes || null,
+    },
+  });
+  await audit(request, "PLANNER_ITEM_UPDATED", "PlannerItem", item.id);
+  return ok(response, item);
+}));
+
+router.delete("/planner-items/:id", requireCsrf, asyncHandler(async (request, response) => {
+  const existing = await prisma.plannerItem.findFirst({ where: { id: request.params.id, customerId: request.auth!.userId }, select: { id: true } });
+  if (!existing) throw new AppError(404, "PLANNER_ITEM_NOT_FOUND", "Planned item not found");
+  await prisma.plannerItem.delete({ where: { id: existing.id } });
+  await audit(request, "PLANNER_ITEM_DELETED", "PlannerItem", existing.id);
+  return ok(response, { deleted: true });
 }));
 
 router.post("/requests", requireCsrf, asyncHandler(async (request, response) => {
