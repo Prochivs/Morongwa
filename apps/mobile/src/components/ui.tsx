@@ -96,7 +96,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
             </Reveal>
           </View> : null}
           <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: colors.background }]}>
-            {showTopArtwork ? <><View pointerEvents="none" style={[styles.authPatternOne, styles.authPatternOneColored]} /><View pointerEvents="none" style={[styles.authPatternTwo, styles.authPatternTwoColored]} /></> : null}
+            {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /></> : null}
             <Reveal delay={170} style={styles.authBodyContent}>
               {titleInBody ? <View style={styles.authInlineHeader}><Text style={[styles.authTitle, styles.authInlineTitle, { color: colors.text }]}>{title}</Text><Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text></View> : null}
               {children}
@@ -256,8 +256,6 @@ export const styles = StyleSheet.create({
   authHeroWithoutBrand: { minHeight: 0, paddingTop: 26, paddingBottom: 18 },
   authPatternOne: { position: "absolute", width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: "rgba(0,157,231,.12)", right: -95, top: -95 },
   authPatternTwo: { position: "absolute", width: 160, height: 160, borderRadius: 80, borderWidth: 1, borderColor: "rgba(0,157,231,.09)", right: -34, top: -38 },
-  authPatternOneColored: { backgroundColor: "rgba(0,157,231,.08)", borderColor: "rgba(0,157,231,.22)" },
-  authPatternTwoColored: { backgroundColor: "rgba(0,157,231,.13)", borderColor: "rgba(0,157,231,.3)" },
   authTitle: { fontSize: 32, lineHeight: 38, fontWeight: "600", letterSpacing: -0.8, marginTop: 48, alignSelf: "flex-start" },
   authTitleWithoutBrand: { marginTop: 0 },
   authSubtitle: { fontSize: 15, lineHeight: 22, marginTop: 8, alignSelf: "flex-start" },
