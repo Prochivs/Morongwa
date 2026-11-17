@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useRef, useState, type ComponentProps, type PropsWithChildren, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ComponentProps, type ComponentRef, type PropsWithChildren, type ReactNode } from "react";
 import {
   Animated,
   Image,
@@ -172,13 +172,20 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
 export function Field({ label, error, multiline, compact = false, icon, trailing, ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; icon?: IconName; trailing?: ReactNode }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
+  const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
   return (
     <View style={styles.fieldGroup}>
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
-      <View style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }]}>
+      <Pressable
+        accessibilityRole="none"
+        onPress={() => inputRef.current?.focus()}
+        style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }]}
+      >
         {icon ? <Ionicons color={focused ? palette.brand : colors.muted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
         <TextInput
+          ref={inputRef}
           {...props}
+          editable={props.editable !== false}
           multiline={multiline}
           onBlur={(event) => { setFocused(false); props.onBlur?.(event); }}
           onFocus={(event) => { setFocused(true); props.onFocus?.(event); }}
@@ -187,7 +194,7 @@ export function Field({ label, error, multiline, compact = false, icon, trailing
           style={[styles.field, compact && styles.fieldCompact, multiline && styles.textarea, multiline && compact && styles.textareaCompact, { color: colors.text }, props.style]}
         />
         {trailing}
-      </View>
+      </Pressable>
       {error ? <Text style={{ color: colors.danger, fontSize: 12 }}>{error}</Text> : null}
     </View>
   );
