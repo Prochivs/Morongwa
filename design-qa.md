@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-compact-request-rows-no-status.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-tighter-request-rows.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -11,7 +11,7 @@
 
 ## Full-view comparison evidence
 
-The implementation preserves the source hierarchy while incorporating the user's latest refinements: fully circular 44-point header controls, a compact 180-point photographic request card, clear 72-point request rows, and a 64-point floating navigation bar aligned to the 27-point content gutters with an 18-point bottom margin. The light-mode canvas is pure white. Pet-specific content is intentionally mapped to QueueMate request data. The progress list, lower wellness cards, and floating feature action were intentionally omitted at the user's request.
+The implementation preserves the source hierarchy while incorporating the user's latest refinements: fully circular 44-point header controls, a compact 180-point photographic request card, clear 66-point request rows, and a 64-point floating navigation bar aligned to the 27-point content gutters with an 18-point bottom margin. The light-mode canvas is pure white. Pet-specific content is intentionally mapped to QueueMate request data. The progress list, lower wellness cards, and floating feature action were intentionally omitted at the user's request.
 
 ## Focused comparison evidence
 
@@ -24,7 +24,7 @@ The implementation preserves the source hierarchy while incorporating the user's
 ## Required fidelity surfaces
 
 - Fonts and typography: system mobile typography matches the soft, readable character of the source. Heading and body weights remain restrained; no clipping or broken wrapping is visible.
-- Spacing and layout rhythm: 27-point content gutters, the compact 180-point feature card, 72-point request rows, restrained radii, and 64-point floating navigation preserve a balanced mobile rhythm with ample space above the persistent tab bar.
+- Spacing and layout rhythm: 27-point content gutters, the compact 180-point feature card, 66-point request rows, restrained radii, and 64-point floating navigation preserve a balanced mobile rhythm with ample space above the persistent tab bar.
 - Colors and visual tokens: a pure white light-mode canvas, darkened photographic feature card, pale-grey task surfaces, blue QueueMate accents, and muted copy preserve strong contrast while applying QueueMate tokens.
 - Image quality and asset fidelity: the existing high-resolution QueueMate service-centre photo is sharp, positioned with its native aspect ratio so the face and phone remain visible, and protected by a translucent readability overlay. No placeholder art, CSS art, or custom SVG substitutes are used.
 - Copy and content: all source-specific pet language has been replaced with coherent QueueMate content backed by the authenticated customer, active request, and today's real request data.
