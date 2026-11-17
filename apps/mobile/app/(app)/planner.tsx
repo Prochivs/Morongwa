@@ -56,7 +56,7 @@ export default function PlannerScreen() {
             </Pressable>
           </Reveal>
         )) : (
-          <View style={[styles.empty, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={[styles.empty, { backgroundColor: colors.surface }]}>
             <View style={[styles.emptyIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name="calendar-outline" size={23} /></View>
             <EmptyState title="No plans yet" message="Add a reminder for something you may want QueueMate to handle later." />
             <Pressable accessibilityRole="button" onPress={() => router.push("/(app)/plan")} style={styles.emptyButton}><Ionicons color="#fff" name="add" size={19} /><Text style={styles.emptyButtonText}>Add a plan</Text></Pressable>
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   itemCopy: { flex: 1, minWidth: 0 },
   itemTitle: { fontSize: 15, lineHeight: 19, fontWeight: "600" },
   itemMeta: { fontSize: 11, lineHeight: 15, marginTop: 4 },
-  empty: { minHeight: 250, borderWidth: 1, borderRadius: 14, padding: 24, alignItems: "center", justifyContent: "center" },
+  empty: { minHeight: 250, borderRadius: 14, padding: 24, alignItems: "center", justifyContent: "center" },
   emptyIcon: { width: 48, height: 48, borderRadius: 15, alignItems: "center", justifyContent: "center", marginBottom: 4 },
   emptyButton: { minHeight: 46, borderRadius: 10, paddingHorizontal: 20, marginTop: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: palette.brand },
   emptyButtonText: { color: "#fff", fontSize: 13, fontWeight: "500" },
