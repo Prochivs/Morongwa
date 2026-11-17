@@ -105,7 +105,7 @@ function CustomerDetailScreen() {
       </Card>
       {item.assignments[0] ? <Button icon="call-outline" variant="quiet" onPress={() => void Linking.openURL(`tel:${item.assignments[0]!.agent.user.mobile}`)}>Call your agent</Button> : null}
       <View style={{ height: 16 }} />
-      {needsPayment ? <Card style={{ borderWidth: 0 }}>
+      {needsPayment ? <Card style={{ backgroundColor: "transparent", borderWidth: 0, elevation: 0, shadowOpacity: 0 }}>
         <Text style={{ color: colors.text, fontSize: 18, fontWeight: "500" }}>Bank transfer</Text>
         <Text style={{ color: colors.muted, lineHeight: 20, marginTop: 7, marginBottom: 14 }}>Transfer the exact fee using {item.reference} as the reference, then upload proof.</Text>
         {bank.data ? Object.entries(bank.data).map(([key, value]) => <View key={key} style={{ marginBottom: 9 }}><Text style={{ color: colors.muted, fontSize: 11 }}>{key.replace(/([A-Z])/g, " $1")}</Text><Text selectable style={{ color: colors.text }}>{value}</Text></View>) : null}
