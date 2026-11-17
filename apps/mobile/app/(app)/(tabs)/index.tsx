@@ -36,7 +36,7 @@ function CustomerHome() {
   ];
 
   return (
-    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ ...homeStyles.screen, backgroundColor: dark ? colors.background : "#f8faf4" }}>
+    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ ...homeStyles.screen, backgroundColor: dark ? colors.background : palette.white }}>
       <View style={homeStyles.customerHeader}>
         <View style={[homeStyles.avatar, { backgroundColor: dark ? "#22324a" : "#dfe6df" }]}><Text style={[homeStyles.avatarText, { color: colors.text }]}>{initials}</Text></View>
         <View style={homeStyles.headerCopy}>
@@ -49,7 +49,12 @@ function CustomerHome() {
       </View>
 
       <Reveal delay={40}>
-        <View style={homeStyles.featureCard}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={next ? `Open request ${next.reference}` : "Create a request"}
+          onPress={() => next ? router.push({ pathname: "/(app)/request/[id]", params: { id: next.id } }) : router.push("/(app)/new-request")}
+          style={({ pressed }) => [homeStyles.featureCard, { opacity: pressed ? 0.9 : 1 }]}
+        >
           <View style={homeStyles.featureCopy}>
             <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
             <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
@@ -58,14 +63,7 @@ function CustomerHome() {
           <View style={homeStyles.featureImageFrame}>
             <Image source={require("../../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={homeStyles.featureImage} />
           </View>
-          <Pressable
-            onPress={() => next ? router.push({ pathname: "/(app)/request/[id]", params: { id: next.id } }) : router.push("/(app)/new-request")}
-            style={({ pressed }) => [homeStyles.featureAction, { opacity: pressed ? 0.82 : 1 }]}
-          >
-            <Text style={homeStyles.featureActionText}>{next ? "View request" : "Request help"}</Text>
-            <Ionicons color={palette.ink} name="arrow-forward" size={18} />
-          </Pressable>
-        </View>
+        </Pressable>
       </Reveal>
 
       <View style={homeStyles.sectionHeading}>
@@ -104,15 +102,13 @@ const homeStyles = StyleSheet.create({
   hello: { fontSize: 20, lineHeight: 23, fontWeight: "600", letterSpacing: -.5 },
   helloSubtitle: { fontSize: 11, lineHeight: 15, marginTop: 1 },
   notification: { width: 44, height: 44, borderRadius: 18, borderWidth: 1, alignItems: "center", justifyContent: "center" },
-  featureCard: { height: 112, marginTop: 20, marginBottom: 38, borderRadius: 22, backgroundColor: "#151515", overflow: "visible", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
-  featureImageFrame: { position: "absolute", left: 11, top: -12, width: 116, height: 116, padding: 5, borderRadius: 24, backgroundColor: palette.white, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: .17, shadowRadius: 10, elevation: 6 },
+  featureCard: { height: 142, marginTop: 20, marginBottom: 26, borderRadius: 22, backgroundColor: "#151515", overflow: "visible", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
+  featureImageFrame: { position: "absolute", left: 11, top: 7, width: 128, height: 128, padding: 5, borderRadius: 24, backgroundColor: palette.white, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: .17, shadowRadius: 10, elevation: 6 },
   featureImage: { width: "100%", height: "100%", borderRadius: 19 },
-  featureCopy: { marginLeft: 149, paddingTop: 13, paddingRight: 12 },
+  featureCopy: { marginLeft: 153, paddingTop: 25, paddingRight: 12 },
   featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5 },
   featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6 },
   featureMeta: { color: "#9ba3ad", fontSize: 11, marginTop: 4 },
-  featureAction: { position: "absolute", right: 10, bottom: -18, minWidth: 154, height: 40, paddingHorizontal: 16, borderRadius: 19, backgroundColor: "#f8fafc", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderWidth: 1, borderColor: "#e2e8f0" },
-  featureActionText: { color: palette.ink, fontSize: 13, fontWeight: "600" },
   sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
   sectionTitle: { fontSize: 19, lineHeight: 23, fontWeight: "600", letterSpacing: -.45 },
   addButton: { width: 30, height: 30, borderRadius: 11, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center" },

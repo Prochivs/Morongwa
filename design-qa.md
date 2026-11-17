@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-nav-content-aligned.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-white-taller-card.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -11,12 +11,12 @@
 
 ## Full-view comparison evidence
 
-The implementation preserves the source hierarchy and measured rhythm: 44-point header controls, a 112-point dark feature card, a 116-point square overlapping image, a 40-point action pill, 64-point progress rows and check tiles, and a 64-point floating navigation bar aligned to the 27-point content gutters with an 18-point bottom margin. Pet-specific content is intentionally mapped to QueueMate request data. The source's lower wellness cards were intentionally omitted at the user's request.
+The implementation preserves the source hierarchy while incorporating the user's latest refinements: 44-point header controls, a taller 142-point dark feature card, a 128-point square image, 64-point progress rows and check tiles, and a 64-point floating navigation bar aligned to the 27-point content gutters with an 18-point bottom margin. The light-mode canvas is pure white. Pet-specific content is intentionally mapped to QueueMate request data. The source's lower wellness cards and floating feature action were intentionally omitted at the user's request.
 
 ## Focused comparison evidence
 
 - Header: avatar, two-line greeting, and circular notification match the source's placement and scale.
-- Feature card: real QueueMate agent imagery replaces the pet image; the square crop, white image frame, 112:116 card-to-image height ratio, black surface, large title, secondary line, and floating action pill match the reference treatment.
+- Feature card: real QueueMate agent imagery replaces the pet image; the larger square crop, white image frame, taller black surface, large title, and secondary line preserve the reference treatment. The visible action pill was removed while the complete card remains an accessible tap target.
 - Progress list: three 64-point rows use 40-point icon tiles, matched label hierarchy, rounded pale-grey surfaces, 8-point gaps, and independent 64-point check controls.
 - Bottom navigation: the customer tab bar floats above the home indicator, aligns to the same 27-point side gutters as the content above, shows labels, and gives the active route a dark rounded pill. Requests and Profile captures confirm the active state follows navigation.
 - Dark mode: surfaces, borders, text, icon tiles, and floating navigation retain readable contrast without flattening the hierarchy.
@@ -24,8 +24,8 @@ The implementation preserves the source hierarchy and measured rhythm: 44-point 
 ## Required fidelity surfaces
 
 - Fonts and typography: system mobile typography matches the soft, readable character of the source. Heading and body weights remain restrained; no clipping or broken wrapping is visible.
-- Spacing and layout rhythm: 27-point content gutters, measured card/image proportions, section gaps, 64-point row heights, radii, and 64-point floating navigation preserve the normalized source proportions. The progress list ends with enough breathing room above the persistent tab bar.
-- Colors and visual tokens: continuous warm off-white canvas, black feature card, pale-grey task surfaces, blue QueueMate accents, and muted copy preserve the source balance while applying QueueMate tokens.
+- Spacing and layout rhythm: 27-point content gutters, the intentional 142-point feature card, section gaps, 64-point row heights, radii, and 64-point floating navigation preserve a balanced mobile rhythm. The progress list ends with enough breathing room above the persistent tab bar.
+- Colors and visual tokens: a pure white light-mode canvas, black feature card, pale-grey task surfaces, blue QueueMate accents, and muted copy preserve strong contrast while applying QueueMate tokens.
 - Image quality and asset fidelity: the existing high-resolution QueueMate service-centre photo is sharp, correctly cropped, and contained by a real image frame. No placeholder art, CSS art, or custom SVG substitutes are used.
 - Copy and content: all source-specific pet language has been replaced with coherent QueueMate content backed by the authenticated customer and active request.
 - Icons and interaction: Ionicons provide a consistent native icon family. Feature action, add request, and all three customer tabs are wired to existing routes.
@@ -33,7 +33,7 @@ The implementation preserves the source hierarchy and measured rhythm: 44-point 
 
 ## Findings
 
-No actionable P0, P1, or P2 differences remain. The layout is intentionally adapted rather than copied literally: QueueMate has three customer destinations instead of the four destinations in the source, real request milestones replace pet-care tasks, and the previously removed lower overview remains omitted.
+No actionable P0, P1, or P2 differences remain. The layout is intentionally adapted rather than copied literally: QueueMate has three customer destinations instead of the four destinations in the source, real request milestones replace pet-care tasks, the feature card is intentionally taller, its floating action is removed, and the previously removed lower overview remains omitted.
 
 ## Comparison history
 
@@ -44,6 +44,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Theme pass: captured dark mode and confirmed readable contrast and retained hierarchy.
 - Navigation-centering pass: the first width-only adjustment remained left-anchored because the tab navigator uses logical `start` and `end` positioning. Replacing it with equal 7% logical insets produced matching 28-point side margins in the post-fix simulator capture.
 - Navigation-width pass: restored the tab bar to its original full width, then aligned it to the established 27-point content gutters at the user's request while retaining its 18-point bottom spacing.
+- Home-surface pass: changed light-mode app backgrounds to pure white, increased the active-request card from 112 to 142 points, enlarged its image to 128 points, and removed the visible action pill. Post-fix capture confirms the card remains balanced and fully tappable.
 
 ## Follow-up polish
 

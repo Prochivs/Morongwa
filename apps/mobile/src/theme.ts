@@ -19,7 +19,7 @@ export function useTheme() {
   return {
     dark,
     colors: {
-      background: dark ? "#06101f" : "#f3f8fc",
+      background: dark ? "#06101f" : palette.white,
       surface: dark ? "#0d1a2b" : palette.white,
       surfaceMuted: dark ? "#15263b" : "#f2f6fa",
       surfaceTint: dark ? "#102238" : "#f8fbfd",
