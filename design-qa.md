@@ -62,6 +62,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Planner-add-control pass: removed the solid blue fill from the top add control and retained its original rounded-square radius with a light outline and theme-aware dark plus.
 - Planner-empty-icon pass: changed the empty-state calendar to the theme-aware dark text color while retaining its subtle light background.
 - Mobile-navigation pass: standardized every former dark portal header to the Planner treatment—a compact themed surface, dark light-mode controls and title, no navigation subtitle, and a subtle bottom divider.
+- Planner-form pass: flattened the Add to Planner and Plan Details form container by removing its border, corner radius, and card shadow while preserving field spacing.
 
 ## Follow-up polish
 

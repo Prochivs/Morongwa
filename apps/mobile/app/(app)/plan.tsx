@@ -71,7 +71,7 @@ export default function PlanScreen() {
           <View style={styles.noticeCopy}><Text style={[styles.noticeTitle, { color: colors.text }]}>This is only a reminder</Text><Text style={[styles.noticeText, { color: colors.muted }]}>Saving does not create or send a QueueMate request.</Text></View>
         </View>
         <ErrorMessage message={error} />
-        <Card>
+        <Card style={styles.formCard}>
           <Field icon="create-outline" label="What do you need to do?" value={form.title} onChangeText={(value) => change("title", value)} placeholder="e.g. Visit the service centre" />
           <Field icon="calendar-outline" label="Planned date" value={form.plannedDate} onChangeText={(value) => change("plannedDate", value)} placeholder="YYYY-MM-DD" />
           <Field icon="time-outline" label="Planned time" value={form.plannedTime} onChangeText={(value) => change("plannedTime", value)} placeholder="09:00" />
@@ -90,6 +90,7 @@ export default function PlanScreen() {
 const styles = StyleSheet.create({
   screen: { paddingHorizontal: 0, paddingBottom: 42 },
   content: { paddingHorizontal: 20, paddingTop: 20 },
+  formCard: { borderWidth: 0, borderRadius: 0, shadowOpacity: 0, elevation: 0 },
   notice: { borderRadius: 12, padding: 14, marginBottom: 18, flexDirection: "row", alignItems: "flex-start", gap: 11 },
   noticeCopy: { flex: 1 },
   noticeTitle: { fontSize: 14, lineHeight: 18, fontWeight: "600" },
