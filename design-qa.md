@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-exact-heights-final.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-nav-centered-v2.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -18,7 +18,7 @@ The implementation preserves the source hierarchy and measured rhythm: 44-point 
 - Header: avatar, two-line greeting, and circular notification match the source's placement and scale.
 - Feature card: real QueueMate agent imagery replaces the pet image; the square crop, white image frame, 112:116 card-to-image height ratio, black surface, large title, secondary line, and floating action pill match the reference treatment.
 - Progress list: three 64-point rows use 40-point icon tiles, matched label hierarchy, rounded pale-grey surfaces, 8-point gaps, and independent 64-point check controls.
-- Bottom navigation: the customer tab bar floats above the home indicator, shows labels, and gives the active route a dark rounded pill. Requests and Profile captures confirm the active state follows navigation.
+- Bottom navigation: the customer tab bar floats above the home indicator with equal 7% left and right insets, shows labels, and gives the active route a dark rounded pill. Requests and Profile captures confirm the active state follows navigation.
 - Dark mode: surfaces, borders, text, icon tiles, and floating navigation retain readable contrast without flattening the hierarchy.
 
 ## Required fidelity surfaces
@@ -42,6 +42,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Pass 3: set the source-normalized 27-point gutters, 112-point feature card, 116-point square image, 40-point action pill, pale-grey row surfaces, and full-height warm canvas. Post-fix capture shows the reference proportions without clipping or overlap.
 - Interaction pass: captured Requests and Profile destinations to verify the active navigation pill follows the route.
 - Theme pass: captured dark mode and confirmed readable contrast and retained hierarchy.
+- Navigation-centering pass: the first width-only adjustment remained left-anchored because the tab navigator uses logical `start` and `end` positioning. Replacing it with equal 7% logical insets produced matching 28-point side margins in the post-fix simulator capture.
 
 ## Follow-up polish
 
