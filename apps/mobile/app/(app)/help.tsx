@@ -15,7 +15,7 @@ export default function HelpScreen() {
   const { colors, dark } = useTheme();
   return (
     <Screen contentStyle={styles.screen}>
-      <AppHeader title="Help" subtitle="Talk to QueueMate support" onBack={() => router.back()} />
+      <AppHeader title="Help" onBack={() => router.back()} />
       <View style={styles.content}>
         <Text style={[styles.title, { color: colors.text }]}>How can we help?</Text>
         <Text style={[styles.subtitle, { color: colors.muted }]}>Choose the quickest way to get support with a request, payment, or account.</Text>

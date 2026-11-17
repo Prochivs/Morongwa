@@ -26,7 +26,7 @@ export default function NotificationsScreen() {
 
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={styles.screen}>
-      <AppHeader title="Notifications" subtitle="Updates about your requests" onBack={() => router.back()} />
+      <AppHeader title="Notifications" onBack={() => router.back()} />
       <View style={styles.content}>
         {query.isLoading ? <ListSkeleton rows={4} /> : !query.data?.length ? (
           <View style={[styles.empty, { backgroundColor: colors.surface, borderColor: colors.border }]}><EmptyState title="No notifications" message="Important QueueMate updates will appear here." /></View>

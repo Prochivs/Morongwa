@@ -66,7 +66,7 @@ export default function NewRequestScreen() {
   const next = () => { setError(""); if (canContinue) setStep((value) => Math.min(3, value + 1)); };
   return (
     <Screen contentStyle={{ paddingHorizontal: 0 }}>
-      <AppHeader onBack={() => step > 0 ? setStep((value) => value - 1) : router.back()} title={plannerId ? "Prepare planned request" : "Request assistance"} subtitle={`Step ${step + 1} of 4`} />
+      <AppHeader onBack={() => step > 0 ? setStep((value) => value - 1) : router.back()} title={plannerId ? "Prepare planned request" : "Request assistance"} />
       <View style={{ paddingHorizontal: 20, paddingTop: 18 }}>
       <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>{[0,1,2,3].map((item) => <View key={item} style={{ height: 5, borderRadius: 3, flex: 1, backgroundColor: item <= step ? palette.brand : colors.border }} />)}</View>
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 22 }}>{["Place", "Details", "Contact", "Review"].map((label, index) => <Text key={label} style={{ color: index === step ? palette.brand : colors.muted, fontSize: 10, fontWeight: index === step ? "600" : "400" }}>{index + 1}. {label}</Text>)}</View>

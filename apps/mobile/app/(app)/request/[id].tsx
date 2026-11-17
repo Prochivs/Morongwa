@@ -64,7 +64,7 @@ function CustomerDetailScreen() {
   const completed = item.requestStatus === "COMPLETED" ? 5 : ["AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"].includes(item.requestStatus) ? 4 : item.requestStatus === "APPROVED" ? 3 : item.paymentStatus === "VERIFIED" ? 2 : 1;
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <AppHeader onBack={() => router.back()} title="Request details" subtitle={item.reference} />
+      <AppHeader onBack={() => router.back()} title="Request details" />
       <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
       <Card><View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}><View style={{ flex: 1 }}><Text style={{ color: colors.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>Service centre</Text><Text style={{ color: colors.text, fontSize: 20, lineHeight: 25, fontWeight: "600", marginTop: 6 }}>{item.institution.name}</Text><Text style={{ color: colors.muted, marginTop: 5 }}>{item.serviceType.name}</Text></View><Text style={{ color: colors.text, fontSize: 20, fontWeight: "600" }}>{item.currency} {Number(item.quotedAmount).toFixed(2)}</Text></View><View style={{ flexDirection: "row", gap: 7, marginTop: 17 }}><Badge status={item.paymentStatus} /><Badge status={item.requestStatus} /></View></Card>
       <ErrorMessage message={upload.isError || review.isError ? message : undefined} />
@@ -114,7 +114,7 @@ function AgentDetailScreen() {
   const activeIndex = item.status === "COMPLETED" ? 3 : item.status === "IN_PROGRESS" || item.status === "ARRIVED" ? 2 : item.status === "EN_ROUTE" ? 1 : 0;
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <AppHeader onBack={() => router.back()} title="Assignment details" subtitle={item.request.reference} />
+      <AppHeader onBack={() => router.back()} title="Assignment details" />
       <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
         <ErrorMessage message={transition.isError ? message : undefined} />{!transition.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}><Text style={{ color: colors.text, fontSize: 24, fontWeight: "600", letterSpacing: -.5 }}>{item.request.reference}</Text><Badge status={item.status} /></View>

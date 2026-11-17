@@ -181,7 +181,7 @@ function AgentHome() {
   const metrics = query.data.metrics;
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <AppHeader title="Agent portal" subtitle="Today’s QueueMate work" />
+      <AppHeader title="Agent portal" />
       <View style={{ paddingHorizontal: 20, paddingTop: 18 }}>
       <PageHeader title={`Hi, ${user?.fullName.split(" ")[0] ?? "agent"}`} description="Confirm assignments and record each real status change." />
       <View style={{ flexDirection: "row", gap: 10, marginBottom: 24 }}>

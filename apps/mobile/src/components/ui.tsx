@@ -115,12 +115,12 @@ export function PortalHero({ children, compact = false }: PropsWithChildren<{ co
   );
 }
 
-export function AppHeader({ title, subtitle, onBack, right }: { title: string; subtitle?: string; onBack?: () => void; right?: ReactNode }) {
+export function AppHeader({ title, onBack, right }: { title: string; onBack?: () => void; right?: ReactNode }) {
   const { colors } = useTheme();
   return (
-    <View style={[styles.appHeader, { backgroundColor: colors.header }]}>
-      {onBack ? <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={onBack} style={styles.appHeaderSide}><Ionicons color={palette.white} name="chevron-back" size={24} /></Pressable> : <View style={styles.appHeaderSide} />}
-      <View style={styles.appHeaderCopy}><Text style={styles.appHeaderTitle}>{title}</Text>{subtitle ? <Text style={styles.appHeaderSubtitle}>{subtitle}</Text> : null}</View>
+    <View style={[styles.appHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      {onBack ? <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={onBack} style={styles.appHeaderSide}><Ionicons color={colors.text} name="chevron-back" size={24} /></Pressable> : <View style={styles.appHeaderSide} />}
+      <View style={styles.appHeaderCopy}><Text style={[styles.appHeaderTitle, { color: colors.text }]}>{title}</Text></View>
       <View style={[styles.appHeaderSide, { alignItems: "flex-end" }]}>{right}</View>
     </View>
   );
@@ -251,11 +251,10 @@ export const styles = StyleSheet.create({
   authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
-  appHeader: { minHeight: 82, paddingHorizontal: 18, paddingVertical: 14, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "rgba(255,255,255,.13)" },
+  appHeader: { minHeight: 64, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth },
   appHeaderSide: { width: 42, minHeight: 42, alignItems: "flex-start", justifyContent: "center" },
   appHeaderCopy: { flex: 1, alignItems: "center", paddingHorizontal: 6 },
-  appHeaderTitle: { color: palette.white, fontSize: 18, lineHeight: 22, fontWeight: "600", textAlign: "center" },
-  appHeaderSubtitle: { color: "#b9c6d7", fontSize: 11, lineHeight: 15, marginTop: 3, textAlign: "center" },
+  appHeaderTitle: { fontSize: 18, lineHeight: 22, fontWeight: "600", textAlign: "center" },
   stageWrap: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", marginVertical: 20, position: "relative" },
   stageRail: { position: "absolute", height: 4, left: 22, right: 22, top: 20, borderRadius: 2 },
   stageRailActive: { position: "absolute", height: 4, left: 22, top: 20, borderRadius: 2, backgroundColor: "#24b84a", maxWidth: "88%" },

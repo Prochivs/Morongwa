@@ -64,7 +64,7 @@ export default function PlanScreen() {
 
   return (
     <Screen contentStyle={styles.screen}>
-      <AppHeader title={id ? "Plan details" : "Add to planner"} subtitle="Saved privately until you submit" onBack={() => router.back()} />
+      <AppHeader title={id ? "Plan details" : "Add to planner"} onBack={() => router.back()} />
       <View style={styles.content}>
         <View style={[styles.notice, { backgroundColor: dark ? colors.surfaceMuted : "#f0f9fe" }]}>
           <Ionicons color={palette.brand} name="lock-closed-outline" size={20} />

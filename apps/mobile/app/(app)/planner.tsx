@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { EmptyState, ListSkeleton, Reveal, Screen } from "@/components/ui";
+import { AppHeader, EmptyState, ListSkeleton, Reveal, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
 import { palette, useTheme } from "@/theme";
@@ -17,11 +17,7 @@ export default function PlannerScreen() {
 
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={styles.screen}>
-      <View style={[styles.topBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()} style={styles.topBarSide}><Ionicons color={colors.text} name="chevron-back" size={24} /></Pressable>
-        <Text style={[styles.topBarTitle, { color: colors.text }]}>Planner</Text>
-        <View style={styles.topBarSide} />
-      </View>
+      <AppHeader title="Planner" onBack={() => router.back()} />
       <View style={styles.content}>
         <View style={styles.introRow}>
           <View style={styles.introCopy}>
@@ -73,9 +69,6 @@ function planDate(item: PlannerItem) {
 
 const styles = StyleSheet.create({
   screen: { paddingHorizontal: 0, paddingBottom: 42 },
-  topBar: { minHeight: 64, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth },
-  topBarSide: { width: 42, minHeight: 42, alignItems: "flex-start", justifyContent: "center" },
-  topBarTitle: { flex: 1, fontSize: 18, lineHeight: 22, fontWeight: "600", textAlign: "center" },
   content: { paddingHorizontal: 20, paddingTop: 22 },
   introRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 14 },
   introCopy: { flex: 1 },

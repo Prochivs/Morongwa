@@ -28,7 +28,7 @@ export default function WorkScreen() {
   }), [filter, items]);
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <AppHeader title={agent ? "My assignments" : "My requests"} subtitle={agent ? "Your scheduled QueueMate work" : "Track every request in one place"} />
+      <AppHeader title={agent ? "My assignments" : "My requests"} />
       <View style={styles.content}>
       {!agent ? <Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button> : null}
       <View style={[styles.tabs, { backgroundColor: colors.surface, borderColor: colors.border }]}>{[["ALL", "All"], ["ACTIVE", "Active"], ["DONE", "Completed"]].map(([value, label]) => <Pressable key={value} onPress={() => setFilter(value as "ALL" | "ACTIVE" | "DONE")} style={[styles.tab, filter === value && styles.tabActive]}><Text style={[styles.tabText, { color: filter === value ? palette.white : colors.muted }]}>{label}</Text></Pressable>)}</View>

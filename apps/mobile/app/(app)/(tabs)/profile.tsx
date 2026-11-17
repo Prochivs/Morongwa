@@ -29,7 +29,7 @@ function AgentProfile() {
   const [loading, setLoading] = useState(false);
   return (
     <Screen contentStyle={{ paddingHorizontal: 0 }}>
-      <AppHeader title="Profile" subtitle="Your QueueMate agent account" />
+      <AppHeader title="Profile" />
       <View style={styles.content}>
       <ProfileIdentity name={user?.fullName ?? "QueueMate agent"} subtitle={user?.email ?? ""} />
       <Card>
@@ -68,7 +68,7 @@ function CustomerProfile() {
   };
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <AppHeader title="Profile" subtitle="Account and contact details" />
+      <AppHeader title="Profile" />
       <View style={styles.content}>
       <ProfileIdentity name={form.fullName || "QueueMate customer"} subtitle={form.email || "Keep your details current"} />
       {query.isLoading ? <ListSkeleton rows={3} /> : <>
