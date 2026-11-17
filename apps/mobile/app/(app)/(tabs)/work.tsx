@@ -54,5 +54,5 @@ const styles = StyleSheet.create({
   tab: { flex: 1, minHeight: 38, borderRadius: 7, alignItems: "center", justifyContent: "center" },
   tabActive: { backgroundColor: palette.brand },
   tabText: { fontSize: 12, fontWeight: "600" },
-  fab: { position: "absolute", right: 28, bottom: 102, width: 58, height: 58, borderRadius: 29, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center", zIndex: 10, shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 10 },
+  fab: { position: "absolute", right: 28, bottom: 102, width: 60, height: 52, borderRadius: 14, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center", zIndex: 10, shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.28, shadowRadius: 12, elevation: 10 },
 });
