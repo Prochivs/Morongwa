@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-title-spacing.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-quick-actions.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -18,6 +18,7 @@ The implementation preserves the source hierarchy while incorporating the user's
 - Header: a circular person avatar, two-line greeting, and fully circular notification match the source's placement and scale.
 - Feature card: the QueueMate agent photo fills the complete card behind a restored dark overlay. Its custom crop keeps both the agent's face and phone visible, while the overlay and text shadows preserve title and reference readability. The separate framed thumbnail is removed, the radius is reduced to 16 points, and the complete card remains an accessible tap target.
 - Today's requests: requests scheduled, requested, or submitted today appear in compact tappable rows with the appointment date or time, institution, reference, city, and navigation chevron. Status pills are intentionally omitted from this home-screen summary. When the account has no requests, a centered empty state provides a direct New request button; View all appears when request history exists.
+- Quick actions: compact Planner, Help, and Notifications cards sit directly below today's requests. Each opens a complete, themed screen: live upcoming requests, direct support choices, or live in-app notifications respectively. The header bell uses the same Notifications route.
 - Bottom navigation: the customer tab bar floats above the home indicator, aligns to the same 27-point side gutters as the content above, shows labels, and gives the active route a dark rounded pill. Requests and Profile captures confirm the active state follows navigation.
 - Dark mode: surfaces, borders, text, icon tiles, and floating navigation retain readable contrast without flattening the hierarchy.
 
@@ -51,7 +52,8 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Today's-requests pass: added a live section that includes requests scheduled, requested, or submitted today. The first horizontal badge placement compressed institution names; moving status below the request metadata produced the readable post-fix rows shown in the final capture.
 - Full-color and empty-state pass: removed the full-card overlay and pressed opacity, then added text shadows for legibility. Added a centered no-request state with a direct New request action while preserving the existing-history and no-today variants.
 - Overlay restoration pass: restored the translucent dark image overlay at the user's request without changing the centered empty state or its New request action.
-- Request-row simplification pass: removed status pills from the home-screen list items and reduced the rows from 88 to 72 points, while preserving full status information on request details and the complete Requests screen.
+- Request-row simplification pass: removed status pills from the home-screen list items and reduced the rows from 88 to 66 points, while preserving full status information on request details and the complete Requests screen.
+- Quick-actions pass: added three compact actions below today's requests, connected them to functional Planner, Help, and Notifications screens, and verified each route in the iOS Simulator.
 
 ## Follow-up polish
 

@@ -34,7 +34,7 @@ function CustomerHome() {
           <Text style={[homeStyles.hello, { color: colors.text }]}>Hey {firstName}!</Text>
           <Text style={[homeStyles.helloSubtitle, { color: colors.muted }]}>Your QueueMate day at a glance</Text>
         </View>
-        <Pressable accessibilityLabel="Notifications" style={[homeStyles.notification, { backgroundColor: dark ? colors.surface : "#efefed", borderColor: controlBorder }]}>
+        <Pressable accessibilityLabel="Notifications" accessibilityRole="button" onPress={() => router.push("/(app)/notifications")} style={[homeStyles.notification, { backgroundColor: dark ? colors.surface : "#efefed", borderColor: controlBorder }]}>
           <Ionicons color={colors.text} name="notifications" size={21} />
         </Pressable>
       </View>
@@ -90,6 +90,29 @@ function CustomerHome() {
           {!query.data?.length ? <View style={homeStyles.todayEmptyButton}><Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button></View> : null}
         </View>
       )}
+
+      <View style={homeStyles.quickHeader}>
+        <Text style={[homeStyles.quickTitle, { color: colors.text }]}>Quick actions</Text>
+      </View>
+      <View style={homeStyles.quickGrid}>
+        {([
+          ["Planner", "calendar-outline", "/(app)/planner"],
+          ["Help", "help-circle-outline", "/(app)/help"],
+          ["Notifications", "notifications-outline", "/(app)/notifications"],
+        ] as const).map(([label, icon, route], index) => (
+          <Reveal key={label} delay={190 + index * 55} style={homeStyles.quickReveal}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={label}
+              onPress={() => router.push(route)}
+              style={({ pressed }) => [homeStyles.quickAction, { backgroundColor: colors.surface, borderColor: colors.border, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
+            >
+              <View style={[homeStyles.quickIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name={icon} size={20} /></View>
+              <Text numberOfLines={1} style={[homeStyles.quickLabel, { color: colors.text }]}>{label}</Text>
+            </Pressable>
+          </Reveal>
+        ))}
+      </View>
     </Screen>
   );
 }
@@ -123,6 +146,13 @@ const homeStyles = StyleSheet.create({
   todayEmptyTitle: { fontSize: 16, lineHeight: 20, fontWeight: "600", textAlign: "center" },
   todayEmptyText: { maxWidth: 240, fontSize: 11, lineHeight: 16, textAlign: "center", marginTop: 5 },
   todayEmptyButton: { width: 180, marginTop: 17 },
+  quickHeader: { marginTop: 22, marginBottom: 12 },
+  quickTitle: { fontSize: 17, lineHeight: 21, fontWeight: "600", letterSpacing: -.35 },
+  quickGrid: { flexDirection: "row", gap: 9 },
+  quickReveal: { flex: 1 },
+  quickAction: { minHeight: 82, borderWidth: 1, borderRadius: 14, paddingHorizontal: 10, paddingVertical: 10, justifyContent: "space-between" },
+  quickIcon: { width: 34, height: 34, borderRadius: 11, alignItems: "center", justifyContent: "center" },
+  quickLabel: { fontSize: 10.5, lineHeight: 14, fontWeight: "600", marginTop: 8 },
 });
 
 function TodayRequestsSkeleton() {

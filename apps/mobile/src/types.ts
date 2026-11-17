@@ -41,3 +41,12 @@ export type AssignmentListItem = {
     customer: { fullName: string; mobile: string };
   };
 };
+
+export type NotificationItem = {
+  id: string;
+  requestId?: string;
+  title: string;
+  message: string;
+  readAt?: string;
+  createdAt: string;
+};

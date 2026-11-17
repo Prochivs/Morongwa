@@ -13,6 +13,9 @@ export default function AppLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="request/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="new-request" options={{ headerShown: false, presentation: "card" }} />
+      <Stack.Screen name="planner" options={{ headerShown: false }} />
+      <Stack.Screen name="help" options={{ headerShown: false }} />
+      <Stack.Screen name="notifications" options={{ headerShown: false }} />
     </Stack>
   );
 }
