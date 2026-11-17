@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
 import { AppHeader, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
@@ -55,14 +55,19 @@ function CustomerHome() {
           onPress={() => next ? router.push({ pathname: "/(app)/request/[id]", params: { id: next.id } }) : router.push("/(app)/new-request")}
           style={({ pressed }) => [homeStyles.featureCard, { opacity: pressed ? 0.9 : 1 }]}
         >
-          <View style={homeStyles.featureCopy}>
-            <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
-            <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
-            <Text numberOfLines={1} style={homeStyles.featureMeta}>{next?.reference ?? "Create your first request"}</Text>
-          </View>
-          <View style={homeStyles.featureImageFrame}>
-            <Image source={require("../../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={homeStyles.featureImage} />
-          </View>
+          <ImageBackground
+            imageStyle={homeStyles.featureBackgroundImage}
+            resizeMode="cover"
+            source={require("../../../../web/public/images/queuemate-agent-service-centre.png")}
+            style={homeStyles.featureBackground}
+          >
+            <View style={homeStyles.featureOverlay} />
+            <View style={homeStyles.featureCopy}>
+              <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
+              <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
+              <Text numberOfLines={1} style={homeStyles.featureMeta}>{next?.reference ?? "Create your first request"}</Text>
+            </View>
+          </ImageBackground>
         </Pressable>
       </Reveal>
 
@@ -102,10 +107,11 @@ const homeStyles = StyleSheet.create({
   hello: { fontSize: 20, lineHeight: 23, fontWeight: "600", letterSpacing: -.5 },
   helloSubtitle: { fontSize: 11, lineHeight: 15, marginTop: 1 },
   notification: { width: 44, height: 44, borderRadius: 18, borderWidth: 1, alignItems: "center", justifyContent: "center" },
-  featureCard: { height: 142, marginTop: 20, marginBottom: 26, borderRadius: 22, backgroundColor: "#151515", overflow: "visible", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
-  featureImageFrame: { position: "absolute", left: 11, top: 7, width: 128, height: 128, padding: 5, borderRadius: 24, backgroundColor: palette.white, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: .17, shadowRadius: 10, elevation: 6 },
-  featureImage: { width: "100%", height: "100%", borderRadius: 19 },
-  featureCopy: { marginLeft: 153, paddingTop: 25, paddingRight: 12 },
+  featureCard: { height: 142, marginTop: 20, marginBottom: 26, borderRadius: 22, backgroundColor: "#151515", overflow: "hidden", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
+  featureBackground: { flex: 1, justifyContent: "center" },
+  featureBackgroundImage: { borderRadius: 22 },
+  featureOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3, 12, 25, .62)" },
+  featureCopy: { maxWidth: "76%", paddingLeft: 24, paddingRight: 12 },
   featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5 },
   featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6 },
   featureMeta: { color: "#9ba3ad", fontSize: 11, marginTop: 4 },
