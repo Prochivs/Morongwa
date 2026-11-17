@@ -1,9 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { AppHeader, Badge, Button, Card, EmptyState, ListSkeleton, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
+import { AppHeader, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
@@ -20,53 +19,128 @@ export default function HomeScreen() {
 function CustomerHome() {
   const router = useRouter();
   const { token, user } = useSession();
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
   const query = useQuery({ queryKey: ["mobile", "requests"], queryFn: () => apiFetch<RequestListItem[]>("/requests/my-requests?pageSize=5", { token }) });
   const next = query.data?.find((item) => !["COMPLETED", "REJECTED", "CANCELLED"].includes(item.requestStatus));
+  const firstName = user?.fullName.split(" ")[0] ?? "there";
+  const initials = user?.fullName.split(" ").slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "QM";
+  const paymentComplete = next?.paymentStatus === "VERIFIED";
+  const approvalComplete = Boolean(next && ["APPROVED", "AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS", "COMPLETED"].includes(next.requestStatus));
+  const agentComplete = Boolean(next && ["AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS", "COMPLETED"].includes(next.requestStatus));
+  const progress = [
+    { icon: "card-outline" as const, title: "Payment", detail: paymentComplete ? "Verified" : formatStatus(next?.paymentStatus ?? "Not started"), complete: paymentComplete },
+    { icon: "shield-checkmark-outline" as const, title: "Request review", detail: approvalComplete ? "Approved" : formatStatus(next?.requestStatus ?? "Not started"), complete: approvalComplete },
+    { icon: "people-outline" as const, title: "Queue agent", detail: agentComplete ? "Assigned" : "Awaiting assignment", complete: agentComplete },
+  ];
+
   return (
-    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <View style={homeStyles.hero}>
-        <Image source={require("../../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={StyleSheet.absoluteFill} />
-        <View style={homeStyles.heroOverlay} />
-        <LinearGradient colors={["rgba(4,17,38,.22)", "rgba(4,17,38,.82)"]} style={StyleSheet.absoluteFill} />
-        <View style={homeStyles.heroTop}><Text style={homeStyles.brand}>Queue<Text style={{ color: palette.brandLight }}>Mate</Text></Text><View style={homeStyles.bell}><Ionicons color={palette.white} name="notifications-outline" size={21} /></View></View>
-        <View><Text style={homeStyles.greeting}>Hi, {user?.fullName.split(" ")[0] ?? "there"}</Text><Text style={homeStyles.heroTitle}>Keep moving.{"\n"}We’ll hold your place.</Text></View>
+    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={homeStyles.screen}>
+      <View style={homeStyles.customerHeader}>
+        <View style={[homeStyles.avatar, { backgroundColor: dark ? "#22324a" : "#dfe6df" }]}><Text style={[homeStyles.avatarText, { color: colors.text }]}>{initials}</Text></View>
+        <View style={homeStyles.headerCopy}>
+          <Text style={[homeStyles.hello, { color: colors.text }]}>Hey {firstName}!</Text>
+          <Text style={[homeStyles.helloSubtitle, { color: colors.muted }]}>Your QueueMate day at a glance</Text>
+        </View>
+        <Pressable accessibilityLabel="Notifications" style={[homeStyles.notification, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Ionicons color={colors.text} name="notifications" size={21} />
+        </Pressable>
       </View>
-      <View style={homeStyles.content}>
-        <Reveal delay={60}>
-          <Card style={homeStyles.requestCard}>
-            <View style={homeStyles.requestCardHeader}><View style={[homeStyles.requestIcon, { backgroundColor: colors.surfaceMuted }]}><Ionicons color={palette.brand} name="people-outline" size={23} /></View><View style={{ flex: 1 }}><Text style={[homeStyles.requestTitle, { color: colors.text }]}>Need queue assistance?</Text><Text style={[homeStyles.requestSubtitle, { color: colors.muted }]}>Choose a place, service, date and time.</Text></View></View>
-            <Button arrow variant="brand" onPress={() => router.push("/(app)/new-request")}>Request assistance</Button>
-          </Card>
+
+      <Reveal delay={40}>
+        <View style={homeStyles.featureCard}>
+          <View style={homeStyles.featureCopy}>
+            <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
+            <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
+            <Text numberOfLines={1} style={homeStyles.featureMeta}>{next?.reference ?? "Create your first request"}</Text>
+          </View>
+          <View style={homeStyles.featureImageFrame}>
+            <Image source={require("../../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={homeStyles.featureImage} />
+          </View>
+          <Pressable
+            onPress={() => next ? router.push({ pathname: "/(app)/request/[id]", params: { id: next.id } }) : router.push("/(app)/new-request")}
+            style={({ pressed }) => [homeStyles.featureAction, { opacity: pressed ? 0.82 : 1 }]}
+          >
+            <Text style={homeStyles.featureActionText}>{next ? "View request" : "Request help"}</Text>
+            <Ionicons color={palette.ink} name="arrow-forward" size={18} />
+          </Pressable>
+        </View>
+      </Reveal>
+
+      <View style={homeStyles.sectionHeading}>
+        <Text style={[homeStyles.sectionTitle, { color: colors.text }]}>Today’s progress</Text>
+        <Pressable accessibilityLabel="Create a request" onPress={() => router.push("/(app)/new-request")} style={homeStyles.addButton}><Ionicons color={palette.white} name="add" size={20} /></Pressable>
+      </View>
+
+      {query.isLoading ? <CustomerHomeSkeleton /> : progress.map((item, index) => (
+        <Reveal key={item.title} delay={90 + index * 55}>
+          <View style={homeStyles.progressRow}>
+            <View style={[homeStyles.progressMain, { backgroundColor: colors.surface, borderColor: colors.border, opacity: next ? 1 : 0.6 }]}>
+              <View style={[homeStyles.progressIcon, { backgroundColor: index === 0 ? "#fff1cf" : index === 1 ? "#dff4ff" : "#e8f6ed" }]}>
+                <Ionicons color={index === 0 ? "#cc7a00" : index === 1 ? palette.brand : palette.success} name={item.icon} size={24} />
+              </View>
+              <View style={{ flex: 1 }}><Text style={[homeStyles.progressTitle, { color: colors.text }]}>{item.title}</Text><Text numberOfLines={1} style={[homeStyles.progressDetail, { color: colors.muted }]}>{item.detail}</Text></View>
+            </View>
+            <View style={[homeStyles.checkTile, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <View style={[homeStyles.checkCircle, { backgroundColor: item.complete ? palette.ink : "transparent", borderColor: item.complete ? palette.ink : colors.muted }]}>
+                <Ionicons color={item.complete ? palette.white : colors.muted} name="checkmark" size={16} />
+              </View>
+            </View>
+          </View>
         </Reveal>
-        <PageHeader title="Your next request" />
-        {query.isLoading ? <ListSkeleton rows={1} /> : next ? <WorkCard title={next.institution.name} reference={next.reference} meta={`${new Date(next.scheduledStartAt).toLocaleDateString("en-BW", { day: "2-digit", month: "short" })} · ${next.preferredArrivalTime}`} statuses={[next.paymentStatus, next.requestStatus]} onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: next.id } })} /> : <Card><EmptyState title="No active request" message="Create a request when you need help holding your place." /></Card>}
-        <PageHeader title="Quick access" />
-        <Card style={{ padding: 0, overflow: "hidden" }}>
-          {[["ticket-outline", "My requests", "Track payment, assignment and progress", () => router.push("/(app)/(tabs)/work")], ["person-outline", "Profile", "Keep your contact details current", () => router.push("/(app)/(tabs)/profile")]].map(([icon, title, description, action], index) => <Pressable key={title as string} onPress={action as () => void} style={[homeStyles.menuRow, index === 0 && { borderBottomWidth: 1, borderBottomColor: colors.border }]}><View style={[homeStyles.menuIcon, { backgroundColor: colors.surfaceMuted }]}><Ionicons color={palette.brand} name={icon as "ticket-outline"} size={21} /></View><View style={{ flex: 1 }}><Text style={{ color: colors.text, fontSize: 15, fontWeight: "600" }}>{title as string}</Text><Text style={{ color: colors.muted, fontSize: 12, marginTop: 3 }}>{description as string}</Text></View><Ionicons color={colors.muted} name="chevron-forward" size={19} /></Pressable>)}
-        </Card>
+      ))}
+
+      <Text style={[homeStyles.sectionTitle, homeStyles.overviewTitle, { color: colors.text }]}>Queue overview</Text>
+      <View style={homeStyles.statGrid}>
+        <Reveal delay={280} style={{ flex: 1 }}><View style={[homeStyles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={palette.brand} name="wallet-outline" size={27} /><Text numberOfLines={1} style={[homeStyles.statValue, { color: colors.text }]}>{next ? `${next.currency} ${Number(next.quotedAmount).toFixed(0)}` : "—"}</Text><Text style={[homeStyles.statLabel, { color: colors.muted }]}>Request fee</Text></View></Reveal>
+        <Reveal delay={330} style={{ flex: 1 }}><View style={[homeStyles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={palette.brand} name="calendar-outline" size={27} /><Text numberOfLines={1} style={[homeStyles.statValue, { color: colors.text }]}>{next ? new Date(next.scheduledStartAt).toLocaleDateString("en-BW", { day: "2-digit", month: "short" }).toUpperCase() : "—"}</Text><Text style={[homeStyles.statLabel, { color: colors.muted }]}>Scheduled</Text></View></Reveal>
       </View>
     </Screen>
   );
 }
 
 const homeStyles = StyleSheet.create({
-  hero: { height: 270, paddingHorizontal: 20, paddingTop: 18, paddingBottom: 30, justifyContent: "space-between" },
-  heroOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,.12)" },
-  heroTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  brand: { color: palette.white, fontSize: 25, fontWeight: "600", letterSpacing: -.8 },
-  bell: { width: 40, height: 40, borderRadius: 9, borderWidth: 1, borderColor: "rgba(255,255,255,.28)", backgroundColor: "rgba(0,0,0,.22)", alignItems: "center", justifyContent: "center" },
-  greeting: { color: "#d7e8f5", fontSize: 14, marginBottom: 7 },
-  heroTitle: { color: palette.white, fontSize: 31, lineHeight: 36, fontWeight: "600", letterSpacing: -.8 },
-  content: { paddingHorizontal: 20, marginTop: -18 },
-  requestCard: { padding: 17, borderColor: "#c6eafa" },
-  requestCardHeader: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 15 },
-  requestIcon: { width: 44, height: 44, borderRadius: 10, alignItems: "center", justifyContent: "center" },
-  requestTitle: { fontSize: 17, fontWeight: "600" },
-  requestSubtitle: { fontSize: 12, marginTop: 3 },
-  menuRow: { minHeight: 76, flexDirection: "row", alignItems: "center", paddingHorizontal: 15, gap: 12 },
-  menuIcon: { width: 42, height: 42, borderRadius: 9, alignItems: "center", justifyContent: "center" },
+  screen: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 126 },
+  customerHeader: { minHeight: 70, flexDirection: "row", alignItems: "center" },
+  avatar: { width: 52, height: 52, borderRadius: 18, alignItems: "center", justifyContent: "center" },
+  avatarText: { fontSize: 17, fontWeight: "600", letterSpacing: -.4 },
+  headerCopy: { flex: 1, paddingHorizontal: 12 },
+  hello: { fontSize: 22, lineHeight: 25, fontWeight: "600", letterSpacing: -.6 },
+  helloSubtitle: { fontSize: 12, lineHeight: 17, marginTop: 2 },
+  notification: { width: 48, height: 48, borderRadius: 18, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  featureCard: { height: 194, marginTop: 24, marginBottom: 28, marginLeft: 8, borderRadius: 28, backgroundColor: "#151515", overflow: "visible", shadowColor: palette.navy, shadowOffset: { width: 0, height: 9 }, shadowOpacity: .18, shadowRadius: 18, elevation: 6 },
+  featureImageFrame: { position: "absolute", left: -8, top: -14, width: 122, height: 150, padding: 6, borderRadius: 28, backgroundColor: palette.white, shadowColor: "#000", shadowOffset: { width: 0, height: 5 }, shadowOpacity: .18, shadowRadius: 12, elevation: 7 },
+  featureImage: { width: "100%", height: "100%", borderRadius: 22 },
+  featureCopy: { marginLeft: 126, paddingTop: 25, paddingRight: 18 },
+  featureEyebrow: { color: palette.brandLight, fontSize: 9, letterSpacing: 1.7, marginBottom: 7 },
+  featureTitle: { color: palette.white, fontSize: 24, lineHeight: 27, fontWeight: "600", letterSpacing: -.7 },
+  featureMeta: { color: "#9ba3ad", fontSize: 12, marginTop: 5 },
+  featureAction: { position: "absolute", right: 12, bottom: -17, minWidth: 148, height: 48, paddingHorizontal: 18, borderRadius: 20, backgroundColor: "#f8fafc", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderWidth: 1, borderColor: "#e2e8f0" },
+  featureActionText: { color: palette.ink, fontSize: 14, fontWeight: "600" },
+  sectionHeading: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
+  sectionTitle: { fontSize: 21, lineHeight: 26, fontWeight: "600", letterSpacing: -.5 },
+  addButton: { width: 34, height: 34, borderRadius: 13, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center" },
+  progressRow: { flexDirection: "row", gap: 9, marginBottom: 10 },
+  progressMain: { minHeight: 76, flex: 1, paddingHorizontal: 13, borderWidth: 1, borderRadius: 21, flexDirection: "row", alignItems: "center", gap: 12 },
+  progressIcon: { width: 47, height: 47, borderRadius: 15, alignItems: "center", justifyContent: "center" },
+  progressTitle: { fontSize: 16, lineHeight: 19, fontWeight: "600" },
+  progressDetail: { fontSize: 12, lineHeight: 16, marginTop: 3, textTransform: "capitalize" },
+  checkTile: { width: 68, minHeight: 76, borderWidth: 1, borderRadius: 21, alignItems: "center", justifyContent: "center" },
+  checkCircle: { width: 28, height: 28, borderRadius: 10, borderWidth: 1.5, alignItems: "center", justifyContent: "center" },
+  overviewTitle: { marginTop: 17, marginBottom: 12 },
+  statGrid: { flexDirection: "row", gap: 10 },
+  statCard: { minHeight: 142, flex: 1, padding: 17, borderWidth: 1, borderRadius: 24, justifyContent: "space-between" },
+  statValue: { fontSize: 23, lineHeight: 27, fontWeight: "600", letterSpacing: -.7, marginTop: 14 },
+  statLabel: { fontSize: 12, lineHeight: 16, marginTop: 2 },
 });
+
+function CustomerHomeSkeleton() {
+  const { colors } = useTheme();
+  return <View>{[0, 1, 2].map((index) => <View key={index} style={homeStyles.progressRow}><View style={[homeStyles.progressMain, { backgroundColor: colors.surface, borderColor: colors.border }]}><View style={[homeStyles.progressIcon, { backgroundColor: colors.surfaceMuted }]} /><View style={{ flex: 1, gap: 8 }}><View style={{ width: "52%", height: 12, borderRadius: 6, backgroundColor: colors.surfaceMuted }} /><View style={{ width: "72%", height: 9, borderRadius: 5, backgroundColor: colors.surfaceMuted }} /></View></View><View style={[homeStyles.checkTile, { backgroundColor: colors.surface, borderColor: colors.border }]} /></View>)}</View>;
+}
+
+function formatStatus(value: string) {
+  return value.toLowerCase().replaceAll("_", " ");
+}
 
 function AgentHome() {
   const router = useRouter();
