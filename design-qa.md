@@ -60,6 +60,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Planner-header pass: removed the list screen's subtitle and dark masthead, replacing them with a compact themed surface and subtle bottom divider.
 - Planner-empty-state pass: removed the surrounding card border so the no-plans message sits directly on the page canvas.
 - Planner-add-control pass: removed the solid blue fill from the top add control and retained its original rounded-square radius with a light outline and theme-aware dark plus.
+- Planner-empty-icon pass: changed the empty-state calendar to the theme-aware dark text color while retaining its subtle light background.
 
 ## Follow-up polish
 

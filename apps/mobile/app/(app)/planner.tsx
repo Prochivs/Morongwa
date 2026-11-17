@@ -57,7 +57,7 @@ export default function PlannerScreen() {
           </Reveal>
         )) : (
           <View style={[styles.empty, { backgroundColor: colors.surface }]}>
-            <View style={[styles.emptyIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name="calendar-outline" size={23} /></View>
+            <View style={[styles.emptyIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={colors.text} name="calendar-outline" size={23} /></View>
             <EmptyState title="No plans yet" message="Add a reminder for something you may want QueueMate to handle later." />
             <Pressable accessibilityRole="button" onPress={() => router.push("/(app)/plan")} style={styles.emptyButton}><Ionicons color="#fff" name="add" size={19} /><Text style={styles.emptyButtonText}>Add a plan</Text></Pressable>
           </View>
