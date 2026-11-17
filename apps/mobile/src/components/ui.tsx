@@ -169,14 +169,14 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
   return <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>{children}</View>;
 }
 
-export function Field({ label, error, multiline, icon, trailing, ...props }: TextInputProps & { label: string; error?: string; icon?: IconName; trailing?: ReactNode }) {
+export function Field({ label, error, multiline, compact = false, icon, trailing, ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; icon?: IconName; trailing?: ReactNode }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   return (
     <View style={styles.fieldGroup}>
       <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
-      <View style={[styles.fieldShell, multiline && styles.textareaShell, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }]}>
-        {icon ? <Ionicons color={focused ? palette.brand : colors.muted} name={icon} size={20} style={multiline ? { marginTop: 15 } : undefined} /> : null}
+      <View style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }]}>
+        {icon ? <Ionicons color={focused ? palette.brand : colors.muted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
         <TextInput
           {...props}
           multiline={multiline}
@@ -184,7 +184,7 @@ export function Field({ label, error, multiline, icon, trailing, ...props }: Tex
           onFocus={(event) => { setFocused(true); props.onFocus?.(event); }}
           placeholderTextColor={colors.muted}
           selectionColor={palette.brand}
-          style={[styles.field, multiline && styles.textarea, { color: colors.text }, props.style]}
+          style={[styles.field, compact && styles.fieldCompact, multiline && styles.textarea, multiline && compact && styles.textareaCompact, { color: colors.text }, props.style]}
         />
         {trailing}
       </View>
@@ -271,9 +271,13 @@ export const styles = StyleSheet.create({
   fieldGroup: { gap: 7, marginBottom: 15 },
   label: { fontSize: 15, fontWeight: "600" },
   fieldShell: { minHeight: 54, borderWidth: 1, borderRadius: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 11 },
+  fieldShellCompact: { minHeight: 48, paddingHorizontal: 13 },
   textareaShell: { alignItems: "flex-start", minHeight: 118 },
+  textareaShellCompact: { minHeight: 96 },
   field: { minHeight: 54, flex: 1, fontSize: 16, paddingVertical: 0 },
+  fieldCompact: { minHeight: 48, fontSize: 15 },
   textarea: { minHeight: 108, paddingTop: 15, textAlignVertical: "top" },
+  textareaCompact: { minHeight: 88, paddingTop: 12 },
   button: { minHeight: 52, borderRadius: 9, paddingHorizontal: 18, alignItems: "center", justifyContent: "center", marginTop: 4, overflow: "hidden", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 2 },
   buttonContent: { width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 },
   buttonText: { fontSize: 15, fontWeight: "500" },

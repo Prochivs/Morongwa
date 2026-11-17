@@ -72,12 +72,12 @@ export default function PlanScreen() {
         </View>
         <ErrorMessage message={error} />
         <Card style={styles.formCard}>
-          <Field icon="create-outline" label="What do you need to do?" value={form.title} onChangeText={(value) => change("title", value)} placeholder="e.g. Visit the service centre" />
-          <Field icon="calendar-outline" label="Planned date" value={form.plannedDate} onChangeText={(value) => change("plannedDate", value)} placeholder="YYYY-MM-DD" />
-          <Field icon="time-outline" label="Planned time" value={form.plannedTime} onChangeText={(value) => change("plannedTime", value)} placeholder="09:00" />
-          <Field icon="document-text-outline" label="Notes (optional)" multiline value={form.notes} onChangeText={(value) => change("notes", value)} placeholder="Add anything you want to remember" />
+          <Field compact icon="create-outline" label="What do you need to do?" value={form.title} onChangeText={(value) => change("title", value)} placeholder="e.g. Visit the service centre" />
+          <Field compact icon="calendar-outline" label="Planned date" value={form.plannedDate} onChangeText={(value) => change("plannedDate", value)} placeholder="YYYY-MM-DD" />
+          <Field compact icon="time-outline" label="Planned time" value={form.plannedTime} onChangeText={(value) => change("plannedTime", value)} placeholder="09:00" />
+          <Field compact icon="document-text-outline" label="Notes (optional)" multiline value={form.notes} onChangeText={(value) => change("notes", value)} placeholder="Add anything you want to remember" />
         </Card>
-        <View style={styles.formAction}><Button loading={save.isPending} onPress={submit}>{id ? "Save changes" : "Save to planner"}</Button></View>
+        <View style={styles.formAction}><Button loading={save.isPending} onPress={submit}>Save</Button></View>
         {id ? <>
           <View style={styles.actionGap}><Button arrow icon="paper-plane-outline" variant="brand" onPress={send}>Prepare request</Button></View>
           <Pressable accessibilityRole="button" disabled={remove.isPending} onPress={confirmDelete} style={styles.deleteButton}><Ionicons color={colors.danger} name="trash-outline" size={18} /><Text style={[styles.deleteText, { color: colors.danger }]}>{remove.isPending ? "Deleting…" : "Delete plan"}</Text></Pressable>

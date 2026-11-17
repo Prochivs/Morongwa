@@ -64,6 +64,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Mobile-navigation pass: standardized every former dark portal header to the Planner treatment—a compact themed surface, dark light-mode controls and title, no navigation subtitle, and a subtle bottom divider.
 - Planner-form pass: flattened the Add to Planner and Plan Details form container by removing its border, corner radius, and card shadow while preserving field spacing.
 - Planner-action-alignment pass: inset Save to Planner and Save Changes to align their left and right edges with the form fields above.
+- Planner-input-density pass: reduced the Planner form input and notes heights with a screen-specific compact field treatment, and shortened the primary action label to Save.
 
 ## Follow-up polish
 
