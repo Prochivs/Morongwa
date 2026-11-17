@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { AppHeader, Badge, Button, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
+import { AppHeader, Button, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
@@ -78,7 +78,6 @@ function CustomerHome() {
             <View style={homeStyles.todayCopy}>
               <Text numberOfLines={1} style={[homeStyles.todayInstitution, { color: colors.text }]}>{item.institution.name}</Text>
               <Text numberOfLines={1} style={[homeStyles.todayReference, { color: colors.muted }]}>{item.reference} · {item.institution.city}</Text>
-              <View style={homeStyles.todayBadge}><Badge status={item.requestStatus} /></View>
             </View>
             <Ionicons color={colors.muted} name="chevron-forward" size={18} />
           </Pressable>
@@ -113,13 +112,12 @@ const homeStyles = StyleSheet.create({
   todayHeader: { marginTop: 2, marginBottom: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   todayTitle: { fontSize: 19, lineHeight: 23, fontWeight: "600", letterSpacing: -.45 },
   todayLink: { color: palette.brand, fontSize: 12, fontWeight: "600" },
-  todayRequest: { minHeight: 88, borderWidth: 1, borderRadius: 14, padding: 9, marginBottom: 8, flexDirection: "row", alignItems: "center", gap: 10 },
-  todayTime: { width: 54, minHeight: 58, borderRadius: 12, alignItems: "center", justifyContent: "center", gap: 3 },
+  todayRequest: { minHeight: 72, borderWidth: 1, borderRadius: 14, padding: 9, marginBottom: 8, flexDirection: "row", alignItems: "center", gap: 10 },
+  todayTime: { width: 54, minHeight: 54, borderRadius: 12, alignItems: "center", justifyContent: "center", gap: 3 },
   todayTimeText: { fontSize: 10, fontWeight: "600" },
   todayCopy: { flex: 1, minWidth: 0 },
   todayInstitution: { fontSize: 14, lineHeight: 18, fontWeight: "600" },
   todayReference: { fontSize: 10, lineHeight: 14, marginTop: 2 },
-  todayBadge: { alignSelf: "flex-start", marginTop: 5 },
   todayEmpty: { minHeight: 210, borderWidth: 1, borderRadius: 14, paddingHorizontal: 22, paddingVertical: 24, alignItems: "center", justifyContent: "center" },
   todayEmptyIcon: { width: 48, height: 48, borderRadius: 16, alignItems: "center", justifyContent: "center", marginBottom: 12 },
   todayEmptyTitle: { fontSize: 16, lineHeight: 20, fontWeight: "600", textAlign: "center" },
