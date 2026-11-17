@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-todays-requests-final.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-full-color-and-empty-state-ready.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -16,8 +16,8 @@ The implementation preserves the source hierarchy while incorporating the user's
 ## Focused comparison evidence
 
 - Header: a circular person avatar, two-line greeting, and fully circular notification match the source's placement and scale.
-- Feature card: the real QueueMate agent photo fills the complete card behind a subtle dark overlay. Its custom crop keeps both the agent's face and phone visible, while the large title and reference remain readable. The separate framed thumbnail is removed, the radius is reduced to 16 points, and the complete card remains an accessible tap target.
-- Today's requests: requests scheduled, requested, or submitted today appear in compact tappable rows with the appointment date or time, institution, reference, city, status, and navigation chevron. A restrained empty state appears when there are no qualifying requests, and View all opens the complete request list.
+- Feature card: the full-color QueueMate agent photo fills the complete card without a color overlay or pressed-state dimming. Its custom crop keeps both the agent's face and phone visible, while text shadows preserve title and reference readability. The separate framed thumbnail is removed, the radius is reduced to 16 points, and the complete card remains an accessible tap target.
+- Today's requests: requests scheduled, requested, or submitted today appear in compact tappable rows with the appointment date or time, institution, reference, city, status, and navigation chevron. When the account has no requests, a centered empty state provides a direct New request button; View all appears when request history exists.
 - Bottom navigation: the customer tab bar floats above the home indicator, aligns to the same 27-point side gutters as the content above, shows labels, and gives the active route a dark rounded pill. Requests and Profile captures confirm the active state follows navigation.
 - Dark mode: surfaces, borders, text, icon tiles, and floating navigation retain readable contrast without flattening the hierarchy.
 
@@ -25,8 +25,8 @@ The implementation preserves the source hierarchy while incorporating the user's
 
 - Fonts and typography: system mobile typography matches the soft, readable character of the source. Heading and body weights remain restrained; no clipping or broken wrapping is visible.
 - Spacing and layout rhythm: 27-point content gutters, the compact 180-point feature card, 88-point request rows, restrained radii, and 64-point floating navigation preserve a balanced mobile rhythm with ample space above the persistent tab bar.
-- Colors and visual tokens: a pure white light-mode canvas, darkened photographic feature card, pale-grey task surfaces, blue QueueMate accents, and muted copy preserve strong contrast while applying QueueMate tokens.
-- Image quality and asset fidelity: the existing high-resolution QueueMate service-centre photo is sharp, positioned with its native aspect ratio so the face and phone remain visible, and protected by a translucent readability overlay. No placeholder art, CSS art, or custom SVG substitutes are used.
+- Colors and visual tokens: a pure white light-mode canvas, full-color photographic feature card, pale-grey task surfaces, blue QueueMate accents, and muted copy preserve strong contrast while applying QueueMate tokens.
+- Image quality and asset fidelity: the existing high-resolution QueueMate service-centre photo is sharp, positioned with its native aspect ratio so the face and phone remain visible, and displayed without a color overlay. No placeholder art, CSS art, or custom SVG substitutes are used.
 - Copy and content: all source-specific pet language has been replaced with coherent QueueMate content backed by the authenticated customer, active request, and today's real request data.
 - Icons and interaction: Ionicons provide a consistent native icon family. Feature action, add request, and all three customer tabs are wired to existing routes.
 - Accessibility: primary controls have practical mobile tap areas; notification and add controls have accessibility labels; text and borders retain contrast in light and dark modes.
@@ -49,6 +49,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Simplification pass: removed the complete progress section, replaced initials with a circular person avatar, made the notification fully circular, reduced the card radius from 22 to 16 points, and increased the card to 230 points. The first crop did not resolve the image width correctly; the corrected full-width native-ratio crop now shows both the agent's face and phone in the post-fix capture.
 - Card-height pass: reduced the request card from 230 to 180 points and shifted the image upward by 36 points to retain the face-and-phone focal crop in the shorter layout.
 - Today's-requests pass: added a live section that includes requests scheduled, requested, or submitted today. The first horizontal badge placement compressed institution names; moving status below the request metadata produced the readable post-fix rows shown in the final capture.
+- Full-color and empty-state pass: removed the full-card overlay and pressed opacity, then added text shadows for legibility. Added a centered no-request state with a direct New request action while preserving the existing-history and no-today variants.
 
 ## Follow-up polish
 
@@ -58,7 +59,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 
 - [x] Reference hierarchy translated to live QueueMate request data without the removed progress or overview sections.
 - [x] Customer-only floating navigation added.
-- [x] Today's request rows, empty state, detail navigation, and View all interaction checked.
+- [x] Today's request rows, centered empty state, New request action, detail navigation, and View all behavior implemented.
 - [x] Agent portal navigation preserved.
 - [x] Light and dark modes checked.
 - [x] Mobile typecheck passed.

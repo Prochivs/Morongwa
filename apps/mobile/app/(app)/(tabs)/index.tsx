@@ -2,7 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { AppHeader, Badge, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
+import { AppHeader, Badge, Button, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
@@ -44,10 +44,9 @@ function CustomerHome() {
           accessibilityRole="button"
           accessibilityLabel={next ? `Open request ${next.reference}` : "Create a request"}
           onPress={() => next ? router.push({ pathname: "/(app)/request/[id]", params: { id: next.id } }) : router.push("/(app)/new-request")}
-          style={({ pressed }) => [homeStyles.featureCard, { opacity: pressed ? 0.9 : 1 }]}
+          style={({ pressed }) => [homeStyles.featureCard, { transform: [{ scale: pressed ? 0.99 : 1 }] }]}
         >
           <Image source={require("../../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={homeStyles.featureBackgroundImage} />
-          <View style={homeStyles.featureOverlay} />
           <View style={homeStyles.featureCopy}>
             <Text style={homeStyles.featureEyebrow}>{next ? "ACTIVE REQUEST" : "QUEUE ASSISTANCE"}</Text>
             <Text numberOfLines={2} style={homeStyles.featureTitle}>{next?.institution.name ?? "Ready when you are"}</Text>
@@ -58,9 +57,9 @@ function CustomerHome() {
 
       <View style={homeStyles.todayHeader}>
         <Text style={[homeStyles.todayTitle, { color: colors.text }]}>Today’s requests</Text>
-        <Pressable accessibilityRole="button" onPress={() => router.push("/(app)/(tabs)/work")} hitSlop={8}>
+        {query.data?.length ? <Pressable accessibilityRole="button" onPress={() => router.push("/(app)/(tabs)/work")} hitSlop={8}>
           <Text style={homeStyles.todayLink}>View all</Text>
-        </Pressable>
+        </Pressable> : null}
       </View>
 
       {query.isLoading ? <TodayRequestsSkeleton /> : todayRequests.length ? todayRequests.map((item, index) => (
@@ -86,7 +85,9 @@ function CustomerHome() {
       )) : (
         <View style={[homeStyles.todayEmpty, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={[homeStyles.todayEmptyIcon, { backgroundColor: dark ? colors.surfaceMuted : "#e7f6fd" }]}><Ionicons color={palette.brand} name="calendar-outline" size={20} /></View>
-          <View style={{ flex: 1 }}><Text style={[homeStyles.todayInstitution, { color: colors.text }]}>Nothing scheduled today</Text><Text style={[homeStyles.todayReference, { color: colors.muted }]}>New and upcoming requests are available under Requests.</Text></View>
+          <Text style={[homeStyles.todayEmptyTitle, { color: colors.text }]}>{query.data?.length ? "Nothing scheduled today" : "No requests yet"}</Text>
+          <Text style={[homeStyles.todayEmptyText, { color: colors.muted }]}>{query.data?.length ? "Upcoming requests are available under Requests." : "Create your first request and track it from this screen."}</Text>
+          {!query.data?.length ? <View style={homeStyles.todayEmptyButton}><Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button></View> : null}
         </View>
       )}
     </Screen>
@@ -103,11 +104,10 @@ const homeStyles = StyleSheet.create({
   notification: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   featureCard: { height: 180, marginTop: 20, marginBottom: 26, borderRadius: 16, backgroundColor: "#151515", overflow: "hidden", shadowColor: palette.navy, shadowOffset: { width: 0, height: 7 }, shadowOpacity: .16, shadowRadius: 14, elevation: 5 },
   featureBackgroundImage: { position: "absolute", top: -36, left: 0, width: "100%", height: 415 },
-  featureOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3, 12, 25, .56)" },
   featureCopy: { position: "absolute", left: 22, bottom: 22, width: "62%" },
-  featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5 },
-  featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6 },
-  featureMeta: { color: "#9ba3ad", fontSize: 11, marginTop: 4 },
+  featureEyebrow: { color: palette.brandLight, fontSize: 8, letterSpacing: 1.55, marginBottom: 5, textShadowColor: "rgba(0,0,0,.9)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4 },
+  featureTitle: { color: palette.white, fontSize: 21, lineHeight: 23, fontWeight: "600", letterSpacing: -.6, textShadowColor: "rgba(0,0,0,.94)", textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 6 },
+  featureMeta: { color: "#edf3f8", fontSize: 11, marginTop: 4, textShadowColor: "rgba(0,0,0,.94)", textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 5 },
   todayHeader: { marginTop: 2, marginBottom: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   todayTitle: { fontSize: 19, lineHeight: 23, fontWeight: "600", letterSpacing: -.45 },
   todayLink: { color: palette.brand, fontSize: 12, fontWeight: "600" },
@@ -118,8 +118,11 @@ const homeStyles = StyleSheet.create({
   todayInstitution: { fontSize: 14, lineHeight: 18, fontWeight: "600" },
   todayReference: { fontSize: 10, lineHeight: 14, marginTop: 2 },
   todayBadge: { alignSelf: "flex-start", marginTop: 5 },
-  todayEmpty: { minHeight: 68, borderWidth: 1, borderRadius: 14, padding: 11, flexDirection: "row", alignItems: "center", gap: 11 },
-  todayEmptyIcon: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center" },
+  todayEmpty: { minHeight: 210, borderWidth: 1, borderRadius: 14, paddingHorizontal: 22, paddingVertical: 24, alignItems: "center", justifyContent: "center" },
+  todayEmptyIcon: { width: 48, height: 48, borderRadius: 16, alignItems: "center", justifyContent: "center", marginBottom: 12 },
+  todayEmptyTitle: { fontSize: 16, lineHeight: 20, fontWeight: "600", textAlign: "center" },
+  todayEmptyText: { maxWidth: 240, fontSize: 11, lineHeight: 16, textAlign: "center", marginTop: 5 },
+  todayEmptyButton: { width: 180, marginTop: 17 },
 });
 
 function TodayRequestsSkeleton() {
