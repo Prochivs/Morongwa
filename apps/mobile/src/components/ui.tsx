@@ -4,7 +4,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState, type ComponentProps, type ComponentRef, type PropsWithChildren, type ReactNode } from "react";
 import {
   Animated,
-  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -76,14 +75,14 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
   );
 }
 
-export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
+export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showTopArtwork = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showTopArtwork?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
   const { colors } = useTheme();
   return (
     <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: colors.background }]}>
       <StatusBar style={colors.background === "#f3f8fc" ? "dark" : "light"} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.authSafe}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.authScroll}>
-          <View style={[styles.authHero, compact && styles.authHeroCompact, !showBrand && styles.authHeroWithoutBrand, { backgroundColor: colors.surface }]}>
+          {showBrand || !titleInBody ? <View style={[styles.authHero, compact && styles.authHeroCompact, !showBrand && styles.authHeroWithoutBrand, { backgroundColor: colors.surface }]}>
             <View style={styles.authPatternOne} />
             <View style={styles.authPatternTwo} />
             {showBrand ? <Reveal delay={40}><Brand /></Reveal> : null}
@@ -95,9 +94,13 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
                 <Text style={[styles.authRoleText, { color: colors.muted }]}>{roleText}</Text>
               </View> : null}
             </Reveal>
-          </View>
+          </View> : null}
           <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: colors.background }]}>
-            <Reveal delay={170}>{children}</Reveal>
+            {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /></> : null}
+            <Reveal delay={170} style={styles.authBodyContent}>
+              {titleInBody ? <View style={styles.authInlineHeader}><Text style={[styles.authTitle, styles.authInlineTitle, { color: colors.text }]}>{title}</Text><Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text></View> : null}
+              {children}
+            </Reveal>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -259,8 +262,11 @@ export const styles = StyleSheet.create({
   authRoleCue: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 18, alignSelf: "flex-start" },
   authRoleText: { fontSize: 12, lineHeight: 17 },
   authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
+  authBodyContent: { zIndex: 1 },
   authBodyWithoutBrand: { paddingTop: 18 },
   authBodyCentered: { justifyContent: "center" },
+  authInlineHeader: { marginBottom: 24 },
+  authInlineTitle: { marginTop: 0 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
   appHeader: { minHeight: 64, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth },
