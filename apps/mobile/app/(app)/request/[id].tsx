@@ -1,9 +1,10 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as DocumentPicker from "expo-document-picker";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Linking, Pressable, Text, View } from "react-native";
-import { Button, Card, EmptyState, ErrorMessage, Field, LoadingScreen, PageHeader, Screen, Badge } from "@/components/ui";
+import { Brand, Button, Card, EmptyState, ErrorMessage, Field, LoadingScreen, PageHeader, PortalHero, Screen, Badge, StageTracker } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
 import { palette, useTheme } from "@/theme";
@@ -28,6 +29,7 @@ export default function DetailScreen() {
 
 function CustomerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const { token } = useSession();
   const { colors } = useTheme();
   const client = useQueryClient();
@@ -59,35 +61,39 @@ function CustomerDetailScreen() {
   if (query.isLoading || !query.data) return <LoadingScreen />;
   const item = query.data;
   const needsPayment = ["UNPAID", "REJECTED"].includes(item.paymentStatus);
-  const milestones = ["Request sent", "Payment confirmed", "Request approved", "Agent active", "Completed"];
   const completed = item.requestStatus === "COMPLETED" ? 5 : ["AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"].includes(item.requestStatus) ? 4 : item.requestStatus === "APPROVED" ? 3 : item.paymentStatus === "VERIFIED" ? 2 : 1;
   return (
-    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()}>
-      <PageHeader title={item.reference} description={`${item.institution.name} · ${new Date(item.scheduledStartAt).toLocaleString("en-BW")}`} />
-      <View style={{ flexDirection: "row", gap: 7, marginBottom: 18 }}><Badge status={item.paymentStatus} /><Badge status={item.requestStatus} /></View>
+    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
+      <PortalHero compact>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}><Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}><Ionicons color={palette.white} name="chevron-back" size={29} /></Pressable><Brand inverse compact /></View>
+        <Text style={{ color: "#b9d3e8", fontSize: 17, marginTop: 38 }}>{item.reference}</Text>
+        <Text style={{ color: palette.white, fontSize: 31, lineHeight: 37, fontWeight: "600", letterSpacing: -.7, marginTop: 8 }}>{item.institution.name}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 14, marginTop: 20 }}><Text style={{ color: palette.white, fontSize: 25, fontWeight: "600" }}>{item.currency} {Number(item.quotedAmount).toFixed(2)}</Text><View style={{ width: 1, height: 38, backgroundColor: "rgba(255,255,255,.5)" }} /><Badge status={item.requestStatus} /></View>
+      </PortalHero>
+      <View style={{ paddingHorizontal: 20, marginTop: -8 }}>
       <ErrorMessage message={upload.isError || review.isError ? message : undefined} />
       {!upload.isError && !review.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
+      <StageTracker stages={["Sent", "Paid", "Approved", "Assigned", "Done"]} activeIndex={Math.max(0, completed - 1)} />
+      <View style={{ backgroundColor: colors.surfaceMuted, borderRadius: 18, padding: 18, flexDirection: "row", alignItems: "center", gap: 15, marginBottom: 22 }}><View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}><Ionicons color={palette.brand} name={item.assignments[0] ? "call-outline" : "notifications-outline"} size={26} /></View><View style={{ flex: 1 }}><Text style={{ color: colors.text, fontSize: 18, fontWeight: "600" }}>What happens next</Text><Text style={{ color: colors.muted, lineHeight: 20, marginTop: 4 }}>{item.assignments[0] ? "Your agent will call before leaving for the service centre." : needsPayment ? "Complete your bank transfer and upload proof for review." : "We’ll notify you as soon as your request moves forward."}</Text></View></View>
+      <PageHeader title="Request summary" />
       <Card>
-        <Text style={{ color: colors.text, fontSize: 17, fontWeight: "500", marginBottom: 16 }}>What happens next</Text>
-        {milestones.map((label, index) => <View key={label} style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: index === milestones.length - 1 ? 0 : 15 }}><View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: index < completed ? palette.brand : colors.surfaceMuted, alignItems: "center", justifyContent: "center" }}><Text style={{ color: index < completed ? "white" : colors.muted }}>{index < completed ? "✓" : index + 1}</Text></View><Text style={{ color: index < completed ? colors.text : colors.muted }}>{label}</Text></View>)}
+        {[["calendar-outline", "Date", new Date(item.scheduledStartAt).toLocaleDateString("en-BW", { day: "2-digit", month: "long", year: "numeric" })], ["layers-outline", "Service", item.serviceType.name], ["location-outline", "Location", item.institution.name], ["person-outline", "Contact", item.contactMobile]].map(([icon, label, value], index) => <View key={label} style={{ flexDirection: "row", alignItems: "center", gap: 12, borderBottomWidth: index === 3 ? 0 : 1, borderBottomColor: colors.border, paddingVertical: 13 }}><Ionicons color={colors.muted} name={icon as "calendar-outline"} size={21} /><Text style={{ color: colors.muted, width: 76 }}>{label}</Text><Text style={{ color: colors.text, flex: 1, fontWeight: "600" }}>{value}</Text></View>)}
       </Card>
-      <Card>
-        <Text style={{ color: colors.text, fontSize: 17, fontWeight: "500", marginBottom: 14 }}>Request summary</Text>
-        {[['Service', item.serviceType.name], ['Fee', `${item.currency} ${Number(item.quotedAmount).toFixed(2)}`], ['Preferred arrival', item.preferredArrivalTime], ['Contact', `${item.contactName} · ${item.contactMobile}`], ['Location', `${item.institution.address}, ${item.institution.city}`]].map(([label, value]) => <View key={label} style={{ borderBottomWidth: label === "Location" ? 0 : 1, borderBottomColor: colors.border, paddingVertical: 10 }}><Text style={{ color: colors.muted, fontSize: 11 }}>{label}</Text><Text style={{ color: colors.text, marginTop: 3 }}>{value}</Text></View>)}
-      </Card>
-      {item.assignments[0] ? <Card><Text style={{ color: colors.muted, fontSize: 12 }}>Assigned agent</Text><Text style={{ color: colors.text, fontSize: 17, marginTop: 5 }}>{item.assignments[0].agent.user.fullName}</Text><Pressable onPress={() => void Linking.openURL(`tel:${item.assignments[0]!.agent.user.mobile}`)}><Text style={{ color: palette.brand, marginTop: 8 }}>Call assigned agent</Text></Pressable></Card> : null}
+      {item.assignments[0] ? <Button icon="call-outline" variant="quiet" onPress={() => void Linking.openURL(`tel:${item.assignments[0]!.agent.user.mobile}`)}>Call your agent</Button> : null}
+      <View style={{ height: 16 }} />
       {needsPayment ? <Card>
         <Text style={{ color: colors.text, fontSize: 18, fontWeight: "500" }}>Bank transfer</Text>
         <Text style={{ color: colors.muted, lineHeight: 20, marginTop: 7, marginBottom: 14 }}>Transfer the exact fee using {item.reference} as the reference, then upload proof.</Text>
         {bank.data ? Object.entries(bank.data).map(([key, value]) => <View key={key} style={{ marginBottom: 9 }}><Text style={{ color: colors.muted, fontSize: 11 }}>{key.replace(/([A-Z])/g, " $1")}</Text><Text selectable style={{ color: colors.text }}>{value}</Text></View>) : null}
-        <Field keyboardType="decimal-pad" label="Amount submitted" value={amount} onChangeText={setAmount} placeholder={Number(item.quotedAmount).toFixed(2)} />
-        <Field label="Payment reference" value={paymentReference} onChangeText={setPaymentReference} placeholder={item.reference} />
-        <Button variant="quiet" onPress={() => void DocumentPicker.getDocumentAsync({ type: ["application/pdf", "image/png", "image/jpeg"], copyToCacheDirectory: true }).then((result) => { if (!result.canceled) setProof(result.assets[0]); })}>{proof ? proof.name : "Choose payment proof"}</Button>
-        <View style={{ height: 8 }} /><Button loading={upload.isPending} onPress={() => upload.mutate()}>Upload proof</Button>
+        <Field icon="cash-outline" keyboardType="decimal-pad" label="Amount submitted" value={amount} onChangeText={setAmount} placeholder={Number(item.quotedAmount).toFixed(2)} />
+        <Field icon="receipt-outline" label="Payment reference" value={paymentReference} onChangeText={setPaymentReference} placeholder={item.reference} />
+        <Button icon="cloud-upload-outline" variant="quiet" onPress={() => void DocumentPicker.getDocumentAsync({ type: ["application/pdf", "image/png", "image/jpeg"], copyToCacheDirectory: true }).then((result) => { if (!result.canceled) setProof(result.assets[0]); })}>{proof ? proof.name : "Choose payment proof"}</Button>
+        <View style={{ height: 8 }} /><Button arrow loading={upload.isPending} onPress={() => upload.mutate()} variant="brand">Upload proof</Button>
       </Card> : null}
-      {item.requestStatus === "COMPLETED" && !item.review ? <Card><Text style={{ color: colors.text, fontSize: 18, fontWeight: "500", marginBottom: 12 }}>How did we do?</Text><View style={{ flexDirection: "row", gap: 7, marginBottom: 16 }}>{[1,2,3,4,5].map((value) => <Pressable key={value} onPress={() => setRating(value)}><Text style={{ color: value <= rating ? "#f5a524" : colors.muted, fontSize: 30 }}>★</Text></Pressable>)}</View><Field label="Review (optional)" multiline value={comment} onChangeText={setComment} placeholder="Tell us about your experience" /><Button loading={review.isPending} onPress={() => review.mutate()}>Submit review</Button></Card> : null}
+      {item.requestStatus === "COMPLETED" && !item.review ? <Card><Text style={{ color: colors.text, fontSize: 18, fontWeight: "500", marginBottom: 12 }}>How did we do?</Text><View style={{ flexDirection: "row", gap: 7, marginBottom: 16 }}>{[1,2,3,4,5].map((value) => <Pressable key={value} onPress={() => setRating(value)}><Ionicons color={value <= rating ? "#f5a524" : colors.muted} name={value <= rating ? "star" : "star-outline"} size={30} /></Pressable>)}</View><Field icon="chatbubble-ellipses-outline" label="Review (optional)" multiline value={comment} onChangeText={setComment} placeholder="Tell us about your experience" /><Button arrow loading={review.isPending} onPress={() => review.mutate()} variant="brand">Submit review</Button></Card> : null}
       <PageHeader title="Status history" />
       {!item.taskUpdates.length ? <Card><EmptyState title="No updates yet" message="Status changes will appear here." /></Card> : [...item.taskUpdates].reverse().map((update) => <Card key={`${update.status}-${update.createdAt}`}><Badge status={update.status} />{update.publicNote ? <Text style={{ color: colors.text, marginTop: 10, lineHeight: 20 }}>{update.publicNote}</Text> : null}<Text style={{ color: colors.muted, fontSize: 11, marginTop: 8 }}>{new Date(update.createdAt).toLocaleString("en-BW")}</Text></Card>)}
+      </View>
     </Screen>
   );
 }
@@ -108,14 +114,28 @@ function AgentDetailScreen() {
   });
   if (query.isLoading || !query.data) return <LoadingScreen />;
   const item = query.data; const action = nextAction[item.status];
+  const activeIndex = item.status === "COMPLETED" ? 3 : item.status === "IN_PROGRESS" || item.status === "ARRIVED" ? 2 : item.status === "EN_ROUTE" ? 1 : 0;
   return (
-    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()}>
-      <PageHeader eyebrow="Assigned task" title={item.request.reference} description={`${item.request.institution.name} · ${new Date(item.scheduledStartAt).toLocaleString("en-BW")}`} action={<Badge status={item.status} />} />
-      <ErrorMessage message={transition.isError ? message : undefined} />{!transition.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
-      <Card><Text style={{ color: colors.text, fontSize: 18, fontWeight: "500" }}>{item.request.institution.name}</Text><Text style={{ color: colors.muted, marginTop: 6, lineHeight: 20 }}>{item.request.institution.address}, {item.request.institution.city}</Text>{item.request.instructions ? <Text style={{ color: colors.text, backgroundColor: colors.surfaceMuted, borderRadius: 10, padding: 12, marginTop: 14, lineHeight: 20 }}>{item.request.instructions}</Text> : null}{item.request.institution.restrictions ? <Text style={{ color: "#a45100", marginTop: 14, lineHeight: 20 }}>{item.request.institution.restrictions}</Text> : null}<View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16 }} /><Text style={{ color: colors.muted, fontSize: 12 }}>Customer contact</Text><Text style={{ color: colors.text, fontSize: 16, marginTop: 5 }}>{item.request.contactName}</Text><Pressable onPress={() => void Linking.openURL(`tel:${item.request.contactMobile}`)}><Text style={{ color: palette.brand, marginTop: 7 }}>{item.request.contactMobile}</Text></Pressable></Card>
-      {action ? <Card><Text style={{ color: colors.text, fontSize: 18, fontWeight: "500", marginBottom: 13 }}>Next step</Text>{item.status === "IN_PROGRESS" ? <><Field label="Task outcome" multiline value={outcome} onChangeText={setOutcome} placeholder="Describe what was completed" /><Field label="Queue reference (optional)" value={reference} onChangeText={setReference} placeholder="Reference supplied by the institution" /></> : <Field label={item.status === "ASSIGNED" ? "Update or decline reason" : "Customer update (optional)"} value={note} onChangeText={setNote} placeholder={item.status === "ASSIGNED" ? "Add a reason if you need to decline" : "Short progress note"} />}<Button disabled={item.status === "IN_PROGRESS" && outcome.trim().length < 5} loading={transition.isPending} variant="brand" onPress={() => transition.mutate(action.status)}>{action.label}</Button>{item.status === "ASSIGNED" ? <><View style={{ height: 9 }} /><Button disabled={note.trim().length < 5} variant="danger" loading={transition.isPending} onPress={() => transition.mutate("CANCELLED")}>Decline assignment</Button></> : null}</Card> : null}
-      <PageHeader title="Status history" />
-      {[...item.request.taskUpdates].reverse().map((update) => <Card key={`${update.status}-${update.createdAt}`}><Badge status={update.status} />{update.publicNote ? <Text style={{ color: colors.text, marginTop: 9 }}>{update.publicNote}</Text> : null}<Text style={{ color: colors.muted, fontSize: 11, marginTop: 8 }}>{new Date(update.createdAt).toLocaleString("en-BW")}</Text></Card>)}
+    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
+      <PortalHero compact>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}><Brand inverse compact /><View style={{ width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: "rgba(255,255,255,.25)", backgroundColor: "rgba(255,255,255,.08)", alignItems: "center", justifyContent: "center" }}><Ionicons color={palette.white} name="notifications-outline" size={22} /></View></View>
+        <Text style={{ color: "#d4e7f6", fontSize: 17, marginTop: 32, borderLeftWidth: 3, borderLeftColor: palette.brandLight, paddingLeft: 14 }}>Agent portal</Text>
+        <Text style={{ color: palette.white, fontSize: 36, lineHeight: 42, fontWeight: "600", letterSpacing: -1, marginTop: 24 }}>Your next assignment</Text>
+      </PortalHero>
+      <View style={{ paddingHorizontal: 20, marginTop: -4 }}>
+        <ErrorMessage message={transition.isError ? message : undefined} />{!transition.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}><Text style={{ color: colors.text, fontSize: 24, fontWeight: "600", letterSpacing: -.5 }}>{item.request.reference}</Text><Badge status={item.status} /></View>
+        <View style={{ gap: 15 }}>
+          {[["business-outline", item.request.institution.name], ["calendar-outline", new Date(item.scheduledStartAt).toLocaleString("en-BW", { weekday: "short", hour: "2-digit", minute: "2-digit" })], ["location-outline", `${item.request.institution.address}, ${item.request.institution.city}`]].map(([icon, value], index) => <View key={icon} style={{ flexDirection: "row", alignItems: "center", gap: 13 }}><Ionicons color={colors.muted} name={icon as "business-outline"} size={23} /><View style={{ width: 1, height: 24, backgroundColor: colors.border }} /><Text style={{ color: index === 0 ? colors.text : colors.muted, flex: 1, fontSize: 16, fontWeight: index === 0 ? "600" : "400" }}>{value}</Text></View>)}
+        </View>
+        <StageTracker stages={["Assigned", "En route", "Assisting", "Done"]} activeIndex={activeIndex} />
+        <PageHeader title="Customer contact" />
+        <View style={{ backgroundColor: colors.surfaceMuted, borderRadius: 18, padding: 14, flexDirection: "row", alignItems: "center", gap: 12 }}><View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: colors.surface, alignItems: "center", justifyContent: "center" }}><Ionicons color={colors.muted} name="person-outline" size={22} /></View><View style={{ flex: 1 }}><Text style={{ color: colors.text, fontSize: 17, fontWeight: "600" }}>{item.request.contactName}</Text><Text style={{ color: colors.muted, marginTop: 2 }}>{item.request.contactMobile}</Text></View><Pressable accessibilityLabel="Call customer" onPress={() => void Linking.openURL(`tel:${item.request.contactMobile}`)} style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: palette.brand, alignItems: "center", justifyContent: "center" }}><Ionicons color={palette.white} name="call" size={21} /></Pressable></View>
+        {item.request.instructions || item.request.institution.restrictions ? <Card style={{ marginTop: 18 }}><Text style={{ color: colors.text, fontSize: 17, fontWeight: "600", marginBottom: 9 }}>Task details</Text>{item.request.instructions ? <Text style={{ color: colors.text, lineHeight: 21 }}>{item.request.instructions}</Text> : null}{item.request.institution.restrictions ? <Text style={{ color: palette.warning, lineHeight: 20, marginTop: 10 }}>{item.request.institution.restrictions}</Text> : null}</Card> : null}
+        {action ? <View style={{ marginTop: 18 }}>{item.status === "IN_PROGRESS" ? <><Field icon="clipboard-outline" label="Task outcome" multiline value={outcome} onChangeText={setOutcome} placeholder="Describe what was completed" /><Field icon="receipt-outline" label="Queue reference (optional)" value={reference} onChangeText={setReference} placeholder="Reference supplied by the institution" /></> : <Field icon="chatbubble-ellipses-outline" label={item.status === "ASSIGNED" ? "Update or decline reason" : "Customer update (optional)"} value={note} onChangeText={setNote} placeholder={item.status === "ASSIGNED" ? "Add a reason only if you need to decline" : "Short progress note"} />}<Button arrow disabled={item.status === "IN_PROGRESS" && outcome.trim().length < 5} loading={transition.isPending} variant="brand" icon={item.status === "EN_ROUTE" ? "navigate-outline" : undefined} onPress={() => transition.mutate(action.status)}>{action.label}</Button>{item.status === "ASSIGNED" ? <><View style={{ height: 9 }} /><Button disabled={note.trim().length < 5} variant="danger" loading={transition.isPending} onPress={() => transition.mutate("CANCELLED")}>Decline assignment</Button></> : null}</View> : null}
+        <PageHeader title="Status history" />
+        {[...item.request.taskUpdates].reverse().map((update) => <Card key={`${update.status}-${update.createdAt}`}><Badge status={update.status} />{update.publicNote ? <Text style={{ color: colors.text, marginTop: 9 }}>{update.publicNote}</Text> : null}<Text style={{ color: colors.muted, fontSize: 11, marginTop: 8 }}>{new Date(update.createdAt).toLocaleString("en-BW")}</Text></Card>)}
+      </View>
     </Screen>
   );
 }

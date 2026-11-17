@@ -19,7 +19,7 @@ export default function WorkScreen() {
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()}>
       <PageHeader eyebrow={agent ? "Assignments" : undefined} title={agent ? "My tasks" : "Requests"} description={agent ? "Only work assigned to your agent profile is shown." : "Open a request to see its progress, payment, and next step."} />
-      {!agent ? <><Button variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button><Card style={{ height: 1, padding: 0, marginVertical: 20 }} /></> : null}
+      {!agent ? <><Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button><Card style={{ height: 1, padding: 0, marginVertical: 20 }} /></> : null}
       {!items.length ? <Card><EmptyState title={agent ? "No assignments" : "No requests yet"} message={agent ? "Assignments made by QueueMate administrators will appear here." : "Your queue assistance requests will appear here."} /></Card> : items.map((raw) => {
         if ("request" in raw) {
           const item = raw;

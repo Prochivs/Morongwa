@@ -1,211 +1,61 @@
-# QueueMate Pricing Cards — Design QA
+# QueueMate Mobile Design QA
 
 ## Evidence
 
-- Source visual truth: `/private/tmp/queuemate-pricing-reference.png`
-- Source pixels: `455 × 341`
-- Desktop implementation: `/private/tmp/queuemate-pricing-plans-960.png`
-- Desktop implementation pixels: `960 × 741`
-- Mobile implementation: `/private/tmp/queuemate-pricing-plans-mobile.png`
-- Mobile implementation pixels: `430 × 1374`
-- Side-by-side comparison: `/private/tmp/queuemate-pricing-comparison.png`
-- Desktop CSS viewport: `960 × 800`, device scale factor `1`
-- Mobile CSS viewport: `430 × 800`, device scale factor `1`
-- Density normalization: the 960 px implementation capture is displayed at 455 px wide beside the 455 px source thumbnail in the combined comparison.
-- State: public homepage, signed out, live pricing loaded, pricing section at rest.
-
-## Findings
-
-- No actionable P0, P1, or P2 differences remain.
-- Fonts and typography: both designs use a centered two-line hierarchy, compact plan names, prominent prices, small feature copy, and restrained button labels. QueueMate keeps its established Poppins family and medium weights.
-- Spacing and layout rhythm: the final section matches the reference's centered header, three equal cards, feature lists, bottom-aligned actions, and emphasized middle choice. The QueueMate container uses its established larger radius as an intentional brand adaptation.
-- Colors and visual tokens: the source purple/coral treatment is intentionally translated to QueueMate's `#1a1c27` dark surface and solid brand blue. The featured middle card uses a blue border and filled action while the outer cards use subtle outlines.
-- Image quality and asset fidelity: the reference is entirely interface UI and contains no photography, illustration, logo, or decorative raster asset requiring recreation.
-- Copy and content: generic plan copy is replaced with QueueMate's live service names, BWP prices, verified-agent benefits, request updates, and fixed-price promise.
-- Responsive behavior: the three-card row becomes a clean single-column stack at 430 px with no clipping or horizontal overflow.
-- Interaction: all three action buttons link to `/register`; the destination returned HTTP 200.
-- Browser console: no browser warnings or errors were recorded in the final desktop or mobile captures.
+- Source visual truth — customer home: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-b5e7dac6-6885-41cc-b34e-d6f0ef1fd14b.png`
+- Source visual truth — customer progress: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-0eb58f23-64a5-41cd-a881-64baf31aca53.png`
+- Source visual truth — agent assignment: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-f382c538-74b3-4fb0-bcd4-499b7cdca813.png`
+- Implementation — customer home: `/private/tmp/queuemate-build-all-customer-detail-top.png`
+- Implementation — customer progress: `/private/tmp/queuemate-build-all-customer-detail.png`
+- Implementation — agent assignment: `/private/tmp/queuemate-build-all-agent-detail.png`
+- Combined comparisons: `/private/tmp/queuemate-home-comparison.png`, `/private/tmp/queuemate-customer-detail-comparison.png`, `/private/tmp/queuemate-agent-detail-comparison.png`
+- Runtime: Expo Go on iOS 18.4, CityBus Test simulator.
+- Logical viewport: 402 × 874 points. Implementation captures: 1206 × 2622 pixels at 3×. Source captures: 852 × 1846 pixels at 2× (426 × 923 logical). For combined inspection the implementation was normalized to 852 × 1846 pixels.
+- State: signed-in customer home with an assigned request, customer request at assigned stage, and agent assignment at accepted stage.
 
 ## Full-view comparison evidence
 
-- `/private/tmp/queuemate-pricing-comparison.png` places the source and final implementation in one comparison input at the same displayed width.
-- The comparison confirms matching information hierarchy, centered alignment, three-card structure, featured middle action, and dark-panel composition.
-- A separate focused crop was not needed because the comparison keeps headings, prices, feature lists, borders, and actions readable; the mobile capture was reviewed separately.
-
-## Comparison history
-
-1. Initial implementation: `/private/tmp/queuemate-pricing-plans-960.png` before the final spacing pass measured `960 × 926`.
-   - [P2] The outer whitespace, header scale, gap above the cards, and 330 px card height made the section substantially taller and airier than the compact source.
-   - Fix: reduced the outer section padding, headline size, card gap, and card minimum height.
-2. Post-fix implementation: `/private/tmp/queuemate-pricing-plans-960.png` now measures `960 × 741`.
-   - The normalized comparison shows the compact three-card rhythm and section proportions now align without actionable P0/P1/P2 drift.
-
-## Implementation checklist
-
-- [x] Centered reference-inspired pricing header
-- [x] Three live service-price cards
-- [x] Shared feature lists and bottom-aligned actions
-- [x] Featured middle option
-- [x] Working registration links
-- [x] Responsive single-column mobile layout
-- [x] TypeScript check and browser-rendered evidence
-
-## Follow-up polish
-
-- P3: the source uses a purple/coral gradient accent; QueueMate intentionally uses a solid blue accent to preserve brand consistency and avoid introducing a one-off visual language.
-
----
-
-# QueueMate Testimonials and Page Titles — Design QA
-
-## Evidence
-
-- Source visual truth: `/private/tmp/uidux-testimonials-reference.png` (`1600 × 1200`).
-- Populated implementation state: `/private/tmp/queuemate-testimonials-populated-section.png` (`1440 × 1200`).
-- Side-by-side comparison: `/private/tmp/queuemate-testimonials-comparison.png` (`3040 × 1200`).
-- Final live-data homepage: `/private/tmp/queuemate-review-spacing.png` (`1440 × 3600`).
-- Responsive populated state: `/private/tmp/queuemate-testimonials-mobile-full.png` (`500 × 6500`).
-- Shared page-title check: `/private/tmp/queuemate-how-it-works-regular.png` (`1440 × 900`).
-- Desktop CSS viewport: `1440 × 3600`; mobile CSS viewport: `500 × 6500`; device scale factor `1`.
-- State: public pages, signed out, light theme. The populated comparison used three clearly labelled temporary QA-only reviews; those fixtures were removed before the final build. The live API currently has no approved reviews, so the shipped state displays the verified empty-state message.
-
-## Findings
-
-- No actionable P0, P1, or P2 differences remain.
-- Fonts and typography: QueueMate retains its established Poppins family. The testimonial hierarchy follows the source while using the product's sentence case. Shared secondary-page H1 titles now use regular weight, verified on the How it works page.
-- Spacing and layout rhythm: the desktop section matches the source's centered introduction, three-card row, elevated middle card, framed background band, and centered paging controls. The mobile layout becomes a clean single-column stack without clipping or horizontal overflow.
-- Colors and visual tokens: the source's amber accent is translated to QueueMate blue `#009de7`; navy text, pale slate framing, soft shadows, and rounded corners remain consistent with the rest of the site.
-- Image quality and asset fidelity: the testimonial reference contains interface elements only. Lucide stars and arrows are used as crisp vector icons; no new raster asset was required.
-- Copy and content: no invented customer claims ship in production. Reviews render only from the approved public API, and the live empty state explains the verification requirement.
-- Primary interaction: previous and next controls expose working handlers, clear disabled states, and accessible labels. The single-page QA fixture correctly displayed both controls as disabled.
-- Browser console: no application console errors were observed; the only message was the standard React DevTools development notice.
-
-## Full-view comparison evidence
-
-- `/private/tmp/queuemate-testimonials-comparison.png` places the source and populated implementation in the same `3040 × 1200` comparison input.
-- The comparison confirms the same testimonial-section hierarchy, three-card composition, elevated center card, review-rating row, customer metadata, and paging-control placement.
-- Decorative source dots were intentionally omitted to keep QueueMate's visual language restrained and avoid adding one-off ornamentation.
-
-## Comparison history
-
-1. Initial live-data render: `/private/tmp/queuemate-testimonials-section.png`.
-   - [P2] The approved-review API was empty, so visual fidelity of the populated card composition could not be assessed from the production state alone.
-   - Fix: rendered three explicitly labelled temporary QA records, captured desktop and mobile evidence, and removed every fixture before the final build.
-2. Populated comparison: `/private/tmp/queuemate-testimonials-comparison.png`.
-   - The source structure and QueueMate adaptation align without actionable P0/P1/P2 drift.
-3. Final live-data render: `/private/tmp/queuemate-review-spacing.png`.
-   - The production build uses the real approved-review feed and presents the honest verified empty state until reviews are available.
-
-## Implementation checklist
-
-- [x] Reference-inspired section directly below pricing
-- [x] Three responsive testimonial cards with elevated center card
-- [x] Approved-review API integration with no fabricated production data
-- [x] Accessible paging controls and disabled states
-- [x] Responsive desktop and mobile visual checks
-- [x] Regular-weight shared secondary-page titles
-- [x] TypeScript check and browser-rendered evidence
-
-## Follow-up polish
-
-- P3: when more than three approved reviews exist, add a browser-level interaction test that clicks both paging controls and records the state transition.
-
-final result: passed
-
----
-
-# Built for confidence — option 2 design QA
-
-## Evidence
-
-- Source visual truth: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-c53810ff-f605-4dfb-9c45-e273ac0d36af.png` (`1821 × 864`).
-- Browser-rendered implementation: `/private/tmp/queuemate-confidence-section.png` (`1440 × 900`).
-- Side-by-side comparison input: `/private/tmp/queuemate-confidence-comparison.png` (`1800 × 900`).
-- Responsive implementation: `/private/tmp/queuemate-confidence-mobile500-full.png` (`500 × 4600`).
-- Desktop CSS viewport: `1440 × 3600`; responsive CSS viewport: `500 × 4600`; device scale factor `1`.
-- State: public homepage, signed out. The source is light theme; the browser's saved preference rendered the implementation in dark theme. Structural fidelity and token translation were compared with that theme difference explicitly treated as intentional.
-
-## Findings
-
-- No actionable P0, P1, or P2 differences remain.
-- Fonts and typography: the implementation retains QueueMate's Poppins family, medium-weight display hierarchy, compact headline tracking, oversized pale-blue numerals, and restrained supporting copy from the selected concept.
-- Spacing and layout rhythm: the two-column introduction, wide gap before the assurance band, three equal desktop columns, thin top rules, and flat highlighted centre item match the selected composition. At 500 px the band stacks cleanly without clipping or horizontal overflow.
-- Colors and visual tokens: the selected white/navy/blue composition maps directly to the existing QueueMate light palette. The verified dark state uses the established deep-navy surface, muted slate copy, blue rules, and blue-tinted centre highlight with sufficient contrast.
-- Image quality and asset fidelity: the concept contains no required photography or custom illustration inside this section. The existing masked section-shape asset remains a faint background accent; no placeholder, custom SVG, or CSS-drawn illustration was introduced.
-- Copy and content: the eyebrow, headline, supporting paragraph, three assurance titles, and their descriptions match the approved QueueMate content exactly.
-- Primary interactions: the section is informational and introduces no action control. Hover emphasis is implemented for all three assurance items, while the middle item remains visibly featured at rest. The homepage returned HTTP 200 in the browser-rendered state.
-- Browser console: no application errors were observed. The only console entry was the standard React DevTools development notice.
-
-## Full-view comparison evidence
-
-- `/private/tmp/queuemate-confidence-comparison.png` places the selected option and the browser-rendered implementation in the same comparison input.
-- The comparison confirms the same headline/summary split, horizontal three-part band, oversized numbering, blue top-rule emphasis, and highlighted middle item.
-- The implementation intentionally preserves the site's narrower `max-w-7xl` content boundary and dark-mode preference rather than copying the mock's white presentation canvas literally.
+The three screens preserve the source composition and hierarchy: luminous navy/blue branded hero, curved transition into the content surface, dark navy typography, pale blue support panels, compact semantic badges, horizontal progress tracking, and a single dominant action. The implemented layouts use the same real generated wave asset across authentication and portal heroes rather than recreating it with code-native shapes.
 
 ## Focused region comparison evidence
 
-- `/private/tmp/queuemate-confidence-section.png` isolates the implemented section at readable size, including the transition from the preceding imagery section.
-- Headline wrapping, summary width, band alignment, number scale, title hierarchy, rules, and the highlighted middle state are all legible in the focused crop; no additional micro-crop was needed.
+- Customer home: hero/CTA, active-request card, progress bar, activity rows, and tab bar were checked. Content density and vertical rhythm match the source while using real request fields.
+- Customer progress: the five-stage tracker, next-step callout, summary rows, and agent-call action were checked at readable size. Labels, icons, and semantic colors remain legible at the narrower real device viewport.
+- Agent assignment: the hero, reference/status row, location metadata, four-stage tracker, customer contact strip, and next-action area were checked. The implementation intentionally derives the active stage from the real assignment status.
+
+## Required fidelity surfaces
+
+- Fonts and typography: passed. The existing QueueMate mobile type system is used consistently, with display weights and sizes closely matching the references and smaller labels retaining readable optical weight.
+- Spacing and layout rhythm: passed. Major section proportions, curved hero transition, card spacing, radii, summary-row rhythm, and bottom-navigation clearance align with the references.
+- Colors and visual tokens: passed. `#009de7`, deep navy, white, pale blue, semantic green, and muted slate tokens are consistently applied with sufficient contrast.
+- Image quality and asset fidelity: passed. The generated wave background is a sharp raster asset placed directly in the app; Ionicons supplies all interface icons. No placeholder or hand-drawn SVG/CSS image substitute remains.
+- Copy and content: passed. Source wording is retained where applicable and real API fields replace mock-specific values.
+
+## Findings
+
+- No actionable P0, P1, or P2 findings remain.
+- [P3] The source customer-detail concept shows four bottom destinations while the production app keeps the established three-tab customer navigation. This is an intentional product constraint and avoids introducing non-existent Services/Support routes.
+- [P3] Expo Go's floating development button and the simulator's unsupported `tel:` toast appear in some QA captures. They are development chrome and are not part of a production build.
 
 ## Comparison history
 
-1. Initial implementation: `/private/tmp/queuemate-confidence-section.png`.
-   - The first browser-rendered pass matched the chosen layout without actionable P0/P1/P2 drift.
-2. Responsive confirmation: `/private/tmp/queuemate-confidence-mobile500-full.png`.
-   - The horizontal band becomes three clearly separated stacked rows, retaining the centre highlight and complete copy.
+1. Initial pass found a P2 duplicate native stack header above the branded request hero and slightly crowded four-stage labels.
+2. Fixed by hiding the request stack header, making the in-hero customer back control functional, and tightening tracker label sizing/padding.
+3. Post-fix source review and TypeScript verification found no remaining actionable P0/P1/P2 mismatch. The app-owned layout now starts with the intended branded hero and keeps persistent controls clear.
+
+## Primary interactions and console checks
+
+- Verified authenticated route loading, customer/agent detail routing, tab persistence, press feedback, loading states, and the call affordance.
+- Metro console checked. The only interaction error observed was Expo Go reporting that the iOS simulator cannot open a `tel:` URL; physical devices support that action. No render, navigation, or type errors remain.
+- `npm run typecheck -w @queuemate/mobile` passed.
 
 ## Implementation checklist
 
-- [x] Two-column headline and summary introduction
-- [x] Flat three-column assurance band
-- [x] Oversized numbered hierarchy
-- [x] Featured centre assurance with blue top rule
-- [x] Hover emphasis for each assurance item
-- [x] Existing QueueMate light and dark themes preserved
-- [x] Responsive stacked mobile layout
-- [x] Production build and TypeScript checks
-- [x] Browser-rendered desktop and responsive evidence
-
-## Follow-up polish
-
-- P3: if desired, the centre item's resting highlight can be softened slightly on light mode after reviewing it in the final production context.
-
-final result: passed
-
----
-
-# Agent progress tracker design QA
-
-- Source visual truth: user-provided inline reference image in the active conversation (1784 × 113 px).
-- Implementation screenshot: `/private/tmp/queuemate-tracker-implementation.png`.
-- Viewport: 1800 × 220 CSS px at device scale factor 1.
-- Implementation pixels: 1800 × 220 px.
-- Density normalization: both references evaluated at approximately 1×; comparison focused on the tracker region rather than surrounding canvas height.
-- State: light theme, step 2 current, step 1 completed, remaining steps upcoming.
-
-**Full-view comparison evidence**
-
-The source and rendered implementation were opened in the same active comparison context. Both use separate equal-width horizontal progress bars with compact numbered labels below. Reached steps use QueueMate blue, the active label uses the same blue, and upcoming steps use a pale neutral track with muted copy. The implementation intentionally uses five columns because the real agent workflow has five stages; the source contains four illustrative stages.
-
-**Focused region comparison evidence**
-
-The tracker itself was reviewed at full readable size. Bar thickness, rounded ends, label offset, active-state color, neutral-state contrast, and column gaps match the reference closely. The implementation width follows the portal's existing `max-w-7xl` content boundary rather than stretching to the screenshot's full-width frame.
-
-**Findings**
-
-- No actionable P0, P1, or P2 mismatch remains.
-- Typography: Poppins, 11–12 px labels, normal weight, and compact line height match the existing portal and the reference's restrained treatment.
-- Spacing: equal tracks, 12–16 px inter-track gaps, and 12 px label offset reproduce the reference rhythm.
-- Colors: reached/current states use `#009de7`; upcoming states use the established slate token and retain dark-theme contrast.
-- Image quality and asset fidelity: no raster imagery, icons, or custom assets are present in this UI control.
-- Copy: labels use the real QueueMate agent workflow: Assigned, Accepted, On the way, Working, Done.
-
-**Comparison history**
-
-- Initial pass: the rendered implementation matched the requested styling. No P0/P1/P2 correction loop was required.
-
-**Follow-up polish**
-
-- None required for this scoped replacement.
+- [x] Shared raster hero asset used across auth and portal screens.
+- [x] Customer home rebuilt around the next request and recent activity.
+- [x] Customer progress screen rebuilt around a five-stage tracker and next action.
+- [x] Agent assignment rebuilt around one assignment and one primary status action.
+- [x] Real API behavior, payment, review, and assignment mutations preserved.
+- [x] QA-only fixture and auto-login code removed.
 
 final result: passed

@@ -69,13 +69,13 @@ function CustomerProfile() {
       <Card>
         <ErrorMessage message={update.isError ? message : undefined} />
         {!update.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
-        <Field label="Full name" value={form.fullName} onChangeText={(value) => change("fullName", value)} placeholder="e.g. Neo Molefe" />
-        <Field autoCapitalize="none" keyboardType="email-address" label="Email address" value={form.email} onChangeText={(value) => change("email", value)} placeholder="name@example.com" />
-        <Field keyboardType="phone-pad" label="Mobile number" value={form.mobile} onChangeText={(value) => change("mobile", value)} placeholder="+267 71 123 456" />
-        <Field keyboardType="phone-pad" label="Other mobile (optional)" value={form.altMobile} onChangeText={(value) => change("altMobile", value)} placeholder="+267 72 123 456" />
-        <Field label="City" value={form.city} onChangeText={(value) => change("city", value)} placeholder="Gaborone" />
-        <Field label="Address (optional)" value={form.address} onChangeText={(value) => change("address", value)} placeholder="Street, ward, or neighbourhood" />
-        <Button loading={update.isPending} onPress={submit}>Save changes</Button>
+        <Field icon="person-outline" label="Full name" value={form.fullName} onChangeText={(value) => change("fullName", value)} placeholder="e.g. Neo Molefe" />
+        <Field autoCapitalize="none" icon="mail-outline" keyboardType="email-address" label="Email address" value={form.email} onChangeText={(value) => change("email", value)} placeholder="name@example.com" />
+        <Field icon="call-outline" keyboardType="phone-pad" label="Mobile number" value={form.mobile} onChangeText={(value) => change("mobile", value)} placeholder="+267 71 123 456" />
+        <Field icon="phone-portrait-outline" keyboardType="phone-pad" label="Other mobile (optional)" value={form.altMobile} onChangeText={(value) => change("altMobile", value)} placeholder="+267 72 123 456" />
+        <Field icon="business-outline" label="City" value={form.city} onChangeText={(value) => change("city", value)} placeholder="Gaborone" />
+        <Field icon="location-outline" label="Address (optional)" value={form.address} onChangeText={(value) => change("address", value)} placeholder="Street, ward, or neighbourhood" />
+        <Button arrow loading={update.isPending} onPress={submit} variant="brand">Save changes</Button>
       </Card>
       <Button loading={signingOut} variant="quiet" onPress={() => { setSigningOut(true); void signOut(); }}>Sign out</Button>
     </Screen>
