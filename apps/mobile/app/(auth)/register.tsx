@@ -37,7 +37,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <AuthShell compact roleText="Secure customer registration" title="Create your account" subtitle="Request and track assistance from your phone.">
+    <AuthShell compact roleText="Secure customer registration" title="Let’s get started" subtitle="Create your QueueMate customer account.">
       <View style={localStyles.form}>
         <ErrorMessage message={error} />
         <Field autoComplete="name" icon="person-outline" label="Full name" onChangeText={(value) => change("fullName", value)} placeholder="e.g. Neo Molefe" value={form.fullName} />
@@ -45,12 +45,11 @@ export default function RegisterScreen() {
         <Field autoComplete="tel" icon="call-outline" keyboardType="phone-pad" label="Mobile number" onChangeText={(value) => change("mobile", value)} placeholder="+267 71 123 456" value={form.mobile} />
         <Field autoCapitalize="none" icon="lock-closed-outline" label="Password" onChangeText={(value) => change("password", value)} placeholder="At least 12 characters" secureTextEntry={!showPassword} trailing={<Pressable accessibilityLabel="Toggle password visibility" hitSlop={12} onPress={() => setShowPassword((value) => !value)}><Ionicons color={colors.muted} name={showPassword ? "eye-off-outline" : "eye-outline"} size={22} /></Pressable>} value={form.password} />
         <Field autoCapitalize="none" icon="shield-checkmark-outline" label="Confirm password" onChangeText={(value) => change("passwordConfirmation", value)} placeholder="Re-enter your password" secureTextEntry={!showPassword} value={form.passwordConfirmation} />
-        <Pressable onPress={() => setShowPassword((value) => !value)}><Text style={localStyles.passwordToggle}>{showPassword ? "Hide passwords" : "Show passwords"}</Text></Pressable>
         <Pressable onPress={() => setAccepted((value) => !value)} style={localStyles.checkRow}>
           <View style={[localStyles.checkbox, { backgroundColor: accepted ? palette.brand : "transparent", borderColor: accepted ? palette.brand : colors.border }]}>{accepted ? <Ionicons color="white" name="checkmark" size={16} /> : null}</View>
           <Text style={{ color: colors.muted, flex: 1, lineHeight: 21 }}>I accept the terms and conditions and privacy policy.</Text>
         </Pressable>
-        <Button arrow loading={loading} onPress={() => void submit()} variant="brand">Create customer account</Button>
+        <Button arrow loading={loading} onPress={() => void submit()}>Create customer account</Button>
         <Text style={[localStyles.accountText, { color: colors.muted }]}>Already registered? <Link href="/(auth)/login" style={localStyles.accountLink}>Sign in</Link></Text>
       </View>
     </AuthShell>
@@ -59,7 +58,6 @@ export default function RegisterScreen() {
 
 const localStyles = StyleSheet.create({
   form: { width: "100%" },
-  passwordToggle: { color: palette.brand, fontSize: 14, fontWeight: "500", marginTop: -6, marginBottom: 16, textAlign: "right" },
   checkRow: { flexDirection: "row", alignItems: "flex-start", gap: 11, marginBottom: 18 },
   checkbox: { width: 23, height: 23, borderRadius: 7, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   accountText: { textAlign: "center", marginTop: 24, marginBottom: 6, fontSize: 15 },

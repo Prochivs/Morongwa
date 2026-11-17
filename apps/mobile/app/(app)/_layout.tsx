@@ -12,7 +12,7 @@ export default function AppLayout() {
     <Stack screenOptions={{ headerStyle: { backgroundColor: colors.surface }, headerTintColor: colors.text, headerShadowVisible: false, contentStyle: { backgroundColor: colors.background }, headerBackButtonDisplayMode: "minimal" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="request/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="new-request" options={{ title: "Request assistance", presentation: "modal" }} />
+      <Stack.Screen name="new-request" options={{ headerShown: false, presentation: "card" }} />
     </Stack>
   );
 }

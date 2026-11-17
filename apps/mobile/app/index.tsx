@@ -5,5 +5,5 @@ import { useSession } from "@/providers/session";
 export default function Index() {
   const { loading, user } = useSession();
   if (loading) return <LoadingScreen />;
-  return <Redirect href={user ? "/(app)/(tabs)" : "/(auth)/login"} />;
+  return <Redirect href={user ? "/(app)/(tabs)" : "/(auth)/welcome"} />;
 }

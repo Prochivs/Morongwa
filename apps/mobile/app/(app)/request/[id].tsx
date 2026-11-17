@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as DocumentPicker from "expo-document-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Linking, Pressable, Text, View } from "react-native";
-import { Brand, Button, Card, EmptyState, ErrorMessage, Field, LoadingScreen, PageHeader, PortalHero, Screen, Badge, StageTracker } from "@/components/ui";
+import { AppHeader, Button, Card, EmptyState, ErrorMessage, Field, LoadingScreen, PageHeader, Screen, Badge, StageTracker } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
 import { palette, useTheme } from "@/theme";
@@ -64,13 +64,9 @@ function CustomerDetailScreen() {
   const completed = item.requestStatus === "COMPLETED" ? 5 : ["AGENT_ASSIGNED", "EN_ROUTE", "ARRIVED", "IN_PROGRESS"].includes(item.requestStatus) ? 4 : item.requestStatus === "APPROVED" ? 3 : item.paymentStatus === "VERIFIED" ? 2 : 1;
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <PortalHero compact>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}><Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}><Ionicons color={palette.white} name="chevron-back" size={29} /></Pressable><Brand inverse compact /></View>
-        <Text style={{ color: "#b9d3e8", fontSize: 17, marginTop: 38 }}>{item.reference}</Text>
-        <Text style={{ color: palette.white, fontSize: 31, lineHeight: 37, fontWeight: "600", letterSpacing: -.7, marginTop: 8 }}>{item.institution.name}</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 14, marginTop: 20 }}><Text style={{ color: palette.white, fontSize: 25, fontWeight: "600" }}>{item.currency} {Number(item.quotedAmount).toFixed(2)}</Text><View style={{ width: 1, height: 38, backgroundColor: "rgba(255,255,255,.5)" }} /><Badge status={item.requestStatus} /></View>
-      </PortalHero>
-      <View style={{ paddingHorizontal: 20, marginTop: -8 }}>
+      <AppHeader onBack={() => router.back()} title="Request details" subtitle={item.reference} />
+      <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
+      <Card><View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}><View style={{ flex: 1 }}><Text style={{ color: colors.muted, fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>Service centre</Text><Text style={{ color: colors.text, fontSize: 20, lineHeight: 25, fontWeight: "600", marginTop: 6 }}>{item.institution.name}</Text><Text style={{ color: colors.muted, marginTop: 5 }}>{item.serviceType.name}</Text></View><Text style={{ color: colors.text, fontSize: 20, fontWeight: "600" }}>{item.currency} {Number(item.quotedAmount).toFixed(2)}</Text></View><View style={{ flexDirection: "row", gap: 7, marginTop: 17 }}><Badge status={item.paymentStatus} /><Badge status={item.requestStatus} /></View></Card>
       <ErrorMessage message={upload.isError || review.isError ? message : undefined} />
       {!upload.isError && !review.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
       <StageTracker stages={["Sent", "Paid", "Approved", "Assigned", "Done"]} activeIndex={Math.max(0, completed - 1)} />
@@ -103,6 +99,7 @@ const nextAction: Record<string, { status: string; label: string }> = { ASSIGNED
 function AgentDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { token } = useSession();
+  const router = useRouter();
   const { colors } = useTheme();
   const client = useQueryClient();
   const [note, setNote] = useState(""); const [outcome, setOutcome] = useState(""); const [reference, setReference] = useState(""); const [message, setMessage] = useState("");
@@ -117,12 +114,8 @@ function AgentDetailScreen() {
   const activeIndex = item.status === "COMPLETED" ? 3 : item.status === "IN_PROGRESS" || item.status === "ARRIVED" ? 2 : item.status === "EN_ROUTE" ? 1 : 0;
   return (
     <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
-      <PortalHero compact>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}><Brand inverse compact /><View style={{ width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: "rgba(255,255,255,.25)", backgroundColor: "rgba(255,255,255,.08)", alignItems: "center", justifyContent: "center" }}><Ionicons color={palette.white} name="notifications-outline" size={22} /></View></View>
-        <Text style={{ color: "#d4e7f6", fontSize: 17, marginTop: 32, borderLeftWidth: 3, borderLeftColor: palette.brandLight, paddingLeft: 14 }}>Agent portal</Text>
-        <Text style={{ color: palette.white, fontSize: 36, lineHeight: 42, fontWeight: "600", letterSpacing: -1, marginTop: 24 }}>Your next assignment</Text>
-      </PortalHero>
-      <View style={{ paddingHorizontal: 20, marginTop: -4 }}>
+      <AppHeader onBack={() => router.back()} title="Assignment details" subtitle={item.request.reference} />
+      <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
         <ErrorMessage message={transition.isError ? message : undefined} />{!transition.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}><Text style={{ color: colors.text, fontSize: 24, fontWeight: "600", letterSpacing: -.5 }}>{item.request.reference}</Text><Badge status={item.status} /></View>
         <View style={{ gap: 15 }}>

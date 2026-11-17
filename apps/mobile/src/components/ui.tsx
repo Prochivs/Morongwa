@@ -79,19 +79,20 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
 export function AuthShell({ children, title, subtitle, compact = false, roleText = "For customers and queue agents" }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; roleText?: string }>) {
   const { colors } = useTheme();
   return (
-    <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: palette.navyDeep }]}>
-      <StatusBar style="light" />
+    <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: colors.background }]}>
+      <StatusBar style={colors.background === "#f3f8fc" ? "dark" : "light"} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.authSafe}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.authScroll}>
-          <View style={[styles.authHero, compact && styles.authHeroCompact]}>
-            <Image source={require("../../assets/queuemate-wave-background.png")} resizeMode="cover" style={StyleSheet.absoluteFill} />
-            <Reveal delay={40}><Brand inverse /></Reveal>
+          <View style={[styles.authHero, compact && styles.authHeroCompact, { backgroundColor: colors.surface }]}>
+            <View style={styles.authPatternOne} />
+            <View style={styles.authPatternTwo} />
+            <Reveal delay={40}><Brand /></Reveal>
             <Reveal delay={110}>
-              <Text style={styles.authTitle}>{title}</Text>
-              <Text style={styles.authSubtitle}>{subtitle}</Text>
+              <Text style={[styles.authTitle, { color: colors.text }]}>{title}</Text>
+              <Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text>
               <View style={styles.authRoleCue}>
-                <Ionicons color={palette.brandLight} name="people-outline" size={20} />
-                <Text style={styles.authRoleText}>{roleText}</Text>
+                <Ionicons color={palette.brand} name="shield-checkmark-outline" size={17} />
+                <Text style={[styles.authRoleText, { color: colors.muted }]}>{roleText}</Text>
               </View>
             </Reveal>
           </View>
@@ -105,10 +106,22 @@ export function AuthShell({ children, title, subtitle, compact = false, roleText
 }
 
 export function PortalHero({ children, compact = false }: PropsWithChildren<{ compact?: boolean }>) {
+  const { colors } = useTheme();
   return (
-    <View style={[styles.portalHero, compact && styles.portalHeroCompact]}>
-      <Image source={require("../../assets/queuemate-wave-background.png")} resizeMode="cover" style={StyleSheet.absoluteFill} />
+    <View style={[styles.portalHero, compact && styles.portalHeroCompact, { backgroundColor: colors.header }]}>
+      <LinearGradient colors={["rgba(0,157,231,.15)", "transparent", "rgba(255,255,255,.03)"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
       {children}
+    </View>
+  );
+}
+
+export function AppHeader({ title, subtitle, onBack, right }: { title: string; subtitle?: string; onBack?: () => void; right?: ReactNode }) {
+  const { colors } = useTheme();
+  return (
+    <View style={[styles.appHeader, { backgroundColor: colors.header }]}>
+      {onBack ? <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={onBack} style={styles.appHeaderSide}><Ionicons color={palette.white} name="chevron-back" size={24} /></Pressable> : <View style={styles.appHeaderSide} />}
+      <View style={styles.appHeaderCopy}><Text style={styles.appHeaderTitle}>{title}</Text>{subtitle ? <Text style={styles.appHeaderSubtitle}>{subtitle}</Text> : null}</View>
+      <View style={[styles.appHeaderSide, { alignItems: "flex-end" }]}>{right}</View>
     </View>
   );
 }
@@ -144,6 +157,11 @@ export function PageHeader({ eyebrow, title, description, action }: { eyebrow?: 
       {description ? <Text style={[styles.description, { color: colors.muted }]}>{description}</Text> : null}
     </View>
   );
+}
+
+export function ListSkeleton({ rows = 3 }: { rows?: number }) {
+  const { colors } = useTheme();
+  return <View>{Array.from({ length: rows }).map((_, index) => <View key={index} style={[styles.skeletonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}><View style={[styles.skeletonIcon, { backgroundColor: colors.surfaceMuted }]} /><View style={{ flex: 1, gap: 10 }}><View style={[styles.skeletonLine, { backgroundColor: colors.surfaceMuted, width: "72%" }]} /><View style={[styles.skeletonLine, { backgroundColor: colors.surfaceMuted, width: "48%", height: 9 }]} /></View></View>)}</View>;
 }
 
 export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle | ViewStyle[] }>) {
@@ -222,15 +240,22 @@ export const styles = StyleSheet.create({
   loaderSquare: { width: 6, height: 6, borderRadius: 2 },
   authSafe: { flex: 1 },
   authScroll: { flexGrow: 1 },
-  authHero: { minHeight: 370, paddingHorizontal: 28, paddingTop: 42, paddingBottom: 72, overflow: "hidden" },
-  authHeroCompact: { minHeight: 305 },
-  authTitle: { color: palette.white, fontSize: 44, lineHeight: 48, fontWeight: "600", letterSpacing: -1.4, marginTop: 42 },
-  authSubtitle: { color: "#d2e7f8", fontSize: 18, lineHeight: 25, marginTop: 10 },
-  authRoleCue: { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 24 },
-  authRoleText: { color: palette.white, fontSize: 14, lineHeight: 19 },
-  authBody: { flex: 1, marginTop: -52, borderTopLeftRadius: 52, borderTopRightRadius: 14, paddingHorizontal: 24, paddingTop: 50, paddingBottom: 34, minHeight: 510 },
-  portalHero: { minHeight: 390, paddingHorizontal: 24, paddingTop: 28, paddingBottom: 78, overflow: "hidden", borderBottomLeftRadius: 96 },
-  portalHeroCompact: { minHeight: 330 },
+  authHero: { minHeight: 310, paddingHorizontal: 24, paddingTop: 38, paddingBottom: 32, overflow: "hidden", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "#dce4ec" },
+  authHeroCompact: { minHeight: 285 },
+  authPatternOne: { position: "absolute", width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: "rgba(0,157,231,.12)", right: -95, top: -95 },
+  authPatternTwo: { position: "absolute", width: 160, height: 160, borderRadius: 80, borderWidth: 1, borderColor: "rgba(0,157,231,.09)", right: -34, top: -38 },
+  authTitle: { fontSize: 32, lineHeight: 38, fontWeight: "600", letterSpacing: -0.8, marginTop: 48, alignSelf: "flex-start" },
+  authSubtitle: { fontSize: 15, lineHeight: 22, marginTop: 8, alignSelf: "flex-start" },
+  authRoleCue: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 18, alignSelf: "flex-start" },
+  authRoleText: { fontSize: 12, lineHeight: 17 },
+  authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
+  portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
+  portalHeroCompact: { minHeight: 250 },
+  appHeader: { minHeight: 82, paddingHorizontal: 18, paddingVertical: 14, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: "rgba(255,255,255,.13)" },
+  appHeaderSide: { width: 42, minHeight: 42, alignItems: "flex-start", justifyContent: "center" },
+  appHeaderCopy: { flex: 1, alignItems: "center", paddingHorizontal: 6 },
+  appHeaderTitle: { color: palette.white, fontSize: 18, lineHeight: 22, fontWeight: "600", textAlign: "center" },
+  appHeaderSubtitle: { color: "#b9c6d7", fontSize: 11, lineHeight: 15, marginTop: 3, textAlign: "center" },
   stageWrap: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", marginVertical: 20, position: "relative" },
   stageRail: { position: "absolute", height: 4, left: 22, right: 22, top: 20, borderRadius: 2 },
   stageRailActive: { position: "absolute", height: 4, left: 22, top: 20, borderRadius: 2, backgroundColor: "#24b84a", maxWidth: "88%" },
@@ -241,16 +266,16 @@ export const styles = StyleSheet.create({
   header: { paddingTop: 18, paddingBottom: 22 },
   eyebrow: { color: palette.brand, fontSize: 11, letterSpacing: 1.8, textTransform: "uppercase", marginBottom: 8, fontWeight: "600" },
   headerRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
-  title: { flex: 1, fontSize: 30, lineHeight: 36, fontWeight: "600", letterSpacing: -0.9 },
+  title: { flex: 1, fontSize: 23, lineHeight: 29, fontWeight: "600", letterSpacing: -0.4 },
   description: { marginTop: 8, fontSize: 15, lineHeight: 22 },
-  card: { borderWidth: 1, borderRadius: 14, padding: 18, marginBottom: 14, shadowColor: palette.navy, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.07, shadowRadius: 22, elevation: 3 },
+  card: { borderWidth: 1, borderRadius: 12, padding: 17, marginBottom: 14, shadowColor: palette.navy, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   fieldGroup: { gap: 7, marginBottom: 15 },
   label: { fontSize: 15, fontWeight: "600" },
-  fieldShell: { minHeight: 56, borderWidth: 1, borderRadius: 16, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", gap: 12, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.16, shadowRadius: 10 },
+  fieldShell: { minHeight: 54, borderWidth: 1, borderRadius: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 11 },
   textareaShell: { alignItems: "flex-start", minHeight: 118 },
   field: { minHeight: 54, flex: 1, fontSize: 16, paddingVertical: 0 },
   textarea: { minHeight: 108, paddingTop: 15, textAlignVertical: "top" },
-  button: { minHeight: 56, borderRadius: 16, paddingHorizontal: 20, alignItems: "center", justifyContent: "center", marginTop: 4, overflow: "hidden", shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.18, shadowRadius: 18, elevation: 4 },
+  button: { minHeight: 52, borderRadius: 9, paddingHorizontal: 18, alignItems: "center", justifyContent: "center", marginTop: 4, overflow: "hidden", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 2 },
   buttonContent: { width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 },
   buttonText: { fontSize: 15, fontWeight: "500" },
   badge: { alignSelf: "flex-start", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 },
@@ -259,4 +284,7 @@ export const styles = StyleSheet.create({
   emptyTitle: { fontSize: 18, fontWeight: "500" },
   emptyText: { marginTop: 7, textAlign: "center", lineHeight: 21 },
   message: { borderLeftWidth: 3, paddingVertical: 10, paddingHorizontal: 12, marginBottom: 14, backgroundColor: "rgba(201,42,42,.06)", borderRadius: 8 },
+  skeletonCard: { borderWidth: 1, borderRadius: 12, padding: 16, marginBottom: 12, minHeight: 92, flexDirection: "row", alignItems: "center", gap: 13 },
+  skeletonIcon: { width: 46, height: 46, borderRadius: 10 },
+  skeletonLine: { height: 12, borderRadius: 6 },
 });

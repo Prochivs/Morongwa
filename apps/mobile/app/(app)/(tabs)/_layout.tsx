@@ -11,14 +11,14 @@ export default function TabsLayout() {
     <Tabs screenOptions={{
       headerShown: false,
       tabBarActiveTintColor: palette.brand,
-      tabBarInactiveTintColor: colors.muted,
-      tabBarStyle: { backgroundColor: colors.nav, borderTopColor: colors.border, height: 78, paddingTop: 8, paddingBottom: 11, shadowColor: palette.navy, shadowOffset: { width: 0, height: -8 }, shadowOpacity: 0.08, shadowRadius: 18 },
-      tabBarItemStyle: { borderRadius: 16, marginHorizontal: 5 },
-      tabBarLabelStyle: { fontSize: 11, fontWeight: "600", marginTop: 3 },
+      tabBarInactiveTintColor: "#8b9bb0",
+      tabBarShowLabel: false,
+      tabBarStyle: { backgroundColor: colors.nav, borderTopColor: "#26313f", height: 70, paddingTop: 8, paddingBottom: 10, shadowColor: palette.navy, shadowOffset: { width: 0, height: -5 }, shadowOpacity: 0.12, shadowRadius: 12 },
+      tabBarItemStyle: { borderRadius: 10, marginHorizontal: 10 },
     }}>
-      <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, focused }) => <Ionicons color={color as string} name={focused ? "home" : "home-outline"} size={21} /> }} />
-      <Tabs.Screen name="work" options={{ title: agent ? "Assignments" : "Requests", tabBarIcon: ({ color, focused }) => <Ionicons color={color as string} name={focused ? "list-circle" : "list-circle-outline"} size={23} /> }} />
-      <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, focused }) => <Ionicons color={color as string} name={focused ? "person" : "person-outline"} size={21} /> }} />
+      <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color, focused }) => <Ionicons color={color as string} name={focused ? "home" : "home-outline"} size={24} /> }} />
+      <Tabs.Screen name="work" options={{ title: agent ? "Assignments" : "Requests", tabBarIcon: ({ color, focused }) => <Ionicons color={color as string} name={focused ? "ticket" : "ticket-outline"} size={25} /> }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile", tabBarIcon: ({ color, focused }) => <Ionicons color={color as string} name={focused ? "person" : "person-outline"} size={24} /> }} />
     </Tabs>
   );
 }

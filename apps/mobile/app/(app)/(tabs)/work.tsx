@@ -1,26 +1,38 @@
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Button, Card, EmptyState, LoadingScreen, PageHeader, Screen } from "@/components/ui";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { AppHeader, Button, Card, EmptyState, ListSkeleton, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
+import { palette, useTheme } from "@/theme";
 import type { AssignmentListItem, RequestListItem } from "@/types";
 
 export default function WorkScreen() {
   const { token, user } = useSession();
   const router = useRouter();
+  const { colors } = useTheme();
+  const [filter, setFilter] = useState<"ALL" | "ACTIVE" | "DONE">("ALL");
   const agent = user?.role === "AGENT";
   const query = useQuery<Array<RequestListItem | AssignmentListItem>>({
     queryKey: ["mobile", agent ? "assignments" : "requests"],
     queryFn: async () => agent ? await apiFetch<AssignmentListItem[]>("/agent/assignments", { token }) : await apiFetch<RequestListItem[]>("/requests/my-requests?pageSize=100", { token }),
   });
-  if (query.isLoading) return <LoadingScreen />;
   const items = query.data ?? [];
+  const filtered = useMemo(() => items.filter((raw) => {
+    if (filter === "ALL") return true;
+    const status = "request" in raw ? raw.status : raw.requestStatus;
+    const done = ["COMPLETED", "REJECTED", "CANCELLED"].includes(status);
+    return filter === "DONE" ? done : !done;
+  }), [filter, items]);
   return (
-    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()}>
-      <PageHeader eyebrow={agent ? "Assignments" : undefined} title={agent ? "My tasks" : "Requests"} description={agent ? "Only work assigned to your agent profile is shown." : "Open a request to see its progress, payment, and next step."} />
-      {!agent ? <><Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button><Card style={{ height: 1, padding: 0, marginVertical: 20 }} /></> : null}
-      {!items.length ? <Card><EmptyState title={agent ? "No assignments" : "No requests yet"} message={agent ? "Assignments made by QueueMate administrators will appear here." : "Your queue assistance requests will appear here."} /></Card> : items.map((raw) => {
+    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
+      <AppHeader title={agent ? "My assignments" : "My requests"} subtitle={agent ? "Your scheduled QueueMate work" : "Track every request in one place"} />
+      <View style={styles.content}>
+      {!agent ? <Button arrow icon="add" variant="brand" onPress={() => router.push("/(app)/new-request")}>New request</Button> : null}
+      <View style={[styles.tabs, { backgroundColor: colors.surface, borderColor: colors.border }]}>{[["ALL", "All"], ["ACTIVE", "Active"], ["DONE", "Completed"]].map(([value, label]) => <Pressable key={value} onPress={() => setFilter(value as "ALL" | "ACTIVE" | "DONE")} style={[styles.tab, filter === value && styles.tabActive]}><Text style={[styles.tabText, { color: filter === value ? palette.white : colors.muted }]}>{label}</Text></Pressable>)}</View>
+      {query.isLoading ? <ListSkeleton rows={4} /> : !filtered.length ? <Card><EmptyState title={agent ? "No assignments here" : "No requests here"} message={agent ? "Assignments made by QueueMate administrators will appear here." : "Your queue assistance requests will appear here."} /></Card> : filtered.map((raw) => {
         if ("request" in raw) {
           const item = raw;
           return <WorkCard key={item.id} title={item.request.institution.name} reference={item.request.reference} meta={`${item.request.institution.address}, ${item.request.institution.city} · ${new Date(item.scheduledStartAt).toLocaleString("en-BW")}`} statuses={[item.status]} onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: item.id } })} />;
@@ -28,6 +40,15 @@ export default function WorkScreen() {
         const item = raw;
         return <WorkCard key={item.id} title={item.institution.name} reference={item.reference} meta={`${item.institution.city} · ${new Date(item.scheduledStartAt).toLocaleString("en-BW")}`} statuses={[item.paymentStatus, item.requestStatus]} onPress={() => router.push({ pathname: "/(app)/request/[id]", params: { id: item.id } })} />;
       })}
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  content: { paddingHorizontal: 20, paddingTop: 20 },
+  tabs: { flexDirection: "row", borderWidth: 1, borderRadius: 10, padding: 4, marginTop: 18, marginBottom: 20 },
+  tab: { flex: 1, minHeight: 38, borderRadius: 7, alignItems: "center", justifyContent: "center" },
+  tabActive: { backgroundColor: palette.brand },
+  tabText: { fontSize: 12, fontWeight: "600" },
+});

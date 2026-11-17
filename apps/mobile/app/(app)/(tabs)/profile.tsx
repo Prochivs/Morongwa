@@ -1,11 +1,12 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { customerProfileSchema } from "@queuemate/shared";
-import { Button, Card, ErrorMessage, Field, LoadingScreen, PageHeader, Screen } from "@/components/ui";
+import { AppHeader, Button, Card, ErrorMessage, Field, ListSkeleton, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";
-import { useTheme } from "@/theme";
+import { palette, useTheme } from "@/theme";
 
 type Profile = {
   id: string;
@@ -27,14 +28,17 @@ function AgentProfile() {
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
   return (
-    <Screen>
-      <PageHeader eyebrow="Agent account" title="Profile" description="Your QueueMate agent account details." />
+    <Screen contentStyle={{ paddingHorizontal: 0 }}>
+      <AppHeader title="Profile" subtitle="Your QueueMate agent account" />
+      <View style={styles.content}>
+      <ProfileIdentity name={user?.fullName ?? "QueueMate agent"} subtitle={user?.email ?? ""} />
       <Card>
         {[['Name', user?.fullName], ['Email', user?.email], ['Mobile', user?.mobile], ['Role', 'QueueMate agent']].map(([label, value]) => (
           <View key={label} style={{ borderBottomWidth: label === "Role" ? 0 : 1, borderBottomColor: colors.border, paddingVertical: 13 }}><Text style={{ color: colors.muted, fontSize: 12 }}>{label}</Text><Text style={{ color: colors.text, fontSize: 16, marginTop: 4 }}>{value}</Text></View>
         ))}
       </Card>
-      <Button loading={loading} variant="quiet" onPress={() => { setLoading(true); void signOut(); }}>Sign out</Button>
+      <SignOutRow loading={loading} onPress={() => { setLoading(true); void signOut(); }} />
+      </View>
     </Screen>
   );
 }
@@ -55,7 +59,6 @@ function CustomerProfile() {
     onSuccess: async (profile) => { client.setQueryData(["mobile", "profile"], profile); await refreshUser(); setMessage("Your profile has been updated."); },
     onError: (reason) => setMessage(reason instanceof Error ? reason.message : "Unable to update your profile"),
   });
-  if (query.isLoading) return <LoadingScreen />;
   const change = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));
   const submit = () => {
     setMessage("");
@@ -64,8 +67,11 @@ function CustomerProfile() {
     update.mutate({ ...parsed.data, altMobile: parsed.data.altMobile ?? "", address: parsed.data.address ?? "" });
   };
   return (
-    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()}>
-      <PageHeader title="Your profile" description="Keep your contact details current so we can reach you about your requests." />
+    <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()} contentStyle={{ paddingHorizontal: 0 }}>
+      <AppHeader title="Profile" subtitle="Account and contact details" />
+      <View style={styles.content}>
+      <ProfileIdentity name={form.fullName || "QueueMate customer"} subtitle={form.email || "Keep your details current"} />
+      {query.isLoading ? <ListSkeleton rows={3} /> : <>
       <Card>
         <ErrorMessage message={update.isError ? message : undefined} />
         {!update.isError && message ? <Text style={{ color: "#087f5b", marginBottom: 14 }}>{message}</Text> : null}
@@ -75,9 +81,33 @@ function CustomerProfile() {
         <Field icon="phone-portrait-outline" keyboardType="phone-pad" label="Other mobile (optional)" value={form.altMobile} onChangeText={(value) => change("altMobile", value)} placeholder="+267 72 123 456" />
         <Field icon="business-outline" label="City" value={form.city} onChangeText={(value) => change("city", value)} placeholder="Gaborone" />
         <Field icon="location-outline" label="Address (optional)" value={form.address} onChangeText={(value) => change("address", value)} placeholder="Street, ward, or neighbourhood" />
-        <Button arrow loading={update.isPending} onPress={submit} variant="brand">Save changes</Button>
+        <Button arrow loading={update.isPending} onPress={submit}>Save changes</Button>
       </Card>
-      <Button loading={signingOut} variant="quiet" onPress={() => { setSigningOut(true); void signOut(); }}>Sign out</Button>
+      <SignOutRow loading={signingOut} onPress={() => { setSigningOut(true); void signOut(); }} />
+      </>}
+      </View>
     </Screen>
   );
 }
+
+function ProfileIdentity({ name, subtitle }: { name: string; subtitle: string }) {
+  const { colors } = useTheme();
+  const initials = name.split(" ").map((part) => part[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();
+  return <View style={styles.identity}><View style={[styles.avatar, { backgroundColor: colors.surfaceMuted, borderColor: colors.border }]}><Text style={[styles.initials, { color: colors.text }]}>{initials || "QM"}</Text><View style={styles.camera}><Ionicons color={palette.white} name="camera" size={14} /></View></View><Text style={[styles.name, { color: colors.text }]}>{name}</Text><Text style={[styles.identitySubtitle, { color: colors.muted }]}>{subtitle}</Text></View>;
+}
+
+function SignOutRow({ loading, onPress }: { loading: boolean; onPress: () => void }) {
+  const { colors } = useTheme();
+  return <Pressable disabled={loading} onPress={onPress} style={[styles.signOut, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={palette.danger} name="log-out-outline" size={22} /><Text style={{ color: palette.danger, fontSize: 15 }}>{loading ? "Signing out…" : "Sign out"}</Text></Pressable>;
+}
+
+const styles = StyleSheet.create({
+  content: { paddingHorizontal: 20, paddingTop: 22 },
+  identity: { alignItems: "center", paddingVertical: 14, marginBottom: 16 },
+  avatar: { width: 104, height: 104, borderRadius: 52, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  initials: { fontSize: 31, fontWeight: "600", letterSpacing: -1 },
+  camera: { position: "absolute", right: 2, bottom: 5, width: 30, height: 30, borderRadius: 15, backgroundColor: palette.brand, borderWidth: 3, borderColor: palette.white, alignItems: "center", justifyContent: "center" },
+  name: { fontSize: 22, fontWeight: "600", marginTop: 13 },
+  identitySubtitle: { fontSize: 13, marginTop: 4 },
+  signOut: { minHeight: 58, borderWidth: 1, borderRadius: 12, flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 18, marginBottom: 20 },
+});

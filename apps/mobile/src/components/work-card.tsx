@@ -8,14 +8,13 @@ export function WorkCard({ title, reference, meta, statuses, onPress }: { title:
   return (
     <Pressable onPress={onPress} style={({ pressed }) => ({ opacity: pressed ? 0.88 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] })}>
       <Card style={{ overflow: "hidden" }}>
-        <View style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, backgroundColor: palette.brand }} />
-        <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
-          <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: colors.surfaceMuted, alignItems: "center", justifyContent: "center" }}><Ionicons color={palette.brand} name="time-outline" size={21} /></View>
-          <View style={{ flex: 1 }}><Text style={{ color: colors.text, fontSize: 17, fontWeight: "600" }}>{title}</Text><Text style={{ color: colors.muted, fontSize: 12, marginTop: 4 }}>{reference}</Text></View>
-          <Ionicons color={colors.muted} name="chevron-forward" size={20} style={{ marginTop: 8 }} />
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <Text style={{ color: colors.muted, fontSize: 11, letterSpacing: .4 }}>{reference}</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-end", gap: 5 }}>{statuses.slice(-1).map((status) => <Badge key={status} status={status} />)}</View>
         </View>
-        <Text style={{ color: colors.muted, fontSize: 13, marginTop: 12, lineHeight: 19 }}>{meta}</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7, marginTop: 14 }}>{statuses.map((status) => <Badge key={status} status={status} />)}</View>
+        <Text style={{ color: colors.text, fontSize: 17, fontWeight: "600", marginTop: 13 }}>{title}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 9 }}><Ionicons color={colors.muted} name="calendar-outline" size={16} /><Text style={{ color: colors.muted, fontSize: 12, lineHeight: 18, flex: 1 }}>{meta}</Text></View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 15, paddingTop: 13, borderTopWidth: 1, borderTopColor: colors.border }}><Text style={{ color: palette.brand, fontSize: 12, fontWeight: "600" }}>View details</Text><Ionicons color={palette.brand} name="arrow-forward" size={17} /></View>
       </Card>
     </Pressable>
   );

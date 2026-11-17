@@ -1,61 +1,67 @@
-# QueueMate Mobile Design QA
+# QueueMate Mobile — CityBus Design QA
 
 ## Evidence
 
-- Source visual truth — customer home: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-b5e7dac6-6885-41cc-b34e-d6f0ef1fd14b.png`
-- Source visual truth — customer progress: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-0eb58f23-64a5-41cd-a881-64baf31aca53.png`
-- Source visual truth — agent assignment: `/Users/withusprochivs/.codex/generated_images/01a1d16f-04f7-7373-b5a7-d8aaebe2e394/exec-f382c538-74b3-4fb0-bcd4-499b7cdca813.png`
-- Implementation — customer home: `/private/tmp/queuemate-build-all-customer-detail-top.png`
-- Implementation — customer progress: `/private/tmp/queuemate-build-all-customer-detail.png`
-- Implementation — agent assignment: `/private/tmp/queuemate-build-all-agent-detail.png`
-- Combined comparisons: `/private/tmp/queuemate-home-comparison.png`, `/private/tmp/queuemate-customer-detail-comparison.png`, `/private/tmp/queuemate-agent-detail-comparison.png`
+- Source project: `/Users/withusprochivs/Music/tutorial-rect`
+- Source visual truth — CityBus home: `/private/tmp/citybus-home-472.png`
+- Source visual truth — CityBus booking flow: `/private/tmp/citybus-booking.png`
+- Implementation — QueueMate home, original simulator capture: `/private/tmp/queuemate-citybus-pass.png`
+- Implementation — QueueMate home, density-normalized: `/private/tmp/queuemate-home-472.png`
+- Implementation — QueueMate requests: `/private/tmp/queuemate-requests-final.png`
+- Implementation — QueueMate request detail: `/private/tmp/queuemate-detail-final.png`
+- Full-view side-by-side comparison: `/private/tmp/queuemate-citybus-compare.png`
 - Runtime: Expo Go on iOS 18.4, CityBus Test simulator.
-- Logical viewport: 402 × 874 points. Implementation captures: 1206 × 2622 pixels at 3×. Source captures: 852 × 1846 pixels at 2× (426 × 923 logical). For combined inspection the implementation was normalized to 852 × 1846 pixels.
-- State: signed-in customer home with an assigned request, customer request at assigned stage, and agent assignment at accepted stage.
+- Viewport and normalization: CityBus source captured at 472 × 1024 CSS pixels with device scale factor 1. QueueMate simulator captured at 944 × 2048 pixels at 2× and normalized to 472 × 1024 pixels. The compared images therefore have equal pixel and logical dimensions.
+- State: customer home with an active request, light theme, authenticated state.
 
 ## Full-view comparison evidence
 
-The three screens preserve the source composition and hierarchy: luminous navy/blue branded hero, curved transition into the content surface, dark navy typography, pale blue support panels, compact semantic badges, horizontal progress tracking, and a single dominant action. The implemented layouts use the same real generated wave asset across authentication and portal heroes rather than recreating it with code-native shapes.
+The combined comparison confirms that QueueMate now follows the CityBus composition and flow language: full-width photographic header, compact brand layer, task-entry card immediately below the image, strong single CTA, white ticket-style cards, shallow borders and shadows, service shortcuts, and a black icon-only tab bar. QueueMate intentionally retains its blue brand, queue-agent imagery, and request-specific content.
 
 ## Focused region comparison evidence
 
-- Customer home: hero/CTA, active-request card, progress bar, activity rows, and tab bar were checked. Content density and vertical rhythm match the source while using real request fields.
-- Customer progress: the five-stage tracker, next-step callout, summary rows, and agent-call action were checked at readable size. Labels, icons, and semantic colors remain legible at the narrower real device viewport.
-- Agent assignment: the hero, reference/status row, location metadata, four-stage tracker, customer contact strip, and next-action area were checked. The implementation intentionally derives the active stage from the real assignment status.
+The home comparison is large enough to read the hero hierarchy, CTA card, ticket card, section titles, imagery, icon family, borders, and bottom navigation without a second crop. The separate QueueMate request-list and request-detail captures verify the equivalent CityBus booking/list pattern at native simulator resolution, including segmented states, status badges, the dark detail header, summary card, progress tracker, and tap targets.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: passed. The existing QueueMate mobile type system is used consistently, with display weights and sizes closely matching the references and smaller labels retaining readable optical weight.
-- Spacing and layout rhythm: passed. Major section proportions, curved hero transition, card spacing, radii, summary-row rhythm, and bottom-navigation clearance align with the references.
-- Colors and visual tokens: passed. `#009de7`, deep navy, white, pale blue, semantic green, and muted slate tokens are consistently applied with sufficient contrast.
-- Image quality and asset fidelity: passed. The generated wave background is a sharp raster asset placed directly in the app; Ionicons supplies all interface icons. No placeholder or hand-drawn SVG/CSS image substitute remains.
-- Copy and content: passed. Source wording is retained where applicable and real API fields replace mock-specific values.
+- Fonts and typography: passed. The implementation preserves QueueMate’s established sans-serif product voice while matching CityBus’s hierarchy, compact label weights, large hero statement, centered dark headers, and readable ticket metadata. This is an intentional brand adaptation rather than unintentional drift.
+- Spacing and layout rhythm: passed. Hero proportion, 20-point page gutters, shallow 9–12 point radii, compact card padding, section gaps, bottom-bar clearance, and ticket density match the source system without clipping or overlap.
+- Colors and visual tokens: passed. CityBus’s red action role maps consistently to QueueMate blue `#009de7`; black navigation/header surfaces, white cards, pale slate page backgrounds, and semantic payment/status tones preserve the reference contrast structure.
+- Image quality and asset fidelity: passed. QueueMate uses its real high-resolution service-centre image with a controlled dark overlay and cover crop. Ionicons provide one consistent interface icon family. No placeholder, emoji, handcrafted SVG, or CSS illustration substitutes are used.
+- Copy and content: passed. CityBus-specific bus language has been replaced with concise QueueMate actions, while real institution, request, payment, schedule, customer, and agent data remain intact.
+- Interaction and accessibility: passed. Primary buttons meet mobile tap-target sizing, disabled/loading states remain visible, cards provide press feedback, tabs expose selected state, text contrast is sufficient, and scrolling preserves access to persistent navigation.
 
 ## Findings
 
 - No actionable P0, P1, or P2 findings remain.
-- [P3] The source customer-detail concept shows four bottom destinations while the production app keeps the established three-tab customer navigation. This is an intentional product constraint and avoids introducing non-existent Services/Support routes.
-- [P3] Expo Go's floating development button and the simulator's unsupported `tel:` toast appear in some QA captures. They are development chrome and are not part of a production build.
+- [P3] The CityBus home exposes origin/destination controls directly in the first card; QueueMate uses a single “Request assistance” entry card because its four-step request needs institution, service, schedule, contact, and policy acknowledgement. The visual pattern is preserved while avoiding an incomplete inline form.
+- [P3] Expo Go’s floating development gear appears in simulator screenshots. It is development chrome and is not included in preview or production builds.
 
 ## Comparison history
 
-1. Initial pass found a P2 duplicate native stack header above the branded request hero and slightly crowded four-stage labels.
-2. Fixed by hiding the request stack header, making the in-hero customer back control functional, and tightening tracker label sizing/padding.
-3. Post-fix source review and TypeScript verification found no remaining actionable P0/P1/P2 mismatch. The app-owned layout now starts with the intended branded hero and keeps persistent controls clear.
+1. The first implementation pass revealed a P2 duplicate native modal header above QueueMate’s custom dark request header.
+2. The request route was changed from a native modal header to a full card screen with `headerShown: false`; card radii and shared title scale were also tightened to the CityBus rhythm.
+3. The post-fix simulator pass verified home, requests, profile, request detail, and request creation. The normalized side-by-side comparison found no remaining actionable P0/P1/P2 differences.
 
 ## Primary interactions and console checks
 
-- Verified authenticated route loading, customer/agent detail routing, tab persistence, press feedback, loading states, and the call affordance.
-- Metro console checked. The only interaction error observed was Expo Go reporting that the iOS simulator cannot open a `tel:` URL; physical devices support that action. No render, navigation, or type errors remain.
+- Tested customer Home → Requests tab → request card → Request details.
+- Tested entry into the four-step Request assistance flow and verified the duplicate header fix.
+- Verified profile rendering, active tab state, request filters, button disabled/loading styling, and API-backed request data.
+- Metro console checked after the final bundle. No render, navigation, runtime errors, or app-owned warnings remain.
 - `npm run typecheck -w @queuemate/mobile` passed.
+- `npx expo-doctor apps/mobile` completed without a reported failure.
 
 ## Implementation checklist
 
-- [x] Shared raster hero asset used across auth and portal screens.
-- [x] Customer home rebuilt around the next request and recent activity.
-- [x] Customer progress screen rebuilt around a five-stage tracker and next action.
-- [x] Agent assignment rebuilt around one assignment and one primary status action.
-- [x] Real API behavior, payment, review, and assignment mutations preserved.
-- [x] QA-only fixture and auto-login code removed.
+- [x] CityBus-style photographic welcome and customer home.
+- [x] Compact authentication hierarchy and form surfaces.
+- [x] Black icon-only bottom navigation.
+- [x] Segmented ticket-style request and assignment lists.
+- [x] Four-step request creation flow: Place, Details, Contact, Review.
+- [x] Compact dark request and assignment detail headers.
+- [x] CityBus-style profile identity and account layout.
+- [x] Existing customer/agent API behavior, payment, review, and status mutations preserved.
+- [x] Light and dark theme token compatibility retained.
 
 final result: passed
