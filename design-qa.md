@@ -59,7 +59,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Planner workflow pass: replaced the submitted-request schedule with private planner to-dos. Customers can create, edit, and delete reminders, then explicitly prepare the normal four-step request form later. Only final request submission sends data into QueueMate operations; a successfully submitted request removes its originating planner item.
 - Planner-header pass: removed the list screen's subtitle and dark masthead, replacing them with a compact themed surface and subtle bottom divider.
 - Planner-empty-state pass: removed the surrounding card border so the no-plans message sits directly on the page canvas.
-- Planner-add-control pass: removed the solid blue fill from the top add control and retained its original rounded-square radius with a light outline and blue plus.
+- Planner-add-control pass: removed the solid blue fill from the top add control and retained its original rounded-square radius with a light outline and theme-aware dark plus.
 
 ## Follow-up polish
 

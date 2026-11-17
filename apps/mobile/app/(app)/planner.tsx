@@ -28,7 +28,7 @@ export default function PlannerScreen() {
             <Text style={[styles.title, { color: colors.text }]}>Your plans</Text>
             <Text style={[styles.subtitle, { color: colors.muted }]}>Save a queue task now. Send it only when you are ready.</Text>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="Add a plan" onPress={() => router.push("/(app)/plan")} style={[styles.addButton, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={palette.brand} name="add" size={22} /></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Add a plan" onPress={() => router.push("/(app)/plan")} style={[styles.addButton, { backgroundColor: colors.surface, borderColor: colors.border }]}><Ionicons color={colors.text} name="add" size={22} /></Pressable>
         </View>
 
         <View style={[styles.privateNote, { backgroundColor: dark ? colors.surfaceMuted : "#f0f9fe" }]}>
