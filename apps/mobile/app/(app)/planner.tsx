@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   introCopy: { flex: 1 },
   title: { fontSize: 22, lineHeight: 27, fontWeight: "600", letterSpacing: -.45 },
   subtitle: { fontSize: 12, lineHeight: 17, marginTop: 4 },
-  addButton: { width: 42, height: 42, borderRadius: 21, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  addButton: { width: 42, height: 42, borderRadius: 14, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   privateNote: { borderRadius: 12, padding: 12, marginBottom: 18, flexDirection: "row", alignItems: "flex-start", gap: 9 },
   privateText: { flex: 1, fontSize: 11, lineHeight: 16 },
   item: { minHeight: 74, borderWidth: 1, borderRadius: 12, padding: 9, marginBottom: 9, flexDirection: "row", alignItems: "center", gap: 11 },
