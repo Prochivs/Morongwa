@@ -1,7 +1,7 @@
 # Customer portal reference QA
 
 - Source visual truth: user-supplied conversation attachment from 2026-11-17 (pet-care mobile home reference; 1170 × 1769 PNG as displayed by the client). The chat client did not expose a local filesystem path.
-- Implementation screenshot: `/private/tmp/queuemate-customer-nav-full-width.png`
+- Implementation screenshot: `/private/tmp/queuemate-customer-nav-content-aligned.png`
 - Dark-mode screenshot: `/private/tmp/queuemate-customer-exact-heights-dark.png`
 - Supporting navigation captures: `/private/tmp/queuemate-customer-requests-nav.png`, `/private/tmp/queuemate-customer-profile-nav.png`
 - Viewport: iOS Simulator, 402 × 874 CSS points at 3× density.
@@ -11,14 +11,14 @@
 
 ## Full-view comparison evidence
 
-The implementation preserves the source hierarchy and measured rhythm: 44-point header controls, a 112-point dark feature card, a 116-point square overlapping image, a 40-point action pill, 64-point progress rows and check tiles, and a 64-point floating navigation bar with an 18-point bottom margin. Pet-specific content is intentionally mapped to QueueMate request data. The source's lower wellness cards were intentionally omitted at the user's request.
+The implementation preserves the source hierarchy and measured rhythm: 44-point header controls, a 112-point dark feature card, a 116-point square overlapping image, a 40-point action pill, 64-point progress rows and check tiles, and a 64-point floating navigation bar aligned to the 27-point content gutters with an 18-point bottom margin. Pet-specific content is intentionally mapped to QueueMate request data. The source's lower wellness cards were intentionally omitted at the user's request.
 
 ## Focused comparison evidence
 
 - Header: avatar, two-line greeting, and circular notification match the source's placement and scale.
 - Feature card: real QueueMate agent imagery replaces the pet image; the square crop, white image frame, 112:116 card-to-image height ratio, black surface, large title, secondary line, and floating action pill match the reference treatment.
 - Progress list: three 64-point rows use 40-point icon tiles, matched label hierarchy, rounded pale-grey surfaces, 8-point gaps, and independent 64-point check controls.
-- Bottom navigation: the customer tab bar floats at full screen width above the home indicator, shows labels, and gives the active route a dark rounded pill. Requests and Profile captures confirm the active state follows navigation.
+- Bottom navigation: the customer tab bar floats above the home indicator, aligns to the same 27-point side gutters as the content above, shows labels, and gives the active route a dark rounded pill. Requests and Profile captures confirm the active state follows navigation.
 - Dark mode: surfaces, borders, text, icon tiles, and floating navigation retain readable contrast without flattening the hierarchy.
 
 ## Required fidelity surfaces
@@ -43,7 +43,7 @@ No actionable P0, P1, or P2 differences remain. The layout is intentionally adap
 - Interaction pass: captured Requests and Profile destinations to verify the active navigation pill follows the route.
 - Theme pass: captured dark mode and confirmed readable contrast and retained hierarchy.
 - Navigation-centering pass: the first width-only adjustment remained left-anchored because the tab navigator uses logical `start` and `end` positioning. Replacing it with equal 7% logical insets produced matching 28-point side margins in the post-fix simulator capture.
-- Navigation-width pass: restored the tab bar to its original full width at the user's request while retaining its 18-point bottom spacing.
+- Navigation-width pass: restored the tab bar to its original full width, then aligned it to the established 27-point content gutters at the user's request while retaining its 18-point bottom spacing.
 
 ## Follow-up polish
 
