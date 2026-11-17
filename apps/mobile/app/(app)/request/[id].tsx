@@ -110,7 +110,7 @@ function CustomerDetailScreen() {
         <Text style={{ color: colors.muted, lineHeight: 20, marginTop: 7, marginBottom: 14 }}>Transfer the exact fee using {item.reference} as the reference, then upload proof.</Text>
         {bank.data ? Object.entries(bank.data).map(([key, value]) => <View key={key} style={{ marginBottom: 9 }}><Text style={{ color: colors.muted, fontSize: 11 }}>{key.replace(/([A-Z])/g, " $1")}</Text><Text selectable style={{ color: colors.text }}>{value}</Text></View>) : null}
         <Field icon="cash-outline" label="Amount transferred" underlineOnly value={selectedAmount ? `${payment.data?.currency ?? item.currency} ${Number(selectedAmount).toFixed(2)}` : ""} onPress={() => setShowAmounts(true)} placeholder={payment.isLoading ? "Loading amount…" : "Select amount"} trailing={<Ionicons color={colors.muted} name="chevron-down" size={19} />} />
-        <Field icon="receipt-outline" label="Payment reference" value={paymentReference} onChangeText={setPaymentReference} placeholder={item.reference} />
+        <Field icon="receipt-outline" label="Payment reference" underlineOnly value={paymentReference} onChangeText={setPaymentReference} placeholder={item.reference} />
         <Button icon="cloud-upload-outline" variant="quiet" onPress={() => void DocumentPicker.getDocumentAsync({ type: ["application/pdf", "image/png", "image/jpeg"], copyToCacheDirectory: true }).then((result) => { if (!result.canceled) setProof(result.assets[0]); })}>{proof ? proof.name : "Choose payment proof"}</Button>
         <View style={{ height: 8 }} /><Button arrow disabled={!payment.data?.allowedAmounts.length} loading={upload.isPending} onPress={() => upload.mutate()} variant="brand">Upload proof</Button>
       </Card> : null}
