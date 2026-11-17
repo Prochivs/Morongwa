@@ -169,7 +169,7 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
   return <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>{children}</View>;
 }
 
-export function Field({ label, error, multiline, compact = false, icon, trailing, onPress, ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void }) {
+export function Field({ label, error, multiline, compact = false, underlineOnly = false, icon, trailing, onPress, ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; underlineOnly?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
@@ -179,7 +179,7 @@ export function Field({ label, error, multiline, compact = false, icon, trailing
       <Pressable
         accessibilityRole="none"
         onPress={() => onPress ? onPress() : inputRef.current?.focus()}
-        style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }]}
+        style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }, underlineOnly && styles.fieldShellUnderline]}
       >
         {icon ? <Ionicons color={focused ? palette.brand : colors.muted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
         <TextInput
@@ -278,6 +278,7 @@ export const styles = StyleSheet.create({
   card: { borderWidth: 1, borderRadius: 12, padding: 17, marginBottom: 14, shadowColor: palette.navy, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   fieldGroup: { gap: 7, marginBottom: 15 },
   label: { fontSize: 15, fontWeight: "600" },
+  fieldShellUnderline: { backgroundColor: "transparent", borderWidth: 0, borderBottomWidth: 1, borderRadius: 0, shadowOpacity: 0 },
   fieldShell: { minHeight: 54, borderWidth: 1, borderRadius: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 11 },
   fieldShellCompact: { minHeight: 48, paddingHorizontal: 13 },
   textareaShell: { alignItems: "flex-start", minHeight: 118 },
