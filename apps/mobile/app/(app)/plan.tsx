@@ -33,6 +33,17 @@ function dateForInput(value: Date) {
   return `${year}-${month}-${day}`;
 }
 
+function timeFromInput(value: string) {
+  const [hour = 9, minute = 0] = value.split(":").map(Number);
+  const parsed = new Date();
+  parsed.setHours(hour, minute, 0, 0);
+  return parsed;
+}
+
+function timeForInput(value: Date) {
+  return `${String(value.getHours()).padStart(2, "0")}:${String(value.getMinutes()).padStart(2, "0")}`;
+}
+
 export default function PlanScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const id = valueOf(params.id);
@@ -43,6 +54,8 @@ export default function PlanScreen() {
   const [form, setForm] = useState({ title: "", plannedDate: tomorrow(), plannedTime: "09:00", notes: "" });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [pickerDate, setPickerDate] = useState(dateFromInput(tomorrow()));
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [pickerTime, setPickerTime] = useState(timeFromInput("09:00"));
   const [error, setError] = useState("");
   const query = useQuery({ queryKey: ["mobile", "planner", id], queryFn: () => apiFetch<PlannerItem>(`/planner-items/${id}`, { token }), enabled: Boolean(id) });
 
@@ -82,6 +95,17 @@ export default function PlanScreen() {
     }
     setShowDatePicker(true);
   };
+  const openTimePicker = () => {
+    const current = timeFromInput(form.plannedTime);
+    setPickerTime(current);
+    if (Platform.OS === "android") {
+      DateTimePickerAndroid.open({ value: current, mode: "time", is24Hour: true, onChange: (event: DateTimePickerEvent, selectedTime?: Date) => {
+        if (event.type === "set" && selectedTime) change("plannedTime", timeForInput(selectedTime));
+      } });
+      return;
+    }
+    setShowTimePicker(true);
+  };
   const send = () => {
     const input = validate();
     if (!input || !id) return;
@@ -101,7 +125,7 @@ export default function PlanScreen() {
         <Card style={styles.formCard}>
           <Field compact icon="create-outline" label="What do you need to do?" value={form.title} onChangeText={(value) => change("title", value)} placeholder="e.g. Visit the service centre" />
           <Field compact icon="calendar-outline" label="Planned date" value={form.plannedDate} onPress={openDatePicker} placeholder="Select a date" />
-          <Field compact icon="time-outline" label="Planned time" value={form.plannedTime} onChangeText={(value) => change("plannedTime", value)} placeholder="09:00" />
+          <Field compact icon="time-outline" label="Planned time" value={form.plannedTime} onPress={openTimePicker} placeholder="Select a time" />
           <Field compact icon="document-text-outline" label="Notes (optional)" multiline value={form.notes} onChangeText={(value) => change("notes", value)} placeholder="Add anything you want to remember" />
         </Card>
         <View style={styles.formAction}><Button loading={save.isPending} onPress={submit}>Save</Button></View>
@@ -119,6 +143,18 @@ export default function PlanScreen() {
               <Pressable accessibilityRole="button" onPress={() => { change("plannedDate", dateForInput(pickerDate)); setShowDatePicker(false); }} style={styles.dateSheetAction}><Text style={[styles.dateSheetActionText, { color: palette.brand }]}>Done</Text></Pressable>
             </View>
             <DateTimePicker accentColor={palette.brand} display="inline" minimumDate={new Date()} mode="date" onChange={(_event, selectedDate) => { if (selectedDate) setPickerDate(selectedDate); }} themeVariant={dark ? "dark" : "light"} value={pickerDate} />
+          </View>
+        </View>
+      </Modal>
+      <Modal animationType="fade" onRequestClose={() => setShowTimePicker(false)} transparent visible={showTimePicker}>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.timeSheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={[styles.dateSheetHeader, { borderBottomColor: colors.border }]}>
+              <Pressable accessibilityRole="button" onPress={() => setShowTimePicker(false)} style={styles.dateSheetAction}><Text style={[styles.dateSheetActionText, { color: colors.muted }]}>Cancel</Text></Pressable>
+              <Text style={[styles.dateSheetTitle, { color: colors.text }]}>Select time</Text>
+              <Pressable accessibilityRole="button" onPress={() => { change("plannedTime", timeForInput(pickerTime)); setShowTimePicker(false); }} style={styles.dateSheetAction}><Text style={[styles.dateSheetActionText, { color: palette.brand }]}>Done</Text></Pressable>
+            </View>
+            <DateTimePicker accentColor={palette.brand} display="spinner" is24Hour mode="time" onChange={(_event, selectedTime) => { if (selectedTime) setPickerTime(selectedTime); }} themeVariant={dark ? "dark" : "light"} value={pickerTime} />
           </View>
         </View>
       </Modal>
@@ -140,6 +176,7 @@ const styles = StyleSheet.create({
   deleteText: { fontSize: 13, fontWeight: "500" },
   modalBackdrop: { flex: 1, backgroundColor: "rgba(4,14,31,.48)", paddingHorizontal: 18, alignItems: "center", justifyContent: "center" },
   dateSheet: { width: "100%", maxWidth: 390, borderWidth: 1, borderRadius: 18, overflow: "hidden", paddingBottom: 8 },
+  timeSheet: { width: "100%", maxWidth: 390, borderWidth: 1, borderRadius: 18, overflow: "hidden", paddingBottom: 14 },
   dateSheetHeader: { minHeight: 54, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 8 },
   dateSheetAction: { minWidth: 64, minHeight: 44, alignItems: "center", justifyContent: "center" },
   dateSheetActionText: { fontSize: 14, fontWeight: "500" },
