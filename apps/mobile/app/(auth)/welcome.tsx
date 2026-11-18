@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: palette.navy },
   safe: { flex: 1 },
   backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -380 },
-  overlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.52)" },
+  overlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.64)" },
   body: { flex: 1, paddingHorizontal: 24, paddingBottom: 24, justifyContent: "flex-end" },
   eyebrow: { color: palette.brandLight, fontSize: 11, lineHeight: 16, fontWeight: "600", letterSpacing: 1.7, textTransform: "uppercase", marginBottom: 14 },
   title: { color: palette.white, fontSize: 32, lineHeight: 38, letterSpacing: -.8, fontWeight: "600" },
