@@ -23,7 +23,7 @@ type IconName = ComponentProps<typeof Ionicons>["name"];
 
 export function Brand({ compact = false, inverse = false }: { compact?: boolean; inverse?: boolean }) {
   return (
-    <Text style={[styles.brand, inverse && { color: palette.white }, compact && { fontSize: 25 }]}>
+    <Text style={[styles.brand, inverse && { color: palette.white }, compact && { fontSize: 28 }]}>
       Queue<Text style={{ color: palette.brand }}>Mate</Text>
     </Text>
   );
