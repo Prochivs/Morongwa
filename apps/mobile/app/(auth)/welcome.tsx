@@ -23,7 +23,6 @@ export default function WelcomeScreen() {
           </Reveal>
           <Reveal delay={180} style={styles.actions}>
             <Button arrow onPress={() => router.push("/(auth)/login")}>Get started</Button>
-            <Text style={styles.accountHint}>New customer? <Text onPress={() => router.push("/(auth)/register")} style={styles.link}>Create an account</Text></Text>
           </Reveal>
         </View>
       </SafeAreaView>
@@ -34,13 +33,11 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: palette.navy },
   safe: { flex: 1 },
-  backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -210 },
+  backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -380 },
   overlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.12)" },
   body: { flex: 1, paddingHorizontal: 24, paddingBottom: 24, justifyContent: "flex-end" },
   eyebrow: { color: palette.brandLight, fontSize: 11, lineHeight: 16, fontWeight: "600", letterSpacing: 1.7, textTransform: "uppercase", marginBottom: 14 },
   title: { color: palette.white, fontSize: 32, lineHeight: 38, letterSpacing: -.8, fontWeight: "600" },
   subtitle: { color: "rgba(255,255,255,.82)", fontSize: 15, lineHeight: 22, marginTop: 12, marginBottom: 28, maxWidth: 340 },
-  actions: { gap: 17 },
-  accountHint: { color: "rgba(255,255,255,.78)", textAlign: "center", fontSize: 13 },
-  link: { color: palette.brandLight, fontWeight: "600" },
+  actions: { paddingBottom: 8 },
 });
