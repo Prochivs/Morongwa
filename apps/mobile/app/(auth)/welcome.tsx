@@ -17,7 +17,7 @@ export default function WelcomeScreen() {
       <SafeAreaView edges={["top", "bottom"]} style={styles.safe}>
         <View style={styles.body}>
           <Reveal delay={80}>
-            <Text style={styles.eyebrow}>Queue assistance · Gaborone</Text>
+            <View style={styles.eyebrowRow}><View style={styles.eyebrowLine} /><Text style={styles.eyebrow}>Queue assistance · Gaborone</Text></View>
             <Text style={styles.title}>Your place is held.{"\n"}Your day keeps moving.</Text>
             <Text style={styles.subtitle}>Request a verified QueueMate agent, follow every update, and return when it is your turn.</Text>
           </Reveal>
@@ -36,7 +36,9 @@ const styles = StyleSheet.create({
   backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -380 },
   overlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.64)" },
   body: { flex: 1, paddingHorizontal: 24, paddingBottom: 24, justifyContent: "flex-end" },
-  eyebrow: { color: palette.brandLight, fontSize: 11, lineHeight: 16, fontWeight: "700", letterSpacing: 1.7, textTransform: "uppercase", marginBottom: 14 },
+  eyebrowRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 },
+  eyebrowLine: { width: 24, height: 2, borderRadius: 1, backgroundColor: palette.brandLight },
+  eyebrow: { color: "rgba(255,255,255,.92)", fontSize: 11, lineHeight: 16, fontWeight: "700", letterSpacing: 1.7, textTransform: "uppercase" },
   title: { color: palette.white, fontSize: 32, lineHeight: 38, letterSpacing: -.8, fontWeight: "700" },
   subtitle: { color: "rgba(255,255,255,.82)", fontSize: 15, lineHeight: 22, fontWeight: "500", marginTop: 12, marginBottom: 28, maxWidth: 340 },
   actions: { paddingBottom: 8 },
