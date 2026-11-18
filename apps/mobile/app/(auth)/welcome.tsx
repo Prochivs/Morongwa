@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
   backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -380 },
   overlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.64)" },
   body: { flex: 1, paddingHorizontal: 24, paddingBottom: 24, justifyContent: "flex-end" },
-  eyebrow: { color: palette.brandLight, fontSize: 11, lineHeight: 16, fontWeight: "600", letterSpacing: 1.7, textTransform: "uppercase", marginBottom: 14 },
-  title: { color: palette.white, fontSize: 32, lineHeight: 38, letterSpacing: -.8, fontWeight: "600" },
-  subtitle: { color: "rgba(255,255,255,.82)", fontSize: 15, lineHeight: 22, marginTop: 12, marginBottom: 28, maxWidth: 340 },
+  eyebrow: { color: palette.brandLight, fontSize: 11, lineHeight: 16, fontWeight: "700", letterSpacing: 1.7, textTransform: "uppercase", marginBottom: 14 },
+  title: { color: palette.white, fontSize: 32, lineHeight: 38, letterSpacing: -.8, fontWeight: "700" },
+  subtitle: { color: "rgba(255,255,255,.82)", fontSize: 15, lineHeight: 22, fontWeight: "500", marginTop: 12, marginBottom: 28, maxWidth: 340 },
   actions: { paddingBottom: 8 },
 });
