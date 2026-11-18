@@ -29,7 +29,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <AuthShell centerBody showBrand={false} showRoleCue={false} showTopArtwork titleInBody title="Hi, welcome back" subtitle="Sign in to manage your requests or assignments.">
+    <AuthShell centerBody showBrand={false} showInlineBrand showRoleCue={false} showTopArtwork titleInBody title="Hi, welcome back" subtitle="Sign in to manage your requests or assignments.">
       <View style={localStyles.form}>
         <ErrorMessage message={error} />
         <Field autoCapitalize="none" autoComplete="email" icon="mail-outline" keyboardType="email-address" label="Email address" onChangeText={setEmail} placeholder="name@example.com" value={email} />

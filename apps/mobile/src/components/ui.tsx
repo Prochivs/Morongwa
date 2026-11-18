@@ -75,7 +75,7 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
   );
 }
 
-export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showTopArtwork = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showTopArtwork?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
+export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showInlineBrand = false, showTopArtwork = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showInlineBrand?: boolean; showTopArtwork?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
   const { colors } = useTheme();
   return (
     <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: colors.background }]}>
@@ -98,7 +98,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
           <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: colors.background }]}>
             {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /></> : null}
             <Reveal delay={170} style={styles.authBodyContent}>
-              {titleInBody ? <View style={styles.authInlineHeader}><Text style={[styles.authTitle, styles.authInlineTitle, { color: colors.text }]}>{title}</Text><Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text></View> : null}
+              {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={styles.authInlineBrand}><Brand compact /></View> : null}<Text style={[styles.authTitle, styles.authInlineTitle, { color: colors.text }]}>{title}</Text><Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text></View> : null}
               {children}
             </Reveal>
           </View>
@@ -266,6 +266,7 @@ export const styles = StyleSheet.create({
   authBodyWithoutBrand: { paddingTop: 18 },
   authBodyCentered: { justifyContent: "center" },
   authInlineHeader: { marginBottom: 24 },
+  authInlineBrand: { marginBottom: 28 },
   authInlineTitle: { marginTop: 0 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
