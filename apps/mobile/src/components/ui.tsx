@@ -267,7 +267,7 @@ export const styles = StyleSheet.create({
   authBodyCentered: { justifyContent: "center" },
   authInlineHeader: { marginBottom: 24 },
   authInlineBrand: { marginBottom: 28 },
-  authInlineTitle: { marginTop: 0 },
+  authInlineTitle: { marginTop: 0, fontSize: 29, lineHeight: 35 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
   appHeader: { minHeight: 64, paddingHorizontal: 18, flexDirection: "row", alignItems: "center", borderBottomWidth: StyleSheet.hairlineWidth },
