@@ -10,13 +10,12 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   type TextInputProps,
   View,
   type ViewStyle,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Text, TextInput } from "@/components/typography";
 import { palette, useTheme } from "@/theme";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];

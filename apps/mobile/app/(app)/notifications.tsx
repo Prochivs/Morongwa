@@ -1,7 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Text } from "@/components/typography";
 import { AppHeader, EmptyState, ListSkeleton, Reveal, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
 import { useSession } from "@/providers/session";

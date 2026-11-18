@@ -3,7 +3,8 @@ import DateTimePicker, { DateTimePickerAndroid, type DateTimePickerEvent } from 
 import { plannerItemSchema } from "@queuemate/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Modal, Platform, Pressable, StyleSheet, View } from "react-native";
+import { Text } from "@/components/typography";
 import { useEffect, useState } from "react";
 import { AppHeader, Button, Card, ErrorMessage, Field, LoadingScreen, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";

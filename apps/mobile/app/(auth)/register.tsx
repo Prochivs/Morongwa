@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Text } from "@/components/typography";
 import { Link, useRouter } from "expo-router";
 import { registerSchema } from "@queuemate/shared";
 import { AuthShell, Button, ErrorMessage, Field } from "@/components/ui";

@@ -12,6 +12,7 @@
     "doctor": "expo-doctor"
   },
   "dependencies": {
+    "@expo-google-fonts/rajdhani": "^0.4.1",
     "@expo/vector-icons": "^15.1.1",
     "@queuemate/shared": "1.0.0",
     "@react-native-community/datetimepicker": "9.2.1",
@@ -19,6 +20,7 @@
     "expo": "~58.0.26",
     "expo-constants": "~58.0.16",
     "expo-document-picker": "~58.0.5",
+    "expo-font": "^58.0.12",
     "expo-linear-gradient": "^58.0.4",
     "expo-linking": "~58.0.17",
     "expo-router": "~58.0.32",

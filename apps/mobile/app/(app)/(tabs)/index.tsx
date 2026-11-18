@@ -1,7 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Text } from "@/components/typography";
 import { AppHeader, Button, Card, EmptyState, LoadingScreen, PageHeader, Reveal, Screen } from "@/components/ui";
 import { WorkCard } from "@/components/work-card";
 import { apiFetch } from "@/lib/api";

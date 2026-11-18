@@ -1,7 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Text } from "@/components/typography";
 import { customerProfileSchema } from "@queuemate/shared";
 import { AppHeader, Button, Card, ErrorMessage, Field, ListSkeleton, Screen } from "@/components/ui";
 import { apiFetch } from "@/lib/api";
