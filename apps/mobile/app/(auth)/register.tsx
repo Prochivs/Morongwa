@@ -37,7 +37,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <AuthShell compact showBrand={false} showRoleCue={false} showTopArtwork titleInBody title="Let’s get started" subtitle="Create your QueueMate customer account." tone="dark">
+    <AuthShell compact inlineCopyOffset={16} showBrand={false} showRoleCue={false} showTopArtwork titleInBody title="Let’s get started" subtitle="Create your QueueMate customer account." tone="dark">
       <View style={localStyles.form}>
         <ErrorMessage message={error} />
         <Field compact appearance="dark" autoComplete="name" icon="person-outline" label="Full name" onChangeText={(value) => change("fullName", value)} placeholder="e.g. Neo Molefe" value={form.fullName} />
