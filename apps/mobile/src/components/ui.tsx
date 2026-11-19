@@ -101,7 +101,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
           <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: authBackground }]}>
             {darkAuth ? <LinearGradient colors={[palette.navyDeep, "#0b2138", palette.navyDeep]} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} /> : null}
             {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /><View pointerEvents="none" style={styles.authPatternThree} /><View pointerEvents="none" style={styles.authPatternFour} /></> : null}
-            <Reveal delay={170} style={darkAuth ? [styles.authBodyContent, styles.authBodyContentRaised] : styles.authBodyContent}>
+            <Reveal delay={170} style={darkAuth && centerBody ? [styles.authBodyContent, styles.authBodyContentRaised] : styles.authBodyContent}>
               {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={[styles.authInlineBrand, { top: inlineBrandOffset }]}><Brand compact inverse={darkAuth} /></View> : null}<View style={[styles.authInlineCopy, { top: inlineCopyOffset }]}><Text style={[styles.authTitle, styles.authInlineTitle, { color: authText }]}>{title}</Text><Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text></View></View> : null}
               {children}
             </Reveal>
