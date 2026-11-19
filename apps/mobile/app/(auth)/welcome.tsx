@@ -24,11 +24,11 @@ export default function WelcomeScreen() {
       <SafeAreaView edges={["top", "bottom"]} style={styles.safe}>
         <View style={styles.body}>
           <Reveal delay={80}>
-            <Text style={styles.title}>Your place is held.{"\n"}Your day keeps moving.</Text>
+            <Text style={styles.title}>Skip the queue.{"\n"}Keep moving.</Text>
             <Text style={styles.subtitle}>Request a verified QueueMate agent, follow every update, and return when it is your turn.</Text>
           </Reveal>
           <Reveal delay={180} style={styles.actions}>
-            <Button arrow variant="brand" onPress={() => router.push("/(auth)/login")}>Get started</Button>
+            <Button arrow variant="brandDark" onPress={() => router.push("/(auth)/login")}>Get started</Button>
           </Reveal>
         </View>
       </SafeAreaView>

@@ -203,13 +203,14 @@ export function Field({ label, error, multiline, compact = false, underlineOnly 
   );
 }
 
-export function Button({ children, onPress, loading, disabled, variant = "primary", arrow = false, icon }: PropsWithChildren<{ onPress?: () => void; loading?: boolean; disabled?: boolean; variant?: "primary" | "brand" | "danger" | "quiet"; arrow?: boolean; icon?: IconName }>) {
+export function Button({ children, onPress, loading, disabled, variant = "primary", arrow = false, icon }: PropsWithChildren<{ onPress?: () => void; loading?: boolean; disabled?: boolean; variant?: "primary" | "brand" | "brandDark" | "danger" | "quiet"; arrow?: boolean; icon?: IconName }>) {
   const { colors } = useTheme();
-  const background = variant === "brand" ? palette.brand : variant === "danger" ? palette.danger : variant === "quiet" ? colors.surfaceMuted : colors.button;
+  const background = variant === "brand" ? palette.brand : variant === "brandDark" ? "#0879ad" : variant === "danger" ? palette.danger : variant === "quiet" ? colors.surfaceMuted : colors.button;
   const textColor = variant === "quiet" ? colors.text : variant === "primary" ? colors.buttonText : palette.white;
   return (
     <Pressable accessibilityRole="button" disabled={disabled || loading} onPress={onPress} style={({ pressed }) => [styles.button, { backgroundColor: background, opacity: disabled ? 0.42 : 1, transform: [{ scale: pressed ? 0.975 : 1 }], shadowColor: variant === "brand" ? palette.brand : palette.navy }]}>
       {variant === "brand" ? <LinearGradient colors={[palette.brand, "#0aaef4", palette.brand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} /> : null}
+      {variant === "brandDark" ? <LinearGradient colors={["#0879ad", "#096f9d", "#075f89"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} /> : null}
       {loading ? <BouncingSquares light={variant !== "quiet"} /> : <View style={styles.buttonContent}>{icon ? <Ionicons color={textColor} name={icon} size={19} /> : null}<Text style={[styles.buttonText, { color: textColor }]}>{children}</Text>{arrow ? <Ionicons color={textColor} name="arrow-forward" size={19} /> : null}</View>}
     </Pressable>
   );
