@@ -100,7 +100,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
           </View> : null}
           <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: authBackground }]}>
             {darkAuth ? <LinearGradient colors={[palette.navyDeep, "#0b2138", palette.navyDeep]} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} /> : null}
-            {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /></> : null}
+            {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /><View pointerEvents="none" style={styles.authPatternThree} /><View pointerEvents="none" style={styles.authPatternFour} /></> : null}
             <Reveal delay={170} style={darkAuth ? [styles.authBodyContent, styles.authBodyContentRaised] : styles.authBodyContent}>
               {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={styles.authInlineBrand}><Brand compact inverse={darkAuth} /></View> : null}<Text style={[styles.authTitle, styles.authInlineTitle, { color: authText }]}>{title}</Text><Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text></View> : null}
               {children}
@@ -268,6 +268,8 @@ export const styles = StyleSheet.create({
   authHeroWithoutBrand: { minHeight: 0, paddingTop: 26, paddingBottom: 18 },
   authPatternOne: { position: "absolute", width: 240, height: 240, borderRadius: 120, borderWidth: 1, borderColor: "rgba(0,157,231,.12)", right: -95, top: -95 },
   authPatternTwo: { position: "absolute", width: 160, height: 160, borderRadius: 80, borderWidth: 1, borderColor: "rgba(0,157,231,.09)", right: -34, top: -38 },
+  authPatternThree: { position: "absolute", width: 230, height: 230, borderRadius: 115, borderWidth: 1, borderColor: "rgba(0,157,231,.1)", left: -118, bottom: -92 },
+  authPatternFour: { position: "absolute", width: 150, height: 150, borderRadius: 75, borderWidth: 1, borderColor: "rgba(0,157,231,.07)", left: -52, bottom: -28 },
   authTitle: { fontSize: 32, lineHeight: 38, fontWeight: "600", letterSpacing: -0.8, marginTop: 48, alignSelf: "flex-start" },
   authTitleWithoutBrand: { marginTop: 0 },
   authSubtitle: { fontSize: 15, lineHeight: 22, marginTop: 8, alignSelf: "flex-start" },
