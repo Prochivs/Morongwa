@@ -29,7 +29,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <AuthShell centerBody showBrand={false} showInlineBrand showRoleCue={false} showTopArtwork titleInBody title="Hi, welcome back" subtitle="Sign in to manage your requests or assignments." tone="dark">
+    <AuthShell centerBody inlineCopyOffset={20} showBrand={false} showInlineBrand showRoleCue={false} showTopArtwork titleInBody title="Hi, welcome back" subtitle="Sign in to manage your requests or assignments." tone="dark">
       <View style={localStyles.form}>
         <ErrorMessage message={error} />
         <Field appearance="dark" autoCapitalize="none" autoComplete="email" icon="mail-outline" keyboardType="email-address" label="Email address" onChangeText={setEmail} placeholder="name@example.com" value={email} />
@@ -54,7 +54,7 @@ export default function LoginScreen() {
 }
 
 const localStyles = StyleSheet.create({
-  form: { width: "100%", paddingTop: 42 },
+  form: { width: "100%", paddingTop: 54 },
   accountText: { color: "#9eb0c6", textAlign: "center", marginTop: 24, fontSize: 15 },
   accountLink: { color: palette.brand, fontWeight: "600" },
   forgotLink: { color: palette.brandLight, fontSize: 13, fontWeight: "500" },

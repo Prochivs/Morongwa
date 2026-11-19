@@ -74,7 +74,7 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
   );
 }
 
-export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showInlineBrand = false, showTopArtwork = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true, tone = "default" }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showInlineBrand?: boolean; showTopArtwork?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean; tone?: "default" | "dark" }>) {
+export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showInlineBrand = false, showTopArtwork = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true, tone = "default", inlineCopyOffset = 0 }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showInlineBrand?: boolean; showTopArtwork?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean; tone?: "default" | "dark"; inlineCopyOffset?: number }>) {
   const { colors } = useTheme();
   const darkAuth = tone === "dark";
   const authBackground = darkAuth ? palette.navyDeep : colors.background;
@@ -102,7 +102,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
             {darkAuth ? <LinearGradient colors={[palette.navyDeep, "#0b2138", palette.navyDeep]} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} /> : null}
             {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /><View pointerEvents="none" style={styles.authPatternThree} /><View pointerEvents="none" style={styles.authPatternFour} /></> : null}
             <Reveal delay={170} style={darkAuth ? [styles.authBodyContent, styles.authBodyContentRaised] : styles.authBodyContent}>
-              {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={styles.authInlineBrand}><Brand compact inverse={darkAuth} /></View> : null}<Text style={[styles.authTitle, styles.authInlineTitle, { color: authText }]}>{title}</Text><Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text></View> : null}
+              {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={styles.authInlineBrand}><Brand compact inverse={darkAuth} /></View> : null}<View style={[styles.authInlineCopy, { top: inlineCopyOffset }]}><Text style={[styles.authTitle, styles.authInlineTitle, { color: authText }]}>{title}</Text><Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text></View></View> : null}
               {children}
             </Reveal>
           </View>
@@ -282,6 +282,7 @@ export const styles = StyleSheet.create({
   authBodyCentered: { justifyContent: "center" },
   authInlineHeader: { marginBottom: 24 },
   authInlineBrand: { marginBottom: 28, alignItems: "center", top: -18 },
+  authInlineCopy: { width: "100%" },
   authInlineTitle: { marginTop: 0, fontSize: 27, lineHeight: 33 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
