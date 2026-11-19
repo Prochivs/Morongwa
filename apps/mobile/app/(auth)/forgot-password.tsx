@@ -37,7 +37,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <AuthShell centerBody inlineCopyOffset={50} showBrand={false} showInlineBrand showRoleCue={false} showTopArtwork titleInBody title="Reset your password" subtitle="Enter your account email and we’ll send instructions to reset your password." tone="dark">
+    <AuthShell centerBody inlineCopyOffset={112} showBrand={false} showInlineBrand showRoleCue={false} showTopArtwork titleInBody title="Reset your password" subtitle="Enter your account email and we’ll send instructions to reset your password." tone="dark">
       <View style={styles.form}>
         <ErrorMessage message={error} />
         {message ? <View style={styles.success}><Ionicons color="#72ddaf" name="checkmark-circle-outline" size={22} /><Text style={styles.successText}>{message}</Text></View> : null}
@@ -50,7 +50,7 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  form: { width: "100%", paddingTop: 96 },
+  form: { width: "100%", paddingTop: 110 },
   success: { flexDirection: "row", alignItems: "flex-start", gap: 10, borderLeftWidth: 3, borderLeftColor: "#38b784", borderRadius: 8, backgroundColor: "rgba(56,183,132,.12)", padding: 12, marginBottom: 16 },
   successText: { color: "#bdebd8", flex: 1, fontSize: 14, lineHeight: 20 },
   backText: { color: "#9eb0c6", textAlign: "center", marginTop: 24, fontSize: 15 },
