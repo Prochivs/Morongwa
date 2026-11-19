@@ -37,7 +37,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <AuthShell centerBody hideTopRightArtwork inlineBrandOffset={120} inlineCopyOffset={288} showBackgroundImage showBrand={false} showInlineBrand showRoleCue={false} showTopArtwork titleInBody title="Reset your password" subtitle="Enter your account email and we’ll send instructions to reset your password." tone="dark">
+    <AuthShell centerBody hideTopRightArtwork inlineBrandOffset={120} inlineCopyOffset={288} showBackgroundImage showBrand={false} showRoleCue={false} showTopArtwork titleInBody title="Reset your password" subtitle="Enter your account email and we’ll send instructions to reset your password." tone="dark">
       <View style={styles.form}>
         <ErrorMessage message={error} />
         {message ? <View style={styles.success}><Ionicons color="#72ddaf" name="checkmark-circle-outline" size={22} /><Text style={styles.successText}>{message}</Text></View> : null}
