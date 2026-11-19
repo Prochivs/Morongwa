@@ -22,7 +22,7 @@ type IconName = ComponentProps<typeof Ionicons>["name"];
 
 export function Brand({ compact = false, inverse = false }: { compact?: boolean; inverse?: boolean }) {
   return (
-    <Text style={[styles.brand, inverse && { color: palette.white }, compact && { fontSize: 28 }]}>
+    <Text style={[styles.brand, inverse && { color: palette.white }, compact && { fontSize: 32 }]}>
       Queue<Text style={{ color: palette.brand }}>Mate</Text>
     </Text>
   );
@@ -281,7 +281,7 @@ export const styles = StyleSheet.create({
   authBodyWithoutBrand: { paddingTop: 18 },
   authBodyCentered: { justifyContent: "center" },
   authInlineHeader: { marginBottom: 24 },
-  authInlineBrand: { marginBottom: 28, alignItems: "center" },
+  authInlineBrand: { marginBottom: 28, alignItems: "center", top: -18 },
   authInlineTitle: { marginTop: 0, fontSize: 27, lineHeight: 33 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
