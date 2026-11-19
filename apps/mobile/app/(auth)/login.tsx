@@ -54,7 +54,7 @@ export default function LoginScreen() {
 }
 
 const localStyles = StyleSheet.create({
-  form: { width: "100%", paddingTop: 54 },
+  form: { width: "100%", paddingTop: 66 },
   accountText: { color: "#9eb0c6", textAlign: "center", marginTop: 24, fontSize: 15 },
   accountLink: { color: palette.brand, fontWeight: "600" },
   forgotLink: { color: palette.brandLight, fontSize: 13, fontWeight: "500" },
