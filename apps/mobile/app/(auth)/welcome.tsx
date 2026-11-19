@@ -24,12 +24,11 @@ export default function WelcomeScreen() {
       <SafeAreaView edges={["top", "bottom"]} style={styles.safe}>
         <View style={styles.body}>
           <Reveal delay={80}>
-            <View style={styles.eyebrowRow}><View style={styles.eyebrowLine} /><Text style={styles.eyebrow}>Queue assistance · Gaborone</Text></View>
             <Text style={styles.title}>Your place is held.{"\n"}Your day keeps moving.</Text>
             <Text style={styles.subtitle}>Request a verified QueueMate agent, follow every update, and return when it is your turn.</Text>
           </Reveal>
           <Reveal delay={180} style={styles.actions}>
-            <Button arrow onPress={() => router.push("/(auth)/login")}>Get started</Button>
+            <Button arrow variant="brand" onPress={() => router.push("/(auth)/login")}>Get started</Button>
           </Reveal>
         </View>
       </SafeAreaView>
@@ -40,13 +39,10 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: palette.navy },
   safe: { flex: 1 },
-  backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -380 },
+  backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -440 },
   overlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.64)" },
   bottomFade: { position: "absolute", right: 0, bottom: 0, left: 0, height: "62%" },
   body: { flex: 1, paddingHorizontal: 24, paddingBottom: 24, justifyContent: "flex-end" },
-  eyebrowRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 },
-  eyebrowLine: { width: 24, height: 2, borderRadius: 1, backgroundColor: palette.brandLight },
-  eyebrow: { color: "rgba(255,255,255,.92)", fontSize: 11, lineHeight: 16, fontWeight: "700", letterSpacing: 1.7, textTransform: "uppercase" },
   title: { color: palette.white, fontSize: 34, lineHeight: 40, letterSpacing: -.85, fontWeight: "700", textShadowColor: "rgba(255,255,255,.2)", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: .5 },
   subtitle: { color: "rgba(255,255,255,.82)", fontSize: 15, lineHeight: 22, fontWeight: "500", marginTop: 12, marginBottom: 28, maxWidth: 340 },
   actions: { paddingBottom: 8 },
