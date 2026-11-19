@@ -45,7 +45,7 @@ export default function LoginScreen() {
           trailing={<Pressable accessibilityLabel={showPassword ? "Hide password" : "Show password"} hitSlop={12} onPress={() => setShowPassword((value) => !value)}><Ionicons color="#8fa4be" name={showPassword ? "eye-off-outline" : "eye-outline"} size={22} /></Pressable>}
           value={password}
         />
-        <Button arrow disabled={!email || !password} loading={loading} onPress={() => void submit()} variant="brand">Sign in</Button>
+        <Button disabled={!email || !password} loading={loading} onPress={() => void submit()} variant="brandSoft">Sign in</Button>
         <Text style={localStyles.accountText}>New to QueueMate? <Link href="/(auth)/register" style={localStyles.accountLink}>Create an account</Link></Text>
       </View>
     </AuthShell>

@@ -213,14 +213,16 @@ export function Field({ label, error, multiline, compact = false, underlineOnly 
   );
 }
 
-export function Button({ children, onPress, loading, disabled, variant = "primary", arrow = false, icon }: PropsWithChildren<{ onPress?: () => void; loading?: boolean; disabled?: boolean; variant?: "primary" | "brand" | "brandDark" | "danger" | "quiet"; arrow?: boolean; icon?: IconName }>) {
+export function Button({ children, onPress, loading, disabled, variant = "primary", arrow = false, icon }: PropsWithChildren<{ onPress?: () => void; loading?: boolean; disabled?: boolean; variant?: "primary" | "brand" | "brandDark" | "brandSoft" | "danger" | "quiet"; arrow?: boolean; icon?: IconName }>) {
   const { colors } = useTheme();
-  const background = variant === "brand" ? palette.brand : variant === "brandDark" ? "#0879ad" : variant === "danger" ? palette.danger : variant === "quiet" ? colors.surfaceMuted : colors.button;
+  const background = variant === "brand" ? palette.brand : variant === "brandDark" ? "#0879ad" : variant === "brandSoft" ? "#178fbd" : variant === "danger" ? palette.danger : variant === "quiet" ? colors.surfaceMuted : colors.button;
   const textColor = variant === "quiet" ? colors.text : variant === "primary" ? colors.buttonText : palette.white;
   return (
-    <Pressable accessibilityRole="button" disabled={disabled || loading} onPress={onPress} style={({ pressed }) => [styles.button, { backgroundColor: background, opacity: disabled ? 0.42 : 1, transform: [{ scale: pressed ? 0.975 : 1 }], shadowColor: variant === "brand" ? palette.brand : palette.navy }]}>
+    <Pressable accessibilityRole="button" disabled={disabled || loading} onPress={onPress} style={({ pressed }) => [styles.button, { backgroundColor: background, opacity: disabled ? variant === "brandSoft" ? 0.72 : 0.42 : 1, transform: [{ scale: pressed ? 0.975 : 1 }], shadowColor: variant === "brand" ? palette.brand : palette.navy }]}>
       {variant === "brand" ? <LinearGradient colors={[palette.brand, "#0aaef4", palette.brand]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} /> : null}
       {variant === "brandDark" ? <LinearGradient colors={["#0879ad", "#096f9d", "#075f89"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} /> : null}
+      {variant === "brandSoft" ? <LinearGradient colors={["#117da9", "#1c9bca", "#54bfe8"]} start={{ x: 0, y: 1 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} /> : null}
+      {variant === "brandSoft" ? <LinearGradient colors={["rgba(255,255,255,.2)", "rgba(255,255,255,.05)", "rgba(255,255,255,0)"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} /> : null}
       {loading ? <BouncingSquares light={variant !== "quiet"} /> : <View style={styles.buttonContent}>{icon ? <Ionicons color={textColor} name={icon} size={19} /> : null}<Text style={[styles.buttonText, { color: textColor }]}>{children}</Text>{arrow ? <Ionicons color={textColor} name="arrow-forward" size={19} /> : null}</View>}
     </Pressable>
   );
@@ -276,7 +278,7 @@ export const styles = StyleSheet.create({
   authBodyWithoutBrand: { paddingTop: 18 },
   authBodyCentered: { justifyContent: "center" },
   authInlineHeader: { marginBottom: 24 },
-  authInlineBrand: { marginBottom: 28 },
+  authInlineBrand: { marginBottom: 28, alignItems: "center" },
   authInlineTitle: { marginTop: 0, fontSize: 27, lineHeight: 33 },
   portalHero: { minHeight: 315, paddingHorizontal: 22, paddingTop: 26, paddingBottom: 52, overflow: "hidden" },
   portalHeroCompact: { minHeight: 250 },
