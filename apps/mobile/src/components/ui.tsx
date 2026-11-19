@@ -176,7 +176,7 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
   return <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>{children}</View>;
 }
 
-export function Field({ label, error, multiline, compact = false, underlineOnly = false, icon, trailing, onPress, appearance = "default", ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; underlineOnly?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void; appearance?: "default" | "dark" }) {
+export function Field({ label, labelAction, error, multiline, compact = false, underlineOnly = false, icon, trailing, onPress, appearance = "default", ...props }: TextInputProps & { label: string; labelAction?: ReactNode; error?: string; multiline?: boolean; compact?: boolean; underlineOnly?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void; appearance?: "default" | "dark" }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
@@ -187,7 +187,7 @@ export function Field({ label, error, multiline, compact = false, underlineOnly 
   const fieldBackground = darkField ? "#102238" : colors.input;
   return (
     <View style={styles.fieldGroup}>
-      <Text style={[styles.label, { color: fieldText }]}>{label}</Text>
+      <View style={styles.fieldLabelRow}><Text style={[styles.label, { color: fieldText }]}>{label}</Text>{labelAction}</View>
       <Pressable
         accessibilityRole="none"
         onPress={() => onPress ? onPress() : inputRef.current?.focus()}
@@ -303,6 +303,7 @@ export const styles = StyleSheet.create({
   description: { marginTop: 8, fontSize: 15, lineHeight: 22 },
   card: { borderWidth: 1, borderRadius: 12, padding: 17, marginBottom: 14, shadowColor: palette.navy, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   fieldGroup: { gap: 7, marginBottom: 15 },
+  fieldLabelRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12 },
   label: { fontSize: 15, fontWeight: "600" },
   fieldShellUnderline: { backgroundColor: "transparent", borderWidth: 0, borderBottomWidth: 1, borderRadius: 0, shadowOpacity: 0 },
   fieldShell: { minHeight: 54, borderWidth: 1, borderRadius: 9, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 11 },

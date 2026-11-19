@@ -39,6 +39,7 @@ export default function LoginScreen() {
           autoComplete="password"
           icon="lock-closed-outline"
           label="Password"
+          labelAction={<Link href="/(auth)/forgot-password" style={localStyles.forgotLink}>Forgot password?</Link>}
           onChangeText={setPassword}
           placeholder="Enter your password"
           secureTextEntry={!showPassword}
@@ -56,4 +57,5 @@ const localStyles = StyleSheet.create({
   form: { width: "100%", paddingTop: 42 },
   accountText: { color: "#9eb0c6", textAlign: "center", marginTop: 24, fontSize: 15 },
   accountLink: { color: palette.brand, fontWeight: "600" },
+  forgotLink: { color: palette.brandLight, fontSize: 13, fontWeight: "500" },
 });
