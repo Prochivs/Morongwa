@@ -176,7 +176,7 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
   return <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>{children}</View>;
 }
 
-export function Field({ label, labelAction, error, multiline, compact = false, underlineOnly = false, icon, trailing, onPress, appearance = "default", ...props }: TextInputProps & { label: string; labelAction?: ReactNode; error?: string; multiline?: boolean; compact?: boolean; underlineOnly?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void; appearance?: "default" | "dark" }) {
+export function Field({ label, labelAction, error, multiline, compact = true, underlineOnly = false, icon, trailing, onPress, appearance = "default", ...props }: TextInputProps & { label: string; labelAction?: ReactNode; error?: string; multiline?: boolean; compact?: boolean; underlineOnly?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void; appearance?: "default" | "dark" }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
