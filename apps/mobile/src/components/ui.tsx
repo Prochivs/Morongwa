@@ -282,7 +282,7 @@ export const styles = StyleSheet.create({
   authRoleText: { fontSize: 12, lineHeight: 17 },
   authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
   authBackgroundImage: { position: "absolute", top: 0, left: -120, width: "150%", height: "72%" },
-  authBackgroundOverlay: { position: "absolute", top: 0, right: -20, left: -20, height: "72%", backgroundColor: "rgba(3,14,30,.46)" },
+  authBackgroundOverlay: { position: "absolute", top: 0, right: -20, left: -20, height: "72%", backgroundColor: "rgba(3,14,30,.62)" },
   authBackgroundFade: { position: "absolute", top: 0, right: -20, left: -20, height: "74%" },
   authBodyContent: { zIndex: 1 },
   authBodyContentRaised: { top: -28 },
