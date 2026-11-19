@@ -75,7 +75,7 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
   );
 }
 
-export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showInlineBrand = false, showTopArtwork = false, showBackgroundImage = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true, tone = "default", inlineCopyOffset = 0, inlineBrandOffset = -18 }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showInlineBrand?: boolean; showTopArtwork?: boolean; showBackgroundImage?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean; tone?: "default" | "dark"; inlineCopyOffset?: number; inlineBrandOffset?: number }>) {
+export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showInlineBrand = false, showTopArtwork = false, hideTopRightArtwork = false, showBackgroundImage = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true, tone = "default", inlineCopyOffset = 0, inlineBrandOffset = -18 }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showInlineBrand?: boolean; showTopArtwork?: boolean; hideTopRightArtwork?: boolean; showBackgroundImage?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean; tone?: "default" | "dark"; inlineCopyOffset?: number; inlineBrandOffset?: number }>) {
   const { colors } = useTheme();
   const darkAuth = tone === "dark";
   const authBackground = darkAuth ? palette.navyDeep : colors.background;
@@ -105,7 +105,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
               <View pointerEvents="none" style={styles.authBackgroundOverlay} />
               <LinearGradient colors={["rgba(3,14,30,.18)", "rgba(3,14,30,.38)", "rgba(3,14,30,.82)", palette.navyDeep]} locations={[0, .38, .72, 1]} pointerEvents="none" style={styles.authBackgroundFade} />
             </> : darkAuth ? <LinearGradient colors={[palette.navyDeep, "#0b2138", palette.navyDeep]} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} /> : null}
-            {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /><View pointerEvents="none" style={styles.authPatternThree} /><View pointerEvents="none" style={styles.authPatternFour} /></> : null}
+            {showTopArtwork ? <>{hideTopRightArtwork ? null : <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /></>}<View pointerEvents="none" style={styles.authPatternThree} /><View pointerEvents="none" style={styles.authPatternFour} /></> : null}
             <Reveal delay={170} style={darkAuth && centerBody ? [styles.authBodyContent, styles.authBodyContentRaised] : styles.authBodyContent}>
               {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={[styles.authInlineBrand, { top: inlineBrandOffset }]}><Brand compact inverse={darkAuth} /></View> : null}<View style={[styles.authInlineCopy, { top: inlineCopyOffset }]}><Text style={[styles.authTitle, styles.authInlineTitle, { color: authText }]}>{title}</Text><Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text></View></View> : null}
               {children}
