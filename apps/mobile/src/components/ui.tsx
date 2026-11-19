@@ -74,30 +74,35 @@ export function Screen({ children, refreshing, onRefresh, contentStyle }: PropsW
   );
 }
 
-export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showInlineBrand = false, showTopArtwork = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showInlineBrand?: boolean; showTopArtwork?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean }>) {
+export function AuthShell({ children, title, subtitle, compact = false, centerBody = false, titleInBody = false, showInlineBrand = false, showTopArtwork = false, roleText = "For customers and queue agents", showBrand = true, showRoleCue = true, tone = "default" }: PropsWithChildren<{ title: string; subtitle: string; compact?: boolean; centerBody?: boolean; titleInBody?: boolean; showInlineBrand?: boolean; showTopArtwork?: boolean; roleText?: string; showBrand?: boolean; showRoleCue?: boolean; tone?: "default" | "dark" }>) {
   const { colors } = useTheme();
+  const darkAuth = tone === "dark";
+  const authBackground = darkAuth ? palette.navyDeep : colors.background;
+  const authText = darkAuth ? palette.white : colors.text;
+  const authMuted = darkAuth ? "#9eb0c6" : colors.muted;
   return (
-    <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: colors.background }]}>
-      <StatusBar style={colors.background === "#f3f8fc" ? "dark" : "light"} />
+    <SafeAreaView edges={["top"]} style={[styles.authSafe, { backgroundColor: authBackground }]}>
+      <StatusBar style={darkAuth ? "light" : colors.background === "#f3f8fc" ? "dark" : "light"} />
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.authSafe}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.authScroll}>
           {showBrand || !titleInBody ? <View style={[styles.authHero, compact && styles.authHeroCompact, !showBrand && styles.authHeroWithoutBrand, { backgroundColor: colors.surface }]}>
             <View style={styles.authPatternOne} />
             <View style={styles.authPatternTwo} />
-            {showBrand ? <Reveal delay={40}><Brand /></Reveal> : null}
+            {showBrand ? <Reveal delay={40}><Brand inverse={darkAuth} /></Reveal> : null}
             <Reveal delay={110}>
-              <Text style={[styles.authTitle, !showBrand && styles.authTitleWithoutBrand, { color: colors.text }]}>{title}</Text>
-              <Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text>
+              <Text style={[styles.authTitle, !showBrand && styles.authTitleWithoutBrand, { color: authText }]}>{title}</Text>
+              <Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text>
               {showRoleCue ? <View style={styles.authRoleCue}>
                 <Ionicons color={palette.brand} name="shield-checkmark-outline" size={17} />
                 <Text style={[styles.authRoleText, { color: colors.muted }]}>{roleText}</Text>
               </View> : null}
             </Reveal>
           </View> : null}
-          <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: colors.background }]}>
+          <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: authBackground }]}>
+            {darkAuth ? <LinearGradient colors={[palette.navyDeep, "#0b2138", palette.navyDeep]} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} /> : null}
             {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /></> : null}
             <Reveal delay={170} style={styles.authBodyContent}>
-              {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={styles.authInlineBrand}><Brand compact /></View> : null}<Text style={[styles.authTitle, styles.authInlineTitle, { color: colors.text }]}>{title}</Text><Text style={[styles.authSubtitle, { color: colors.muted }]}>{subtitle}</Text></View> : null}
+              {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={styles.authInlineBrand}><Brand compact inverse={darkAuth} /></View> : null}<Text style={[styles.authTitle, styles.authInlineTitle, { color: authText }]}>{title}</Text><Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text></View> : null}
               {children}
             </Reveal>
           </View>
@@ -171,19 +176,24 @@ export function Card({ children, style }: PropsWithChildren<{ style?: ViewStyle 
   return <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}>{children}</View>;
 }
 
-export function Field({ label, error, multiline, compact = false, underlineOnly = false, icon, trailing, onPress, ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; underlineOnly?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void }) {
+export function Field({ label, error, multiline, compact = false, underlineOnly = false, icon, trailing, onPress, appearance = "default", ...props }: TextInputProps & { label: string; error?: string; multiline?: boolean; compact?: boolean; underlineOnly?: boolean; icon?: IconName; trailing?: ReactNode; onPress?: () => void; appearance?: "default" | "dark" }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<ComponentRef<typeof TextInput>>(null);
+  const darkField = appearance === "dark";
+  const fieldText = darkField ? palette.white : colors.text;
+  const fieldMuted = darkField ? "#8fa4be" : colors.muted;
+  const fieldBorder = darkField ? "#29435f" : colors.border;
+  const fieldBackground = darkField ? "#102238" : colors.input;
   return (
     <View style={styles.fieldGroup}>
-      <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
+      <Text style={[styles.label, { color: fieldText }]}>{label}</Text>
       <Pressable
         accessibilityRole="none"
         onPress={() => onPress ? onPress() : inputRef.current?.focus()}
-        style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: colors.input, borderColor: error ? colors.danger : focused ? palette.brand : colors.border, shadowColor: focused ? palette.brand : "transparent" }, underlineOnly && styles.fieldShellUnderline]}
+        style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: fieldBackground, borderColor: error ? colors.danger : focused ? palette.brand : fieldBorder, shadowColor: focused ? palette.brand : "transparent" }, underlineOnly && styles.fieldShellUnderline]}
       >
-        {icon ? <Ionicons color={focused ? palette.brand : colors.muted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
+        {icon ? <Ionicons color={focused ? palette.brand : fieldMuted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
         <TextInput
           ref={inputRef}
           {...props}
@@ -192,9 +202,9 @@ export function Field({ label, error, multiline, compact = false, underlineOnly 
           pointerEvents={onPress ? "none" : "auto"}
           onBlur={(event) => { setFocused(false); props.onBlur?.(event); }}
           onFocus={(event) => { setFocused(true); props.onFocus?.(event); }}
-          placeholderTextColor={colors.muted}
+          placeholderTextColor={fieldMuted}
           selectionColor={palette.brand}
-          style={[styles.field, compact && styles.fieldCompact, multiline && styles.textarea, multiline && compact && styles.textareaCompact, { color: colors.text }, props.style]}
+          style={[styles.field, compact && styles.fieldCompact, multiline && styles.textarea, multiline && compact && styles.textareaCompact, { color: fieldText }, props.style]}
         />
         {trailing}
       </Pressable>
