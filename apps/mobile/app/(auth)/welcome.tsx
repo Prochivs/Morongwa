@@ -15,6 +15,12 @@ export default function WelcomeScreen() {
       <Image source={require("../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={styles.backgroundImage} />
       <View style={styles.overlay} />
       <LinearGradient colors={["rgba(3,14,30,.44)", "rgba(3,14,30,.08)", "rgba(3,14,30,.88)"]} locations={[0, .42, 1]} style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={["rgba(3,14,30,0)", "rgba(3,14,30,.72)", "rgba(3,14,30,.98)"]}
+        locations={[0, .48, 1]}
+        pointerEvents="none"
+        style={styles.bottomFade}
+      />
       <SafeAreaView edges={["top", "bottom"]} style={styles.safe}>
         <View style={styles.body}>
           <Reveal delay={80}>
@@ -36,6 +42,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   backgroundImage: { position: "absolute", top: 0, right: 0, bottom: 0, left: -380 },
   overlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.64)" },
+  bottomFade: { position: "absolute", right: 0, bottom: 0, left: 0, height: "62%" },
   body: { flex: 1, paddingHorizontal: 24, paddingBottom: 24, justifyContent: "flex-end" },
   eyebrowRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 },
   eyebrowLine: { width: 24, height: 2, borderRadius: 1, backgroundColor: palette.brandLight },
