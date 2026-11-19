@@ -101,7 +101,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
           <View style={[styles.authBody, !showBrand && styles.authBodyWithoutBrand, centerBody && styles.authBodyCentered, { backgroundColor: authBackground }]}>
             {darkAuth ? <LinearGradient colors={[palette.navyDeep, "#0b2138", palette.navyDeep]} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} /> : null}
             {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /></> : null}
-            <Reveal delay={170} style={styles.authBodyContent}>
+            <Reveal delay={170} style={darkAuth ? [styles.authBodyContent, styles.authBodyContentRaised] : styles.authBodyContent}>
               {titleInBody ? <View style={styles.authInlineHeader}>{showInlineBrand ? <View style={styles.authInlineBrand}><Brand compact inverse={darkAuth} /></View> : null}<Text style={[styles.authTitle, styles.authInlineTitle, { color: authText }]}>{title}</Text><Text style={[styles.authSubtitle, { color: authMuted }]}>{subtitle}</Text></View> : null}
               {children}
             </Reveal>
@@ -275,6 +275,7 @@ export const styles = StyleSheet.create({
   authRoleText: { fontSize: 12, lineHeight: 17 },
   authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
   authBodyContent: { zIndex: 1 },
+  authBodyContentRaised: { top: -28 },
   authBodyWithoutBrand: { paddingTop: 18 },
   authBodyCentered: { justifyContent: "center" },
   authInlineHeader: { marginBottom: 24 },
