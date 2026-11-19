@@ -57,7 +57,7 @@ export default function RegisterScreen() {
 }
 
 const localStyles = StyleSheet.create({
-  form: { width: "100%" },
+  form: { width: "100%", paddingTop: 14 },
   checkRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, marginBottom: 14 },
   checkbox: { width: 23, height: 23, borderRadius: 7, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   termsText: { color: "#9eb0c6", flex: 1, fontSize: 14, lineHeight: 19 },
