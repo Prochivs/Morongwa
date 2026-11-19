@@ -32,8 +32,9 @@ export default function LoginScreen() {
     <AuthShell centerBody inlineBrandOffset={-6} inlineCopyOffset={82} showBrand={false} showInlineBrand showRoleCue={false} showTopArtwork titleInBody title="Hi, welcome back" subtitle="Sign in to manage your requests or assignments." tone="dark">
       <View style={localStyles.form}>
         <ErrorMessage message={error} />
-        <Field appearance="dark" autoCapitalize="none" autoComplete="email" icon="mail-outline" keyboardType="email-address" label="Email address" onChangeText={setEmail} placeholder="name@example.com" value={email} />
+        <Field compact appearance="dark" autoCapitalize="none" autoComplete="email" icon="mail-outline" keyboardType="email-address" label="Email address" onChangeText={setEmail} placeholder="name@example.com" value={email} />
         <Field
+          compact
           appearance="dark"
           autoCapitalize="none"
           autoComplete="password"
@@ -43,7 +44,7 @@ export default function LoginScreen() {
           onChangeText={setPassword}
           placeholder="Enter your password"
           secureTextEntry={!showPassword}
-          trailing={<Pressable accessibilityLabel={showPassword ? "Hide password" : "Show password"} hitSlop={12} onPress={() => setShowPassword((value) => !value)}><Ionicons color={palette.brand} name={showPassword ? "eye-off-outline" : "eye-outline"} size={22} /></Pressable>}
+          trailing={<Pressable accessibilityLabel={showPassword ? "Hide password" : "Show password"} hitSlop={12} onPress={() => setShowPassword((value) => !value)}><Ionicons color={palette.brand} name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} /></Pressable>}
           value={password}
         />
         <Button disabled={!email || !password} loading={loading} onPress={() => void submit()} variant="brandSoft">Sign in</Button>
