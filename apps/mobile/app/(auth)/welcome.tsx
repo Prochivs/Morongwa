@@ -44,6 +44,6 @@ const styles = StyleSheet.create({
   bottomFade: { position: "absolute", right: 0, bottom: 0, left: 0, height: "62%" },
   body: { flex: 1, paddingHorizontal: 24, paddingBottom: 24, justifyContent: "flex-end" },
   title: { color: palette.white, fontSize: 34, lineHeight: 40, letterSpacing: -.85, fontWeight: "700", textShadowColor: "rgba(255,255,255,.2)", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: .5 },
-  subtitle: { color: "rgba(255,255,255,.82)", fontSize: 15, lineHeight: 22, fontWeight: "500", marginTop: 12, marginBottom: 28, maxWidth: 340 },
+  subtitle: { color: "rgba(188,204,224,.72)", fontSize: 15, lineHeight: 22, fontWeight: "500", marginTop: 12, marginBottom: 28, maxWidth: 340 },
   actions: { paddingBottom: 8 },
 });
