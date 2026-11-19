@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   eyebrowRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 },
   eyebrowLine: { width: 24, height: 2, borderRadius: 1, backgroundColor: palette.brandLight },
   eyebrow: { color: "rgba(255,255,255,.92)", fontSize: 11, lineHeight: 16, fontWeight: "700", letterSpacing: 1.7, textTransform: "uppercase" },
-  title: { color: palette.white, fontSize: 32, lineHeight: 38, letterSpacing: -.8, fontWeight: "700" },
+  title: { color: palette.white, fontSize: 34, lineHeight: 40, letterSpacing: -.85, fontWeight: "700", textShadowColor: "rgba(255,255,255,.2)", textShadowOffset: { width: 0, height: 0 }, textShadowRadius: .5 },
   subtitle: { color: "rgba(255,255,255,.82)", fontSize: 15, lineHeight: 22, fontWeight: "500", marginTop: 12, marginBottom: 28, maxWidth: 340 },
   actions: { paddingBottom: 8 },
 });
