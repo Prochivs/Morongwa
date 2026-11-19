@@ -103,7 +103,7 @@ export function AuthShell({ children, title, subtitle, compact = false, centerBo
             {darkAuth && showBackgroundImage ? <>
               <Image source={require("../../../web/public/images/queuemate-agent-service-centre.png")} resizeMode="cover" style={styles.authBackgroundImage} />
               <View pointerEvents="none" style={styles.authBackgroundOverlay} />
-              <LinearGradient colors={["rgba(3,14,30,.34)", "rgba(3,14,30,.7)", palette.navyDeep]} locations={[0, .42, .68]} pointerEvents="none" style={StyleSheet.absoluteFill} />
+              <LinearGradient colors={["rgba(3,14,30,.18)", "rgba(3,14,30,.38)", "rgba(3,14,30,.82)", palette.navyDeep]} locations={[0, .38, .72, 1]} pointerEvents="none" style={styles.authBackgroundFade} />
             </> : darkAuth ? <LinearGradient colors={[palette.navyDeep, "#0b2138", palette.navyDeep]} locations={[0, .5, 1]} style={StyleSheet.absoluteFill} /> : null}
             {showTopArtwork ? <><View pointerEvents="none" style={styles.authPatternOne} /><View pointerEvents="none" style={styles.authPatternTwo} /><View pointerEvents="none" style={styles.authPatternThree} /><View pointerEvents="none" style={styles.authPatternFour} /></> : null}
             <Reveal delay={170} style={darkAuth && centerBody ? [styles.authBodyContent, styles.authBodyContentRaised] : styles.authBodyContent}>
@@ -281,8 +281,9 @@ export const styles = StyleSheet.create({
   authRoleCue: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 18, alignSelf: "flex-start" },
   authRoleText: { fontSize: 12, lineHeight: 17 },
   authBody: { flex: 1, paddingHorizontal: 20, paddingTop: 28, paddingBottom: 34, minHeight: 500 },
-  authBackgroundImage: { position: "absolute", top: 0, right: 0, left: 0, height: "66%", width: "100%" },
-  authBackgroundOverlay: { position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(3,14,30,.36)" },
+  authBackgroundImage: { position: "absolute", top: 0, left: -120, width: "150%", height: "72%" },
+  authBackgroundOverlay: { position: "absolute", top: 0, right: -20, left: -20, height: "72%", backgroundColor: "rgba(3,14,30,.3)" },
+  authBackgroundFade: { position: "absolute", top: 0, right: -20, left: -20, height: "74%" },
   authBodyContent: { zIndex: 1 },
   authBodyContentRaised: { top: -28 },
   authBodyWithoutBrand: { paddingTop: 18 },
