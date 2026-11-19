@@ -193,7 +193,7 @@ export function Field({ label, labelAction, error, multiline, compact = false, u
         onPress={() => onPress ? onPress() : inputRef.current?.focus()}
         style={[styles.fieldShell, compact && styles.fieldShellCompact, multiline && styles.textareaShell, multiline && compact && styles.textareaShellCompact, { backgroundColor: fieldBackground, borderColor: error ? colors.danger : focused ? palette.brand : fieldBorder, shadowColor: focused ? palette.brand : "transparent" }, underlineOnly && styles.fieldShellUnderline]}
       >
-        {icon ? <Ionicons color={focused ? palette.brand : fieldMuted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
+        {icon ? <Ionicons color={darkField || focused ? palette.brand : fieldMuted} name={icon} size={compact ? 18 : 20} style={multiline ? { marginTop: compact ? 12 : 15 } : undefined} /> : null}
         <TextInput
           ref={inputRef}
           {...props}

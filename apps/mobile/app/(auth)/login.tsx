@@ -43,7 +43,7 @@ export default function LoginScreen() {
           onChangeText={setPassword}
           placeholder="Enter your password"
           secureTextEntry={!showPassword}
-          trailing={<Pressable accessibilityLabel={showPassword ? "Hide password" : "Show password"} hitSlop={12} onPress={() => setShowPassword((value) => !value)}><Ionicons color="#8fa4be" name={showPassword ? "eye-off-outline" : "eye-outline"} size={22} /></Pressable>}
+          trailing={<Pressable accessibilityLabel={showPassword ? "Hide password" : "Show password"} hitSlop={12} onPress={() => setShowPassword((value) => !value)}><Ionicons color={palette.brand} name={showPassword ? "eye-off-outline" : "eye-outline"} size={22} /></Pressable>}
           value={password}
         />
         <Button disabled={!email || !password} loading={loading} onPress={() => void submit()} variant="brandSoft">Sign in</Button>
