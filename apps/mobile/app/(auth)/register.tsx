@@ -49,7 +49,7 @@ export default function RegisterScreen() {
           <View style={[localStyles.checkbox, { backgroundColor: accepted ? palette.brand : "transparent", borderColor: accepted ? palette.brand : "#29435f" }]}>{accepted ? <Ionicons color="white" name="checkmark" size={16} /> : null}</View>
           <Text style={localStyles.termsText}>I accept the terms and conditions and privacy policy.</Text>
         </Pressable>
-        <Button loading={loading} onPress={() => void submit()} variant="brandSoft">Create customer account</Button>
+        <Button disabled={!form.fullName.trim() || !form.email.trim() || form.mobile.trim().length <= 4 || !form.password || !form.passwordConfirmation || !accepted} loading={loading} onPress={() => void submit()} variant="brandSoft">Create customer account</Button>
         <Text style={localStyles.accountText}>Already registered? <Link href="/(auth)/login" style={localStyles.accountLink}>Sign in</Link></Text>
       </View>
     </AuthShell>
